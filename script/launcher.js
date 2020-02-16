@@ -1,5 +1,5 @@
-var ID_CONST = { Player: 1, Enemy: 2, PowerUp: 3, Grid: 100 }
-var _DEBUG = { draw: false, time: true };
+var ID_CONST = { Player: 1, Enemy: 2, PowerUp: 3, Grid: 100, Flag: 9001 }
+var _DEBUG = { draw: false, time: false, physics: false };
 var gameMaster = {};
 var board = {
     width: 500,
@@ -12,28 +12,47 @@ var ctx = null;
 var timer = {};
 
 /* Game */
+
+function Play() {
+    gameMaster.state = gameMaster.play;
+}
+function Pause() {
+    gameMaster.state = gameMaster.pause;
+}
+function Stop() {
+    if (timer.interval){
+        clearInterval(timer.interval);
+        timer.interval = null;
+    }
+    Pause();
+}
+function Start() {
+    gameMaster.setup();
+}
+
 gameMaster.play = function() {
     physics.check();
     board.draw();
 };
-
-gameMaster.pause = function() {};
-
-gameMaster.state = gameMaster.play;
+gameMaster.pause = function() { Debug.log("Game Paused"); };
 
 gameMaster.setup = function() {
     canvas = document.getElementById("grid-canvas");
     ctx = canvas.getContext("2d");
     board.setup(20, 20, [
         {x: 0, y: 0, value: ID_CONST.Player},
-        {x: 10, y: 15, value: ID_CONST.Enemy}
+        {x: 10, y: 15, value: ID_CONST.Enemy},
+        {x: 18, y: 0, value: ID_CONST.Flag}
     ]);
     timer.start = Date.now();
     timer.last = timer.start;
 
+    //set the start state
+    Play();
+
     gameMaster.render();
 
-    setInterval(gameMaster.render, 1000);
+    timer.interval = setInterval(gameMaster.render, 1000);
 }
 
 gameMaster.render = function() {
@@ -120,6 +139,9 @@ board.getColor = function(id) {
     if (id === ID_CONST.PowerUp){
         return '#005ac6'
     }
+    if (id === ID_CONST.Flag){
+        return '#c6b600'
+    }
     return '#FFFFFF'
 }
 
@@ -140,6 +162,7 @@ board.canMove = function(id, x, y) { //returns destinationInfo or false
     if (!!idPos){
         const gridY = idPos.y;
         const gridX = idPos.x;
+        let destination = ID_CONST.Grid;
 
         if (x > 0){
             if ((gridX + x) >= board.grid[gridY].length){
@@ -163,11 +186,15 @@ board.canMove = function(id, x, y) { //returns destinationInfo or false
             }
         }
 
-        if (destination === 0){ //wasn't out of bounds
-            destination = board.grid[gridX+y][gridY+x];
+        if (destination === ID_CONST.Grid){ //wasn't out of bounds
+            destination = board.grid[gridY+y][gridX+x];
+
+            return { pos: idPos, destination: destination };
+        }
+        else {
+            return false;
         }
 
-        return { pos: idPos, destination: destination };
     }
 
     return false;
@@ -176,7 +203,13 @@ board.canMove = function(id, x, y) { //returns destinationInfo or false
 board.move = function(id, x, y){
     const movement = board.canMove(id, x, y);
 
+    Debug.physics("Move:", id, "x:", x, "y:", y, "movement:", movement);
+
     if (movement){
+        if (movement.destination === ID_CONST.Flag){
+            Pause();
+        }
+
         board.grid[movement.pos.y][movement.pos.x] = ID_CONST.Grid;
         board.grid[movement.pos.y + y][movement.pos.x + x] = id;
     }
@@ -186,7 +219,7 @@ board.move = function(id, x, y){
 /* Physics */
 
 physics.check = function() {
-
+    board.move(ID_CONST.Player, 1, 0);
 }
 
 
@@ -205,6 +238,11 @@ var Debug = {
     },
     time: function() {
         if (_DEBUG.time){
+            console.log(...arguments);
+        }
+    },
+    physics: function() {
+        if (_DEBUG.physics){
             console.log(...arguments);
         }
     }
@@ -323,5 +361,5 @@ function mouse(button) {
 /* Runner */
 
 document.addEventListener("DOMContentLoaded", function () {
-    gameMaster.setup();
+    Start();
 });
