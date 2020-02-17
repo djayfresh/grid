@@ -1,5 +1,6 @@
 var ID_CONST = { Player: 1, Enemy: 2, PowerUp: 3, Grid: 100, Flag: 9001 }
-var _DEBUG = { draw: false, time: false, physics: false };
+var KEY_CONST = { left: 65, right: 68, up: 87, down: 83 };
+var _DEBUG = { draw: false, time: false, physics: false, keyboard: false };
 var gameMaster = {};
 var board = {
     width: 500,
@@ -44,6 +45,12 @@ gameMaster.setup = function() {
         {x: 10, y: 15, value: ID_CONST.Enemy},
         {x: 18, y: 0, value: ID_CONST.Flag}
     ]);
+
+    keyboardManager.track(KEY_CONST.left); //left
+    keyboardManager.track(KEY_CONST.right); //right
+    keyboardManager.track(KEY_CONST.up); //up
+    keyboardManager.track(KEY_CONST.down); //down
+
     timer.start = Date.now();
     timer.last = timer.start;
 
@@ -52,6 +59,9 @@ gameMaster.setup = function() {
 
     gameMaster.render();
 
+    if (timer.interval){
+        clearInterval(timer.interval);
+    }
     timer.interval = setInterval(gameMaster.render, 1000);
 }
 
@@ -219,7 +229,27 @@ board.move = function(id, x, y){
 /* Physics */
 
 physics.check = function() {
-    board.move(ID_CONST.Player, 1, 0);
+    let x = 0;
+    let y = 0;
+
+    if(keyboardManager.isKeyDown(KEY_CONST.right)){
+        x = 1;
+    }
+    if(keyboardManager.isKeyDown(KEY_CONST.down)){
+        y = 1;
+    }
+    if(keyboardManager.isKeyDown(KEY_CONST.left)){
+        x = -1;
+    }
+    if(keyboardManager.isKeyDown(KEY_CONST.up)){
+        y = -1;
+    }
+
+    if (x !== 0 || y !== 0) {
+        board.move(ID_CONST.Player, x, y);
+    }
+
+    Debug.keyboard("Keys down:", keyboardManager.downKeys);
 }
 
 
@@ -245,6 +275,25 @@ var Debug = {
         if (_DEBUG.physics){
             console.log(...arguments);
         }
+    },
+    keyboard: function() {
+        if (_DEBUG.keyboard){
+            console.log(...arguments);
+        }
+    }
+}
+
+var keyboardManager = {
+    downKeys: {},
+    trackedKeys: {},
+    isKeyDown: function(keyCode) {
+        return keyboardManager.downKeys[keyCode];
+    },
+    track: function(keyCode) {
+        if (!this.trackedKeys[keyCode]) {
+            keyboard(keyCode).onClick(() => this.downKeys[keyCode] = true, () => this.downKeys[keyCode] = false);
+            this.trackedKeys[keyCode] = true;
+        }
     }
 }
 
@@ -255,8 +304,8 @@ function keyboard(keyCode) {
     key.code = keyCode;
     key.isDown = false;
     key.isUp = true;
-    key.press = () => { key.onPress.forEach(press => { press(); }); };
-    key.release = () => { key.onRelease.forEach(release => { release(); }); };
+    key.press = () => { key.onPress.forEach(press => { press(); }); Debug.keyboard("Key Pressed", key.code); };
+    key.release = () => { key.onRelease.forEach(release => { release(); }); Debug.keyboard("Key Released", key.code); };
     BoundKeys.push(keyCode);
     key.onPress = [];
     key.onRelease = [];
