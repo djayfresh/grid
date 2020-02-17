@@ -42,6 +42,12 @@ gameMaster.play = function() {
 gameMaster.pause = function() { Debug.log("Game Paused"); };
 
 gameMaster.setup = function() {
+    if (difficulty > ((board.grids - 1) * (board.grids - 1))){
+        //maybe we store high scores sometime
+        difficulty = 1; //reset
+        score = 0;
+    }
+
     canvas = document.getElementById("grid-canvas");
     ctx = canvas.getContext("2d");
     
@@ -120,6 +126,11 @@ board.draw = function() {
             ctx.lineTo(lineX * (j + 1), lineY * (i + 1)); //bottom right
             ctx.lineTo(lineX * j , lineY * (i + 1)); //bottom left
             ctx.stroke()
+
+            ctx.moveTo(board.size, 0);
+            ctx.lineTo(0, 0);
+            ctx.lineTo(0, board.size);
+            ctx.stroke();
 
             gridX = rectSize + 1;
         }
