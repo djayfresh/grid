@@ -1,16 +1,20 @@
-var ID_CONST = { Player: 1, Enemy: 2, PowerUp: 3, Grid: 100, Flag: 9001 }
+var ID_CONST = { Player: 1, Enemy: 2, PowerUp: 3, Grid: 100, Flag: 9001, Wall: 101 }
 var KEY_CONST = { left: 65, right: 68, up: 87, down: 83 };
-var _DEBUG = { draw: false, time: false, physics: false, keyboard: false };
+var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false };
 var gameMaster = {};
 var board = {
-    width: 500,
-    heigh: 500,
-    size: 1,
+    size: 500,
+    grids: 6,
 };
 var physics = {};
 var canvas = null;
 var ctx = null;
-var timer = {};
+var timer = {
+    gameSpeed: 200 //ms
+};
+
+var difficulty = 1;
+var score = 0;
 
 /* Game */
 
@@ -40,11 +44,9 @@ gameMaster.pause = function() { Debug.log("Game Paused"); };
 gameMaster.setup = function() {
     canvas = document.getElementById("grid-canvas");
     ctx = canvas.getContext("2d");
-    board.setup(20, 20, [
-        {x: 0, y: 0, value: ID_CONST.Player},
-        {x: 10, y: 15, value: ID_CONST.Enemy},
-        {x: 18, y: 0, value: ID_CONST.Flag}
-    ]);
+    
+    const map = board.generateMap();
+    board.setup(map);
 
     keyboardManager.track(KEY_CONST.left); //left
     keyboardManager.track(KEY_CONST.right); //right
@@ -62,7 +64,7 @@ gameMaster.setup = function() {
     if (timer.interval){
         clearInterval(timer.interval);
     }
-    timer.interval = setInterval(gameMaster.render, 1000);
+    timer.interval = setInterval(gameMaster.render, timer.gameSpeed);
 }
 
 gameMaster.render = function() {
@@ -83,31 +85,18 @@ board.grid = [
     [ID_CONST.Grid, ID_CONST.Grid, ID_CONST.Grid, ID_CONST.Enemy]
 ];
 
-board.setup = function(x, y, cords) {
-    board.grid = [];
-    
-    for(let i = 0; i < y; i++){
-        board.grid[i] = [];
-        for(let j = 0; j < x; j++){
-            board.grid[i][j] = ID_CONST.Grid;
-
-            cords.forEach(cord => {
-                if (cord.x === j && cord.y === i){
-                    board.grid[i][j] = cord.value;
-                }
-            });
-        }
-    }
+board.setup = function(map) {
+    board.grid = [...map];
 }
 
 board.draw = function() {
-    ctx.clearRect(0, 0, board.width, board.heigh);
+    ctx.clearRect(0, 0, board.size, board.size);
     ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
     ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
     ctx.save();
 
-    const rectSize = (board.width / board.grid.length) - 1;
-    Debug.draw("Rect Size", rectSize, "Board:", board.grid.length, "width:", board.width)
+    const rectSize = (board.size / board.grid.length) - 1;
+    Debug.draw("Rect Size", rectSize, "Board:", board.grid.length, "size:", board.grids)
     let gridX = 0;
     let gridY = 0;
 
@@ -137,6 +126,9 @@ board.draw = function() {
         gridY = rectSize + 1;
         gridX = 0;
     }
+
+    //refresh score:
+    document.getElementById('game-score').innerText = score;
 }
 
 board.getColor = function(id) {
@@ -152,6 +144,9 @@ board.getColor = function(id) {
     if (id === ID_CONST.Flag){
         return '#c6b600'
     }
+    if (id === ID_CONST.Wall){
+        return '#441d00'
+    }
     return '#FFFFFF'
 }
 
@@ -166,7 +161,11 @@ board.getPos = function(id){
     return null;
 }
 
-board.canMove = function(id, x, y) { //returns destinationInfo or false
+board.getMove = function(id, x, y) { //returns destinationInfo or false
+    if (x === 0 && y === 0 ){
+        return false;
+    }
+
     const idPos = board.getPos(id);
 
     if (!!idPos){
@@ -210,19 +209,81 @@ board.canMove = function(id, x, y) { //returns destinationInfo or false
     return false;
 }
 
-board.move = function(id, x, y){
-    const movement = board.canMove(id, x, y);
-
+board.move = function(id, x, y, movement){
     Debug.physics("Move:", id, "x:", x, "y:", y, "movement:", movement);
 
-    if (movement){
-        if (movement.destination === ID_CONST.Flag){
-            Pause();
-        }
+    board.grid[movement.pos.y][movement.pos.x] = ID_CONST.Grid;
+    board.grid[movement.pos.y + y][movement.pos.x + x] = id;
+}
 
-        board.grid[movement.pos.y][movement.pos.x] = ID_CONST.Grid;
-        board.grid[movement.pos.y + y][movement.pos.x + x] = id;
+/* Board - Generation */
+
+board.generateMap = function() {
+    const map = [];
+    
+    for(let i = 0; i < board.grids; i++){
+        map[i] = [];
+        for(let j = 0; j < board.grids; j++){
+            map[i][j] = ID_CONST.Grid;
+        }
     }
+
+    const insert = function(item, it) {
+        it = it || 1;
+        if (it > 4){
+            Debug.generation("Unable to insert item", item);
+            item.x = undefined;
+            item.y = undefined;
+            for(let i = 0; i < board.grids; i++){
+                for(let j = 0; j < board.grids; j++){
+                    if (map[i][j] === ID_CONST.Grid){
+                        item.x = j;
+                        item.y = i;
+                    }
+                }
+            }
+
+            if (item.x === undefined || item.y === undefined){
+                Debug.generation("Blocking Item", item);
+                return;
+            }
+        }
+        item.x = item.x !== undefined ? item.x : range(0, board.grids);
+        item.y = item.y !== undefined ? item.y : range(0, board.grids);
+
+        if (map[item.y][item.x] !== ID_CONST.Grid) {
+            Debug.generation("Collision:", item, map[item.y][item.x]);
+            item.x = undefined;
+            item.y = undefined;
+            insert(item, ++it);
+        }
+        else {
+            Debug.generation("Insert Item:", item);
+            map[item.y][item.x] = item.id;
+        }
+    }
+
+    //make a wall section
+    if (board.grids >= 20){
+        insert({ x: 0, y: 10, id: ID_CONST.Wall});
+        insert({ x: 1, y: 10, id: ID_CONST.Wall});
+        insert({ x: 2, y: 10, id: ID_CONST.Wall});
+        insert({ x: 3, y: 10, id: ID_CONST.Wall});
+        insert({ x: 4, y: 10, id: ID_CONST.Wall});
+        insert({ x: 5, y: 10, id: ID_CONST.Wall});
+        insert({ x: 5, y: 9, id: ID_CONST.Wall});
+        insert({ x: 5, y: 8, id: ID_CONST.Wall});
+        insert({ x: 5, y: 7, id: ID_CONST.Wall});
+    }
+
+    insert({ id: ID_CONST.Player }); // player randomly on the map
+    insert({ id: ID_CONST.Flag }); // flag randomly on the map
+
+    for (let i = 0; i < difficulty; i++) {
+        insert({ id: ID_CONST.Enemy }); // enemy randomly on the map
+    }
+
+    return map;
 }
 
 
@@ -244,9 +305,44 @@ physics.check = function() {
     if(keyboardManager.isKeyDown(KEY_CONST.up)){
         y = -1;
     }
+    
+    const movement = board.getMove(ID_CONST.Player, x, y);
+    if (movement) {
+        const movePlayer = function() {
+            board.move(ID_CONST.Player, x, y, movement);
+        };
 
-    if (x !== 0 || y !== 0) {
-        board.move(ID_CONST.Player, x, y);
+        if (movement.destination !== ID_CONST.Grid){
+            //check game states
+            switch(movement.destination){
+                case ID_CONST.Wall:
+                    //no move
+                    break;
+                case ID_CONST.Enemy:
+                    //Don't Move, probably End Game
+                    Debug.log("Lost Game");
+                    Start();
+                    break;
+                case ID_CONST.Flag:
+                    movePlayer();
+                    Debug.log("Win Game");
+                    score += 1;
+                    difficulty += 1;
+                    Start();
+                    break;
+                case ID_CONST.PowerUp:
+                    //Enable PowerUP
+                    Debug.log("Power Up");
+                    movePlayer();
+                    break;
+                default:
+                    movePlayer();
+                    break;
+            }
+        }
+        else {
+            movePlayer();
+        }
     }
 
     Debug.keyboard("Keys down:", keyboardManager.downKeys);
@@ -278,6 +374,11 @@ var Debug = {
     },
     keyboard: function() {
         if (_DEBUG.keyboard){
+            console.log(...arguments);
+        }
+    },
+    generation: function() {
+        if (_DEBUG.generation){
             console.log(...arguments);
         }
     }
@@ -404,6 +505,10 @@ function mouse(button) {
     );
 
     return mouse;
+}
+
+function range(min, max){
+    return Math.floor((Math.random() * max) + min);
 }
 
 
