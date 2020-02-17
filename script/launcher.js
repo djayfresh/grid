@@ -144,37 +144,47 @@ board.draw = function() {
     let gridX = 0;
     let gridY = 0;
 
+    //Left Edge
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, board.size);
+    ctx.stroke();
+
     for(let i = 0; i < board.grid.length; i++){
         for(let j = 0; j < board.grid[i].length; j++){
             const space = board.grid[i][j];
-            Debug.draw("Draw:", space, "at:", gridX * j, gridY * i, "color:", board.getColor(space))
 
-            ctx.fillStyle = board.getColor(space);
-            ctx.fillRect(gridX * j, gridY * i, rectSize, rectSize);
-            ctx.save();
+            if (space !== ID_CONST.Grid){
+                Debug.draw("Draw:", space, "at:", gridX * j, gridY * i, "color:", board.getColor(space))
 
-            Debug.draw("Draw Line:", rectSize * (j + 1), gridY * i)
-            Debug.draw("Draw Line:", rectSize * (j + 1), gridY * (i + 1))
-            Debug.draw("Draw Line:",gridX * j , gridY * (i + 1))
-
-            ctx.strokeStyle = 'black';
-            const lineX = gridX || rectSize + 1;
-            const lineY = gridY || rectSize + 1;
-            ctx.moveTo(lineX * (j + 1), lineY * i); //top right
-            ctx.lineTo(lineX * (j + 1), lineY * (i + 1)); //bottom right
-            ctx.lineTo(lineX * j , lineY * (i + 1)); //bottom left
-            ctx.stroke()
-
-            ctx.moveTo(board.size, 0);
-            ctx.lineTo(0, 0);
-            ctx.lineTo(0, board.size);
-            ctx.stroke();
+                ctx.fillStyle = board.getColor(space);
+                ctx.fillRect(gridX * j, gridY * i, rectSize, rectSize);
+            }
 
             gridX = rectSize + 1;
+
+            if (i == 0){
+                ctx.strokeStyle = 'black';
+                const lineX = gridX || rectSize + 1;
+                ctx.moveTo(lineX * (j + 1), 0); //top
+                ctx.lineTo(lineX * (j + 1), board.size); //bottom
+                ctx.stroke()
+            }
         }
+
+        ctx.strokeStyle = 'black';
+        const lineY = gridY || rectSize + 1;
+        ctx.moveTo(0, lineY * i); //left
+        ctx.lineTo(board.size, lineY * i); //right
+        ctx.stroke()
+
         gridY = rectSize + 1;
         gridX = 0;
     }
+
+    //Bottom Edge
+    ctx.moveTo(0, board.size);
+    ctx.lineTo(board.size, board.size);
+    ctx.stroke();
 }
 
 board.getColor = function(id) {
