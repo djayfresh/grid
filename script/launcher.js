@@ -10,11 +10,15 @@ var physics = {};
 var canvas = null;
 var ctx = null;
 var timer = {
-    gameSpeed: 200 //ms
+    gameSpeed: 150, //ms
+    roundStartDelay: 2000, //ms
+    roundStartTime: 0,
+    gameResetDelay: 2000 //ms
 };
 
 var difficulty = 1;
 var score = 0;
+var _lastScore = 0;
 
 /* Game */
 
@@ -32,12 +36,18 @@ function Stop() {
     Pause();
 }
 function Start() {
+    timer.roundStartTime = 0;
     gameMaster.setup();
 }
 
 gameMaster.play = function() {
-    physics.check();
-    board.draw();
+    timer.roundStartTime += timer.step;
+
+    if(gameMaster.roundStarted()){
+        physics.check();
+    }
+
+    gameMaster.draw();
 };
 gameMaster.pause = function() { Debug.log("Game Paused"); };
 
@@ -45,7 +55,9 @@ gameMaster.setup = function() {
     if (difficulty > ((board.grids - 1) * (board.grids - 1))){
         //maybe we store high scores sometime
         difficulty = 1; //reset
+        _lastScore = score;
         score = 0;
+        timer.roundStartTime = -timer.gameResetDelay;
     }
 
     canvas = document.getElementById("grid-canvas");
@@ -81,6 +93,37 @@ gameMaster.render = function() {
     Debug.time(timer);
 }
 
+gameMaster.gameReset = function() {
+    return timer.roundStartTime < 0;
+}
+gameMaster.roundStarted = function() {
+    return timer.roundStartTime > timer.roundStartDelay;
+}
+
+gameMaster.draw = function() {
+    ctx.clearRect(0, 0, board.size, board.size);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
+
+    if (gameMaster.roundStarted()){
+        board.draw();
+    }
+    else if (gameMaster.gameReset()){
+        ctx.font = '30px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Game Over`, board.size / 2, board.size / 3);
+        ctx.fillText(`Score: ${_lastScore}`, board.size / 2, board.size / 2);
+    }
+    else {
+        ctx.font = '30px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Round Starting - ${difficulty}`, board.size / 2, board.size / 2);
+    }
+    
+    //refresh score:
+    document.getElementById('game-score').innerText = score;
+}
+
 /* Board */
 
 //temp
@@ -96,11 +139,6 @@ board.setup = function(map) {
 }
 
 board.draw = function() {
-    ctx.clearRect(0, 0, board.size, board.size);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-    ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
-    ctx.save();
-
     const rectSize = (board.size / board.grid.length) - 1;
     Debug.draw("Rect Size", rectSize, "Board:", board.grid.length, "size:", board.grids)
     let gridX = 0;
@@ -137,9 +175,6 @@ board.draw = function() {
         gridY = rectSize + 1;
         gridX = 0;
     }
-
-    //refresh score:
-    document.getElementById('game-score').innerText = score;
 }
 
 board.getColor = function(id) {
@@ -290,6 +325,10 @@ board.generateMap = function() {
     insert({ id: ID_CONST.Player }); // player randomly on the map
     insert({ id: ID_CONST.Flag }); // flag randomly on the map
 
+    if (difficulty > 10 && Math.random() > 0.75){
+        insert({ id: ID_CONST.PowerUp });
+    }
+
     for (let i = 0; i < difficulty; i++) {
         insert({ id: ID_CONST.Enemy }); // enemy randomly on the map
     }
@@ -330,7 +369,6 @@ physics.check = function() {
                     //no move
                     break;
                 case ID_CONST.Enemy:
-                    //Don't Move, probably End Game
                     Debug.log("Lost Game");
                     Start();
                     break;
@@ -344,6 +382,7 @@ physics.check = function() {
                 case ID_CONST.PowerUp:
                     //Enable PowerUP
                     Debug.log("Power Up");
+                    difficulty - 2;
                     movePlayer();
                     break;
                 default:
