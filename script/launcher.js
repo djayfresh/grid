@@ -1,9 +1,10 @@
 var ID_CONST = { Player: 1, Enemy: 2, PowerUp: 3, Grid: 100, Flag: 9001, Wall: 101 }
 var KEY_CONST = { left: 65, right: 68, up: 87, down: 83 };
-var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false };
+var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false };
 var gameMaster = {};
 var board = {
     size: 500,
+    width: 500,
     grids: 6,
 };
 var physics = {};
@@ -71,6 +72,21 @@ gameMaster.setup = function() {
     keyboardManager.track(KEY_CONST.right); //right
     keyboardManager.track(KEY_CONST.up); //up
     keyboardManager.track(KEY_CONST.down); //down
+
+    const ms = mouse();
+    ms.press = () => { 
+        const pos = board.mouseToBoard(ms.x, ms.y);
+        const player = board.getPos(ID_CONST.Player);
+
+        const moveX = pos.x - player.x;
+        const moveY = pos.y - player.y;
+
+        Debug.mouse("Move player", player, pos, moveX, moveY);
+
+        if (1 >= moveX && moveX >= -1 && 1 >= moveY && moveY >= -1){
+            physics.movePlayer(moveX, moveY);
+        }
+    };
 
     timer.start = Date.now();
     timer.last = timer.start;
@@ -221,6 +237,19 @@ board.getPos = function(id){
     return null;
 }
 
+//find a piece based on the canvas x/y
+board.getId = function(x, y) {
+    const pos = board.mouseToBoard(x, y);
+    return board.grid[pos.y][pos.x];
+}
+
+board.mouseToBoard = function(x, y) {
+    const rectSize = board.width / board.grids;
+    const cellX = Math.floor(x / rectSize);
+    const cellY = Math.floor(y / rectSize);
+    return { x: cellX, y: cellY };
+}
+
 board.getMove = function(id, x, y) { //returns destinationInfo or false
     if (x === 0 && y === 0 ){
         return false;
@@ -277,8 +306,9 @@ board.move = function(id, x, y, movement){
 }
 
 board.resize = function() {
-    board.size = document.getElementById('grid-canvas').width;
-    document.getElementById('grid-canvas').height = board.size;
+    board.size = canvas.width;
+    board.width = canvas.clientWidth;
+    canvas.height = canvas.width;
 }
 
 /* Board - Generation */
@@ -374,7 +404,13 @@ physics.check = function() {
     if(keyboardManager.isKeyDown(KEY_CONST.up)){
         y = -1;
     }
-    
+
+    physics.movePlayer(x, y);
+
+    Debug.keyboard("Keys down:", keyboardManager.downKeys);
+}
+
+physics.movePlayer = function(x, y){
     const movement = board.getMove(ID_CONST.Player, x, y);
     if (movement) {
         const movePlayer = function() {
@@ -413,8 +449,6 @@ physics.check = function() {
             movePlayer();
         }
     }
-
-    Debug.keyboard("Keys down:", keyboardManager.downKeys);
 }
 
 
@@ -448,6 +482,11 @@ var Debug = {
     },
     generation: function() {
         if (_DEBUG.generation){
+            console.log(...arguments);
+        }
+    },
+    mouse: function() {
+        if (_DEBUG.mouse){
             console.log(...arguments);
         }
     }
@@ -529,13 +568,34 @@ function mouse(button) {
     mouse.press = undefined;
     mouse.release = undefined;
     mouse.move = undefined;
+    mouse.lastX = 0;
+    mouse.lastY = 0;
     mouse.x = 0;
     mouse.y = 0;
 
+    function getMousePos(mouseEvent) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: mouseEvent.clientX - rect.left,
+            y: mouseEvent.clientY - rect.top
+        }
+    }
+
+    mouse.setPos = function(pos) {
+        mouse.lastX = mouse.x;
+        mouse.lastY = mouse.y;
+
+        mouse.x = pos.x;
+        mouse.y = pos.y;
+    }
+
     //The `downHandler`
     mouse.downHandler = event => {
-        if(mouse.button == event.button){
-            if (mouse.isUp && mouse.press) mouse.press();
+        const pos = getMousePos(event);
+        mouse.setPos(pos);
+
+        if(!mouse.button || mouse.button == event.button){
+            if (mouse.isUp && mouse.press) mouse.press(event);
             mouse.isDown = true;
             mouse.isUp = false;
 
@@ -545,8 +605,11 @@ function mouse(button) {
 
     //The `upHandler`
     mouse.upHandler = event => {
-        if(mouse.button == event.button){
-            if (mouse.isDown && mouse.release) mouse.release();
+        const pos = getMousePos(event);
+        mouse.setPos(pos);
+
+        if(!mouse.button || mouse.button == event.button){
+            if (mouse.isDown && mouse.release) mouse.release(event);
             mouse.isDown = false;
             mouse.isUp = true;
             
@@ -556,20 +619,21 @@ function mouse(button) {
 
     //The `moveHandler`
     mouse.moveHandler = event => {
-        if(mouse.move) mouse.move(event);
+        const pos = getMousePos(event);
+        mouse.setPos(pos);
+        
+        if(mouse.move) mouse.move(pos);
 
-        mouse.x = event.screenX;
-        mouse.y = event.screenY;
     };
 
-    //Attach event listeners
-    window.addEventListener(
+    //Attach event listeners to canvas
+    canvas.addEventListener(
         "mousedown", mouse.downHandler.bind(mouse), false
     );
-    window.addEventListener(
+    canvas.addEventListener(
         "mouseup", mouse.upHandler.bind(mouse), false
     );
-    window.addEventListener(
+    canvas.addEventListener(
         "mousemove", mouse.moveHandler.bind(mouse), false
     );
 
