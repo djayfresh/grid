@@ -1,0 +1,7 @@
+# Splash page content
+ * About
+ * Team
+ * Events
+ 
+# Career Page
+ * Contact form / Apply 

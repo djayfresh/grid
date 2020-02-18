@@ -65,6 +65,7 @@ gameMaster.setup = function() {
     
     const map = board.generateMap();
     board.setup(map);
+    board.resize();
 
     keyboardManager.track(KEY_CONST.left); //left
     keyboardManager.track(KEY_CONST.right); //right
@@ -121,7 +122,10 @@ gameMaster.draw = function() {
     }
     
     //refresh score:
-    document.getElementById('game-score').innerText = score;
+    const $score = document.getElementById('game-score');
+    if (!!$score){
+        $score.innerText = score;
+    }
 }
 
 /* Board */
@@ -270,6 +274,11 @@ board.move = function(id, x, y, movement){
 
     board.grid[movement.pos.y][movement.pos.x] = ID_CONST.Grid;
     board.grid[movement.pos.y + y][movement.pos.x + x] = id;
+}
+
+board.resize = function() {
+    board.size = document.getElementById('grid-canvas').width;
+    document.getElementById('grid-canvas').height = board.size;
 }
 
 /* Board - Generation */
@@ -577,3 +586,7 @@ function range(min, max){
 document.addEventListener("DOMContentLoaded", function () {
     Start();
 });
+
+window.addEventListener("resize", function() {
+    board.resize();
+}, false);
