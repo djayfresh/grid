@@ -20,6 +20,7 @@ var timer = {
 var difficulty = 1;
 var score = 0;
 var _lastScore = 0;
+var moves = 0;
 
 /* Game */
 
@@ -41,32 +42,31 @@ function Start() {
     gameMaster.setup();
 }
 
+gameMaster.started = false;
 gameMaster.play = function() {
     timer.roundStartTime += timer.step;
 
-    if(gameMaster.roundStarted()){
-        physics.check();
+    if(!gameMaster.roundStarted()){
+        gameMaster.started = false;
+        gameMaster.draw()
     }
-
-    gameMaster.draw();
+    else if (!gameMaster.started) {
+        gameMaster.draw();
+        gameMaster.started = true;
+    }
+    else if(gameMaster.gameReset()){
+        gameMaster.draw();
+    }
 };
+
 gameMaster.pause = function() { Debug.log("Game Paused"); };
 
-gameMaster.setup = function() {
-    if (difficulty > ((board.grids - 1) * (board.grids - 1))){
-        //maybe we store high scores sometime
-        difficulty = 1; //reset
-        _lastScore = score;
-        score = 0;
-        timer.roundStartTime = -timer.gameResetDelay;
-    }
+gameMaster.hasInput = false;
+gameMaster.inputSetup = function() {
 
-    canvas = document.getElementById("grid-canvas");
-    ctx = canvas.getContext("2d");
-    
-    const map = board.generateMap();
-    board.setup(map);
-    board.resize();
+    if(gameMaster.hasInput){
+        return;
+    }
 
     keyboardManager.track(KEY_CONST.left); //left
     keyboardManager.track(KEY_CONST.right); //right
@@ -86,7 +86,31 @@ gameMaster.setup = function() {
         if (1 >= moveX && moveX >= -1 && 1 >= moveY && moveY >= -1){
             physics.movePlayer(moveX, moveY);
         }
+
+        gameMaster.move();
+        gameMaster.newFrame();
     };
+
+    gameMaster.hasInput = true;
+}
+
+gameMaster.setup = function() {
+    if (difficulty > ((board.grids - 1) * (board.grids - 1))){
+        //maybe we store high scores sometime
+        difficulty = 1; //reset
+        _lastScore = score;
+        score = 0;
+        timer.roundStartTime = -timer.gameResetDelay;
+    }
+
+    canvas = document.getElementById("grid-canvas");
+    ctx = canvas.getContext("2d");
+    
+    const map = board.generateMap();
+    board.setup(map);
+    board.resize();
+
+    gameMaster.inputSetup();
 
     timer.start = Date.now();
     timer.last = timer.start;
@@ -117,6 +141,18 @@ gameMaster.roundStarted = function() {
     return timer.roundStartTime > timer.roundStartDelay;
 }
 
+gameMaster.move = function() {
+    moves++;
+    console.warn("Moved", moves);
+}
+
+gameMaster.newFrame = function() {
+    if(gameMaster.roundStarted()){
+        physics.check();
+    }
+    gameMaster.draw();
+}
+
 gameMaster.draw = function() {
     ctx.clearRect(0, 0, board.size, board.size);
     ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
@@ -135,6 +171,7 @@ gameMaster.draw = function() {
         ctx.font = '30px Arial';
         ctx.textAlign = 'center';
         ctx.fillText(`Round Starting - ${difficulty}`, board.size / 2, board.size / 2);
+        ctx.fillText(`Moves - ${moves}`, board.size / 2, board.size / 1.5);
     }
     
     //refresh score:
@@ -500,7 +537,16 @@ var keyboardManager = {
     },
     track: function(keyCode) {
         if (!this.trackedKeys[keyCode]) {
-            keyboard(keyCode).onClick(() => this.downKeys[keyCode] = true, () => this.downKeys[keyCode] = false);
+            keyboard(keyCode).onClick(() => {
+                this.downKeys[keyCode] = true; 
+                
+                gameMaster.move();
+                gameMaster.newFrame();
+            }, () => {
+                this.downKeys[keyCode] = false;
+
+                gameMaster.newFrame();
+            });
             this.trackedKeys[keyCode] = true;
         }
     }
