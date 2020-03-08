@@ -12,7 +12,7 @@ class RenderObject {
 
     };
 
-    animate(_dt) {
+    update(_dt) {
         
     };
 
@@ -28,8 +28,8 @@ class Renderer {
             ro.draw(canvas, world);
         });
     };
-    animate(dt) {
-        this.renderObjects.forEach(ro => ro.animate(dt));
+    update(dt) {
+        this.renderObjects.forEach(ro => ro.update(dt));
     };
     add(renderObject){
         this.renderObjects.push(renderObject);
