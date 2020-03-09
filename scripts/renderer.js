@@ -18,22 +18,29 @@ class RenderObject {
     };
 
     update(_dt) {
-        
+
     };
 
-    isVisible() { 
-        return true; 
+    isVisible() {
+        return true;
     };
 }
 
 class Renderer {
     renderObjects = [];
 
-    draw(ctx, world, layer){
+    draw(ctx, world, layer) {
+        this.clearScreen(ctx, world);
+
+        const worldDelta = world.getPosDelta();
+        Debug.draw('Render Draw:', world.pos, this.renderObjects, worldDelta);
+        ctx.translate(worldDelta.x, worldDelta.y);
+
         this.renderObjects
             .sort((a, b) => a.layer - b.layer)
-            .filter(ro => layer === null || ro.layer === layer)
+            .filter(ro => !layer || ro.layer === layer)
             .forEach(ro => {
+                Debug.draw('Draw RO', ro.id);
                 ro.draw(ctx, world);
             });
     };
@@ -46,26 +53,38 @@ class Renderer {
         this.renderObjects.push(...arguments);
     };
 
-    remove(id) { 
-        this.renderObjects = this.renderObjects.filter(ro => ro.id !== id); 
+    remove(id) {
+        this.renderObjects = this.renderObjects.filter(ro => ro.id !== id);
     };
+
+    clearScreen(ctx, world) {
+        ctx.translate(0, 0);
+        ctx.clearRect(0, 0, world.screen.x, world.screen.y);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
+    }
 }
 
 class Point {
     constructor(x, y) {
-      this.x = x;
-      this.y = y;
+        this.x = x;
+        this.y = y;
     }
-  
-    static distance(a, b) {
-      const dx = a.x - b.x;
-      const dy = a.y - b.y;
-  
-      return Math.hypot(dx, dy);
-    }
-  }
 
-define(function() {
+    static delta(a, b) {
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+
+        return { dx, dy };
+    }
+
+    static distance(a, b) {
+        const delta = Point.delta(a, b);
+        return Math.hypot(delta.dx, delta.dy);
+    }
+}
+
+define(function () {
     return {
         Point,
         Renderer,

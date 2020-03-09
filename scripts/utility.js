@@ -1,6 +1,6 @@
 var ID_CONST = { Player: 100, Enemy: 2, PowerUp: -3, Grid: -1, Flag: 9001, Wall: -101, Ground: -100 }
 var KEY_CONST = { left: 65, right: 68, up: 87, down: 83 };
-var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false };
+var _DEBUG = { draw: true, time: false, physics: false, keyboard: false, generation: false, mouse: false };
 
 var Debug = {
     log: function() {
@@ -40,153 +40,172 @@ var Debug = {
     }
 }
 
-function mouse(button) {
-    let mouse = {};
-    mouse.button = button;
-    mouse.isDown = false;
-    mouse.isUp = true;
-    mouse.press = undefined;
-    mouse.release = undefined;
-    mouse.move = undefined;
-    mouse.lastX = 0;
-    mouse.lastY = 0;
-    mouse.x = 0;
-    mouse.y = 0;
+class Mouse {
+    button = undefined;
+    isDown = false;
+    isUp = true;
+    press = undefined;
+    release = undefined;
+    move = undefined;
+    lastPos = new Point(0, 0);
+    pos = new Point(0, 0);
 
-    function getMousePos(mouseEvent) {
-        var rect = canvas.getBoundingClientRect();
-        return {
-            x: mouseEvent.clientX - rect.left,
-            y: mouseEvent.clientY - rect.top
-        }
+    _canvas;
+
+    constructor(button, canvas){
+        this.button = button;
+        this._canvas = canvas;
+        
+        //Attach event listeners to canvas
+        canvas.addEventListener(
+            "mousedown", this.downHandler.bind(this), false
+        );
+        canvas.addEventListener(
+            "mouseup", this.upHandler.bind(this), false
+        );
+        canvas.addEventListener(
+            "mousemove", this.moveHandler.bind(this), false
+        );
     }
 
-    mouse.setPos = function(pos) {
-        mouse.lastX = mouse.x;
-        mouse.lastY = mouse.y;
+    getMousePos(mouseEvent) {
+        var rect = this._canvas.getBoundingClientRect();
+        return new Point(mouseEvent.clientX - rect.left, mouseEvent.clientY - rect.top);
+    }
 
-        mouse.x = pos.x;
-        mouse.y = pos.y;
+    setPos(pos) {
+        this.lastPos = this.pos;
+        this.pos = pos;
     }
 
     //The `downHandler`
-    mouse.downHandler = event => {
-        const pos = getMousePos(event);
-        mouse.setPos(pos);
+    downHandler(event) {
+        const pos = this.getMousePos(event);
+        this.setPos(pos);
 
-        if(!mouse.button || mouse.button == event.button){
-            if (mouse.isUp && mouse.press) mouse.press(event);
-            mouse.isDown = true;
-            mouse.isUp = false;
+        if(!this.button || this.button == event.button){
+            if (this.isUp && this.press) {
+                this.press(event);
+            }
+            this.isDown = true;
+            this.isUp = false;
 
             event.preventDefault();
         }
     };
 
     //The `upHandler`
-    mouse.upHandler = event => {
-        const pos = getMousePos(event);
-        mouse.setPos(pos);
+    upHandler(event) {
+        const pos = this.getMousePos(event);
+        this.setPos(pos);
 
-        if(!mouse.button || mouse.button == event.button){
-            if (mouse.isDown && mouse.release) mouse.release(event);
-            mouse.isDown = false;
-            mouse.isUp = true;
+        if(!this.button || this.button == event.button){
+            if (this.isDown && this.release) {
+                this.release(event);
+            }
+            this.isDown = false;
+            this.isUp = true;
             
             event.preventDefault();
         }
     };
 
     //The `moveHandler`
-    mouse.moveHandler = event => {
-        const pos = getMousePos(event);
-        mouse.setPos(pos);
+    moveHandler(event) {
+        const pos = this.getMousePos(event);
+        this.setPos(pos);
         
-        if(mouse.move) mouse.move(pos);
-
+        if(this.move) {
+            this.move(pos);
+        }
     };
-
-    //Attach event listeners to canvas
-    canvas.addEventListener(
-        "mousedown", mouse.downHandler.bind(mouse), false
-    );
-    canvas.addEventListener(
-        "mouseup", mouse.upHandler.bind(mouse), false
-    );
-    canvas.addEventListener(
-        "mousemove", mouse.moveHandler.bind(mouse), false
-    );
-
-    return mouse;
 }
 
-var BoundKeys = [];
-function keyboard(keyCode) {
-    let key = {};
-    key.code = keyCode;
-    key.isDown = false;
-    key.isUp = true;
-    key.press = () => { key.onPress.forEach(press => { press(); }); Debug.keyboard("Key Pressed", key.code); };
-    key.release = () => { key.onRelease.forEach(release => { release(); }); Debug.keyboard("Key Released", key.code); };
-    BoundKeys.push(keyCode);
-    key.onPress = [];
-    key.onRelease = [];
+class Key {
+    code;
+    isDown = false;
+    isUp = true;
 
-    key.onClick = (onPress, onRelease) => {
-        key.onPress.push(onPress);
-        key.onRelease.push(onRelease);
+    //callbacks
+    onPress = [];
+    onRelease = [];
+
+    constructor(keyCode){
+        this.code = keyCode;
+        
+        //Attach event listeners
+        window.addEventListener(
+            "keydown", this.downHandler.bind(this), false
+        );
+
+        window.addEventListener(
+            "keyup", this.upHandler.bind(this), false
+        );
     }
 
-    //The `downHandler`
-    key.downHandler = event => {
-      if (event.keyCode === key.code) {
-        if (key.isUp && key.press) key.press();
-        key.isDown = true;
-        key.isUp = false;
-      }
+    press() { 
+        this.onPress.forEach(press => { press(); }); 
+        Debug.keyboard("Key Pressed", this.code); 
+    }
 
-      if(BoundKeys.find(k => k == event.keyCode)){
+    release() { 
+        this.onRelease.forEach(release => { release(); }); 
+        Debug.keyboard("Key Released", this.code); 
+    }
+
+    onClick(onPress, onRelease) {
+        if (onPress) {
+            this.onPress.push(onPress);
+        }
+        if (onRelease) {
+            this.onRelease.push(onRelease);
+        }
+    }
+
+    downHandler(event) {
+      if (event.keyCode === this.code) {
+        if (this.isUp && this.press) {
+            this.press();
+        }
+        this.isDown = true;
+        this.isUp = false;
+
         event.preventDefault();
       }
     };
-  
-    //The `upHandler`
-    key.upHandler = event => {
-      if (event.keyCode === key.code) {
-        if (key.isDown && key.release) key.release();
-        key.isDown = false;
-        key.isUp = true;
-      }
-      if(BoundKeys.find(k => k == event.keyCode)){
+
+    upHandler(event) {
+      if (event.keyCode === this.code) {
+        if (this.isDown && this.release) {
+            this.release();
+        }
+        this.isDown = false;
+        this.isUp = true;
+
         event.preventDefault();
       }
     };
-  
-    //Attach event listeners
-    window.addEventListener(
-      "keydown", key.downHandler.bind(key), false
-    );
-    window.addEventListener(
-      "keyup", key.upHandler.bind(key), false
-    );
-    return key;
 }
 
-function range(min, max){
+//Extends Math library to have a range method
+Math.range = function(min, max){
     return Math.floor((Math.random() * max) + min);
 }
 
-var keyboardManager = {
+var KeyboardManager = {
     downKeys: {},
     trackedKeys: {},
     isKeyDown: function(keyCode) {
-        return keyboardManager.downKeys[keyCode];
+        return KeyboardManager.downKeys[keyCode];
     },
     track: function(keyCode) {
         if (!this.trackedKeys[keyCode]) {
-            keyboard(keyCode).onClick(() => this.downKeys[keyCode] = true, () => this.downKeys[keyCode] = false);
-            this.trackedKeys[keyCode] = true;
+            const key = new Key(keyCode);
+            key.onClick(() => this.downKeys[keyCode] = true, () => this.downKeys[keyCode] = false);
+            this.trackedKeys[keyCode] = key;
         }
+
+        return this.trackedKeys[keyCode];
     }
 }
 
@@ -195,9 +214,8 @@ define(['./canvas'], function() {
         ID_CONST,
         KEY_CONST,
         Debug,
-        mouse,
-        keyboard,
-        range,
-        keyboardManager
+        Mouse,
+        Key,
+        KeyboardManager
     };
 });

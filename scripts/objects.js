@@ -69,13 +69,16 @@ define(['./renderer', './utility'], function(render, utility) {
         }
 
         draw(ctx, world) {
-            translate(0, 0); //draw the player in the center of the screen, always
+           // ctx.translate(-world.pos.x, -world.pos.y); //draw the player in the center of the screen, always
             ctx.fillStyle = this.color;
-            ctx.fillRect((250 - this.width), (250 - this.height), this.width, this.height);
-            translate(world.pos.x, world.pos.y); //reset the translate to w/e the world pos is. 
+            const posX = ((world.screen.x/2) - this.width);
+            const posY = ((world.screen.y/2) - this.height);
+            Debug.draw('Player', 'x', posX, 'y', posY);
+            ctx.fillRect(posX, posY, this.width, this.height);
+            //ctx.translate(world.pos.x, world.pos.y); //reset the translate to w/e the world pos is. 
         }
 
-        update(_dt, world){
+        update(_dt, _world){
 
         }
     }

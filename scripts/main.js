@@ -1,4 +1,4 @@
-  
+
 define(function (require) {
     var board = require('./board');
     var utility = require('./utility');
@@ -20,15 +20,50 @@ define(function (require) {
     var renderer = new render.Renderer();
     renderer.add(...world.map);
     renderer.draw(ctx, world);
+    renderer.update();
 
-    utility.ke
+    var down = utility.KeyboardManager.track(KEY_CONST.down);
 
-    
+    down.onClick(() => {
+        world.setPos(world.pos.x, world.pos.y - 1); //move the world ops. of the player
+
+        renderer.draw(ctx, world);
+        renderer.update();
+    });
+
+    var up = utility.KeyboardManager.track(KEY_CONST.up);
+
+    up.onClick(() => {
+        world.setPos(world.pos.x, world.pos.y + 1); //move the world ops. of the player
+
+        renderer.draw(ctx, world);
+        renderer.update();
+    });
+
+    var left = utility.KeyboardManager.track(KEY_CONST.left);
+
+    left.onClick(() => {
+        world.setPos(world.pos.x + 1, world.pos.y); //move the world ops. of the player
+
+        renderer.draw(ctx, world);
+        renderer.update();
+    });
+
+    var right = utility.KeyboardManager.track(KEY_CONST.right);
+
+    right.onClick(() => {
+        world.setPos(world.pos.x - 1, world.pos.y); //move the world ops. of the player
+
+        renderer.draw(ctx, world);
+        renderer.update();
+    });
+
+
     // gameMaster.init();
     // gameMaster.setup();
     // game.Play();
 
-    window.addEventListener("resize", function() {
+    window.addEventListener("resize", function () {
         board.resize();
     }, false);
 });
