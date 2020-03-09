@@ -3,10 +3,11 @@ class RenderObject {
     pos;
     layer = 0;
     bounds = { w: 0, h: 0 };
+    _isVisible = true;
 
-    constructor(id) {
+    constructor(id, x, y) {
         this.id = id;
-        this.pos = new Point(0, 0);
+        this.pos = new Point(x || 0, y || 0);
     }
 
     setPos(x, y) {
@@ -32,7 +33,7 @@ class RenderObject {
     };
 
     isVisible() {
-        return true;
+        return this._isVisible;
     };
 }
 
@@ -47,10 +48,10 @@ class Renderer {
         ctx.translate(worldDelta.x, worldDelta.y);
 
         this.renderObjects
-            .sort((a, b) => a.layer - b.layer)
+            .sort((a, b) => b.layer - a.layer)
             .filter(ro => !layer || ro.layer === layer)
             .forEach(ro => {
-                Debug.draw('Draw RO', ro.id);
+                Debug.draw('Draw RO', ro.id, ro);
                 ro.draw(ctx, world);
             });
     };

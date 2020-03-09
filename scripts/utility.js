@@ -1,4 +1,4 @@
-var ID_CONST = { Player: 100, Enemy: 2, PowerUp: -3, Grid: -1, Flag: 9001, Wall: -101, Ground: -100 }
+var ID_CONST = { Player: 100, Enemy: 2, PowerUp: -3, Grid: -1, Flag: 9001, Wall: -101, Ground: -100, Bullet: 101 }
 var KEY_CONST = { left: 65, right: 68, up: 87, down: 83 };
 var _DEBUG = { draw: true, time: false, physics: false, keyboard: false, generation: false, mouse: false };
 
@@ -164,7 +164,7 @@ class Key {
 
     downHandler(event) {
       if (event.keyCode === this.code) {
-        if (this.isUp && this.press) {
+        if (this.press) {
             this.press();
         }
         this.isDown = true;
@@ -176,7 +176,7 @@ class Key {
 
     upHandler(event) {
       if (event.keyCode === this.code) {
-        if (this.isDown && this.release) {
+        if (this.release) {
             this.release();
         }
         this.isDown = false;

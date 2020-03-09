@@ -21,44 +21,54 @@ define(function (require) {
 
     var renderer = new render.Renderer();
     renderer.add(...world.map);
-    renderer.draw(ctx, world);
-    renderer.update();
+
+    function frame(timespan, forced) {
+        const worldMove = physics.worldMove();
+        world.setPos(world.pos.x + worldMove.x, world.pos.y + worldMove.y);
+
+        renderer.draw(ctx, world);
+        renderer.update(timespan, world);
+
+        window.requestAnimationFrame(frame)
+    }
+
+    frame(0, true);
 
     var down = utility.KeyboardManager.track(KEY_CONST.down);
 
-    down.onClick(() => {
-        world.setPos(world.pos.x, world.pos.y - 1); //move the world ops. of the player
+    // down.onClick(() => {
+    //     world.setPos(world.pos.x, world.pos.y - 1); //move the world ops. of the player
 
-        renderer.draw(ctx, world);
-        renderer.update();
-    });
+    //     renderer.draw(ctx, world);
+    //     renderer.update();
+    // });
 
     var up = utility.KeyboardManager.track(KEY_CONST.up);
 
-    up.onClick(() => {
-        world.setPos(world.pos.x, world.pos.y + 1); //move the world ops. of the player
+    // up.onClick(() => {
+    //     world.setPos(world.pos.x, world.pos.y + 1); //move the world ops. of the player
 
-        renderer.draw(ctx, world);
-        renderer.update();
-    });
+    //     renderer.draw(ctx, world);
+    //     renderer.update();
+    // });
 
     var left = utility.KeyboardManager.track(KEY_CONST.left);
 
-    left.onClick(() => {
-        world.setPos(world.pos.x + 1, world.pos.y); //move the world ops. of the player
+    // left.onClick(() => {
+    //     world.setPos(world.pos.x + 1, world.pos.y); //move the world ops. of the player
 
-        renderer.draw(ctx, world);
-        renderer.update();
-    });
+    //     renderer.draw(ctx, world);
+    //     renderer.update();
+    // });
 
     var right = utility.KeyboardManager.track(KEY_CONST.right);
 
-    right.onClick(() => {
-        world.setPos(world.pos.x - 1, world.pos.y); //move the world ops. of the player
+    // right.onClick(() => {
+    //     world.setPos(world.pos.x - 1, world.pos.y); //move the world ops. of the player
 
-        renderer.draw(ctx, world);
-        renderer.update();
-    });
+    //     renderer.draw(ctx, world);
+    //     renderer.update();
+    // });
 
 
     // gameMaster.init();
@@ -69,6 +79,10 @@ define(function (require) {
         canvas.height = canvas.width;
         world.setScreen(canvas.width, canvas.height);
     }
+
+    window.requestAnimationFrame(() => {
+
+    })
 
     window.addEventListener("resize", function () {
         Resize();

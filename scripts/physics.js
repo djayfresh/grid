@@ -1,23 +1,27 @@
 var physics = {};
 
-physics.check = function() {
+physics.worldMove = function() {
     let x = 0;
     let y = 0;
 
-    if(keyboardManager.isKeyDown(KEY_CONST.right)){
-        x = 1;
-    }
-    if(keyboardManager.isKeyDown(KEY_CONST.down)){
-        y = 1;
-    }
-    if(keyboardManager.isKeyDown(KEY_CONST.left)){
+    if(KeyboardManager.isKeyDown(KEY_CONST.right)){
         x = -1;
     }
-    if(keyboardManager.isKeyDown(KEY_CONST.up)){
+    if(KeyboardManager.isKeyDown(KEY_CONST.down)){
         y = -1;
+    }
+    if(KeyboardManager.isKeyDown(KEY_CONST.left)){
+        x = 1;
+    }
+    if(KeyboardManager.isKeyDown(KEY_CONST.up)){
+        y = 1;
     }
 
     return { x, y };
+}
+
+physics.inBounds = function(x, y, world){
+   // if (x < 0)
 }
 
 physics.movePlayer = function(x, y){

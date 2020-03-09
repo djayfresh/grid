@@ -1,8 +1,8 @@
 define(['./renderer', './utility'], function(render, utility) {
     class Rectangle extends render.RenderObject {
         color = '';
-        constructor(id, color, width, height){
-            super(id);
+        constructor(id, color, x, y, width, height){
+            super(id, x, y);
 
             this.color = color;
             this.bounds = { w: width, h: height };
@@ -65,7 +65,7 @@ define(['./renderer', './utility'], function(render, utility) {
 
     class Player extends Rectangle {
         constructor() {
-            super(utility.ID_CONST.Player, '#004600', 5, 5);
+            super(utility.ID_CONST.Player, '#004600', 0, 0, 10, 10);
         }
 
         draw(ctx, world) {
