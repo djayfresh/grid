@@ -16,10 +16,15 @@ define(['./objects'], function(objects) {
     return {
         pos: new objects.Point(0, 0),
         lastPos: new objects.Point(0, 0),
+        origin: new objects.Point(0, 0),
         map: renderObjects,
         screen: { x: 500, y: 500 },
         player: player,
+        setScreen: function(x, y) {
+            this.screen = { x, y };
+        },
         setPos: function(x, y) {
+            this.origin = new objects.Point(this.pos.x - x, this.pos.y - y);
             this.lastPos = this.pos;
             this.pos = new objects.Point(x, y);
         },

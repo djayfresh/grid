@@ -17,6 +17,16 @@ class RenderObject {
 
     };
 
+    //Helper function to allow for world translate to to impact drawing an element
+    //Use for UI & Player
+    drawSticky(ctx, world, drawFunc) {
+        ctx.translate(-world.pos.x, -world.pos.y); //reset world translate, move back to 0,0
+
+        drawFunc();
+
+        ctx.translate(world.pos.x, world.pos.y); //reset the translate to w/e the world has been translated to
+    }
+
     update(_dt) {
 
     };
@@ -58,10 +68,13 @@ class Renderer {
     };
 
     clearScreen(ctx, world) {
-        ctx.translate(0, 0);
-        ctx.clearRect(0, 0, world.screen.x, world.screen.y);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-        ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
+        ctx.translate(-world.pos.x, -world.pos.y); //reset world translate, move back to 0,0
+
+        ctx.clearRect(-10, -10, world.screen.x + 10, world.screen.y + 10); //clear off boarder too
+        ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+        ctx.strokeStyle = 'rgba(0, 153, 255, 1)';
+
+        ctx.translate(world.pos.x, world.pos.y); //reset the translate to w/e the world has been translated to
     }
 }
 

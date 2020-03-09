@@ -65,17 +65,17 @@ define(['./renderer', './utility'], function(render, utility) {
 
     class Player extends Rectangle {
         constructor() {
-            super(utility.ID_CONST.Player, '#002500', 5, 5);
+            super(utility.ID_CONST.Player, '#004600', 5, 5);
         }
 
         draw(ctx, world) {
-           // ctx.translate(-world.pos.x, -world.pos.y); //draw the player in the center of the screen, always
-            ctx.fillStyle = this.color;
-            const posX = ((world.screen.x/2) - this.width);
-            const posY = ((world.screen.y/2) - this.height);
-            Debug.draw('Player', 'x', posX, 'y', posY);
-            ctx.fillRect(posX, posY, this.width, this.height);
-            //ctx.translate(world.pos.x, world.pos.y); //reset the translate to w/e the world pos is. 
+            this.drawSticky(ctx, world, () => {
+                ctx.fillStyle = this.color;
+                const posX = ((world.screen.x/2) - (this.width/2));
+                const posY = ((world.screen.y/2) - (this.height/2));
+                Debug.draw('Player', 'x', posX, 'y', posY, 'w', this.width, 'h', this.height);
+                ctx.fillRect(posX, posY, this.width, this.height);
+            })
         }
 
         update(_dt, _world){

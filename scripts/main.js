@@ -17,6 +17,8 @@ define(function (require) {
     console.log("physics", physics);
     console.log("renderer", render);
 
+    Resize();
+
     var renderer = new render.Renderer();
     renderer.add(...world.map);
     renderer.draw(ctx, world);
@@ -63,7 +65,12 @@ define(function (require) {
     // gameMaster.setup();
     // game.Play();
 
+    function Resize() {
+        canvas.height = canvas.width;
+        world.setScreen(canvas.width, canvas.height);
+    }
+
     window.addEventListener("resize", function () {
-        board.resize();
+        Resize();
     }, false);
 });
