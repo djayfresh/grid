@@ -1,8 +1,9 @@
 define(['./renderer'], function(render) {
-    class Rectangle extends render.RenderObjet {
+    class Rectangle extends render.RenderObject {
         color = '';
         constructor(id, color, width, height){
-            this.id = id;
+            super(id);
+
             this.color = color;
             this.bounds = { w: width, h: height };
         }
@@ -17,18 +18,19 @@ define(['./renderer'], function(render) {
         
         draw(ctx, _world){
             ctx.fillStyle = this.color;
-            ctx.fillRect(this.pox.x, this.pox.y, this.width, this.height);
+            ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
         }
     }
 
-    class Text extends render.RenderObjet {
+    class Text extends render.RenderObject {
         text = '';
         font = 'Arial';
         size = '30px';
         color = '#000000';
 
         constructor(id, text, size, color, font){
-            this.id = id;
+            super(id);
+
             this.text = text;
             this.size = size || this.size;
             this.font = font || this.font;
@@ -38,22 +40,23 @@ define(['./renderer'], function(render) {
         draw(ctx){
             ctx.font = `${this.size} ${this.font}`;
             ctx.fillStyle = this.color;
-            ctx.fillText(this.text, this.pos.x, this.pox.y);
+            ctx.fillText(this.text, this.pos.x, this.pos.y);
         }
     }
 
-    class Line extends render.RenderObjet {
+    class Line extends render.RenderObject {
         color = '#000000';
-        bounds = { x = 0, y = 0 }
+        bounds = { x: 0, y: 0 }
         constructor(id, pos, x2, y2, color) {
-            this.id = id;
+            super(id);
+            
             this.pos = pos;
-            this.bounds = { x = x2, y = y2 };
+            this.bounds = { x: x2, y: y2 };
             this.color = color || this.color;
         }
 
         draw(ctx) {
-            ctx.moveTo(this.pox.x, this.pox.y);
+            ctx.moveTo(this.pos.x, this.pos.y);
             ctx.lineTo(this.bounds.x, this.bounds.y);
             ctx.strokeStyle = this.color;
             ctx.stroke()

@@ -1,14 +1,15 @@
 class RenderObject {
-    id = id;
+    id;
+    pos;
     layer = 0;
-    pos = new Point(0, 0);
     bounds = { w: 0, h: 0 };
 
     constructor(id){
         this.id = id;
+        this.pos = new Point(0, 0);
     }
 
-    draw(_canvas, _world) {
+    draw(_ctx, _world) {
 
     };
 
@@ -23,9 +24,9 @@ class RenderObject {
 
 class Renderer {
     renderObjects = [];
-    draw(canvas, world){
+    draw(ctx, world){
         this.renderObjects.sort((a, b) => a.layer - b.layer).forEach(ro => {
-            ro.draw(canvas, world);
+            ro.draw(ctx, world);
         });
     };
     update(dt) {
