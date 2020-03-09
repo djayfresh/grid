@@ -1,4 +1,4 @@
-define(['./renderer'], function(render) {
+define(['./renderer', './utility'], function(render, utility) {
     class Rectangle extends render.RenderObject {
         color = '';
         constructor(id, color, width, height){
@@ -63,9 +63,28 @@ define(['./renderer'], function(render) {
         }
     }
 
+    class Player extends Rectangle {
+        constructor() {
+            super(utility.ID_CONST.Player, '#002500', 5, 5);
+        }
+
+        draw(ctx, world) {
+            translate(0, 0); //draw the player in the center of the screen, always
+            ctx.fillStyle = this.color;
+            ctx.fillRect((250 - this.width), (250 - this.height), this.width, this.height);
+            translate(world.pos.x, world.pos.y); //reset the translate to w/e the world pos is. 
+        }
+
+        update(_dt, world){
+
+        }
+    }
+
     return {
         Rectangle,
         Text,
         Line,
+        Player,
+        Point: render.Point
     }
 });

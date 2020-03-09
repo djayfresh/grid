@@ -17,9 +17,7 @@ physics.check = function() {
         y = -1;
     }
 
-    physics.movePlayer(x, y);
-
-    Debug.keyboard("Keys down:", keyboardManager.downKeys);
+    return { x, y };
 }
 
 physics.movePlayer = function(x, y){

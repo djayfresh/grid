@@ -5,7 +5,7 @@ define(function (require) {
     var game = require('./game');
     var launcher = require('./launcher');
     var physics = require('./physics');
-    var objects = require('./objects');
+    var world = require('./world');
     var render = require('./renderer');
     var gameMaster = game.gameMaster;
 
@@ -15,15 +15,13 @@ define(function (require) {
     console.log("utility", utility);
     console.log("game", game);
     console.log("physics", physics);
-    console.log("objects", objects);
-    console.log("renderer", renderer);
+    console.log("renderer", render);
 
-    var rect = new objects.Rectangle(ID_CONST.Player, '#004600', 20, 20);
     var renderer = new render.Renderer();
+    renderer.add(...world.map);
+    renderer.draw(ctx, world);
 
-    renderer.add(rect);
-
-    renderer.draw(ctx);
+    utility.ke
 
     
     // gameMaster.init();
