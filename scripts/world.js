@@ -53,17 +53,20 @@ define(['./objects'], function(objects) {
     const world = new World(1);
 
     world.generateMap = function() {
-        var renderObjects = [];
-        var player = new objects.Player();
-        var rect2 = new objects.Rectangle(ID_CONST.Ground, '#100000', 5, 5, 20, 20);
-        var rect3 = new objects.Bullet(world.center, { x: 0.03, y: 0.2 });
-    
-        rect2.layer = 1;
-        rect3.layer = 3;
-    
+        const renderObjects = [];
+        const streetWidth = 40;
+
+        const player = new objects.Player();
         renderObjects.push(player);
-        renderObjects.push(rect2);
-        renderObjects.push(rect3);
+
+        //Streets
+        renderObjects.push(new objects.Rectangle(ID_CONST.Street, '#000000', 5, 5, streetWidth, 500)); //left street
+        renderObjects.push(new objects.Rectangle(ID_CONST.Street, '#000000', streetWidth + 5, world.center.y - (streetWidth/2), 400, streetWidth)); //left street
+
+        //test bullet
+        renderObjects.push(new objects.Bullet(world.center, { x: -0.003, y: -0.02 }));
+
+        renderObjects.push(new objects.Rectangle(ID_CONST.Ground, '#043511', -1000, -1000, 2000, 2000)); //global ground
     
         this.setMap(renderObjects);
         this.setPlayer(player);

@@ -8,6 +8,7 @@ class RenderObject {
 
     constructor(id, x, y) {
         this.id = id;
+        this.layer = id;
         this.pos = new Point(x || 0, y || 0);
     }
 
@@ -53,7 +54,7 @@ class Renderer {
         ctx.translate(worldDelta.x, worldDelta.y);
 
         this.renderObjects
-            .sort((a, b) => b.layer - a.layer)
+            .sort((a, b) => a.layer - b.layer)
             .filter(ro => !layer || ro.layer === layer)
             .filter(ro => ro.isVisible())
             .forEach(ro => {
