@@ -1,5 +1,7 @@
 define(['./utility'], function() {
     class Physics {
+
+        //TOOD: Move to KeyboardManager
         static keyboardMoves() {
             let x = 0;
             let y = 0;

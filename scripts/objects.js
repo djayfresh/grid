@@ -95,11 +95,31 @@ define(['./renderer', './utility', './physics'], function(render, utility, physi
         }
     }
 
+    class Bullet extends Rectangle {
+        force = { x: 0, y: 0};
+
+        constructor(startPos, force) {
+            super(ID_CONST.Bullet, '#8e8702', startPos.x, startPos.y, 3, 3);
+            
+            this.force = force;
+        }
+        
+        update(dt, world) {
+            this.setPos(this.pos.x + (this.force.x * dt), this.pos.y + (this.force.y * dt)); 
+
+            this.checkViewVisibility(world); 
+            if(!this._isVisible) { 
+                this._deleted = true; 
+            } 
+        }
+    }
+
     return {
         Rectangle,
         Text,
         Line,
         Player,
-        Point: render.Point
+        Point: render.Point,
+        Bullet
     }
 });

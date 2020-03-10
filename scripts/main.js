@@ -20,19 +20,25 @@ define(function (require) {
     Resize();
 
     var renderer = new render.Renderer();
-    renderer.add(...world.map);
+    renderer.add(...world.generateMap());
 
+    var lastTime = 0;
     function frame(timespan) {
+        const dt = lastTime - timespan;
+
+        Debug.time("Timespan", timespan);
+
         const worldMove = physics.keyboardMoves();
         world.setPos(world.pos.x + worldMove.x, world.pos.y + worldMove.y);
 
         renderer.draw(ctx, world);
-        renderer.update(timespan, world);
+        renderer.update(dt, world);
 
         window.requestAnimationFrame(frame)
+        lastTime = timespan;
     }
 
-    frame(0);
+    frame(1);
 
     var down = utility.KeyboardManager.track(KEY_CONST.down);
 

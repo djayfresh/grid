@@ -40,34 +40,36 @@ define(['./objects'], function(objects) {
             const delta = objects.Point.delta(this.pos, this.lastPos);
             return new objects.Point(delta.dx, delta.dy);
         }
+
+        get center() {
+            return new objects.Point(this.screen.x / 2, this.screen.y / 2);
+        }
+
+        generateMap() {
+            //placeholder
+        }
     }
-
-    var renderObjects = [];
-    var player = new objects.Player();
-    var rect2 = new objects.Rectangle(ID_CONST.Ground, '#100000', 5, 5, 20, 20);
-    var rect3 = new objects.Rectangle(ID_CONST.Bullet, '#8e8702', 0, 0, 3, 3);
-
-    rect2.layer = 1;
-    rect3.layer = 3;
-    const rect3Update = function(dt, world) { 
-        this.setPos(this.pos.x + 3, this.pos.y); 
-
-        this.checkViewVisibility(world); 
-        if(!this._isVisible) { 
-            this._deleted = true; 
-        } 
-    };
-    rect3.update = rect3Update.bind(rect3);
-
-    renderObjects.push(player);
-    renderObjects.push(rect2);
-    renderObjects.push(rect3);
 
     const world = new World(1);
 
-    world.setMap(renderObjects);
-    world.setPlayer(player);
+    world.generateMap = function() {
+        var renderObjects = [];
+        var player = new objects.Player();
+        var rect2 = new objects.Rectangle(ID_CONST.Ground, '#100000', 5, 5, 20, 20);
+        var rect3 = new objects.Bullet(world.center, { x: 0.03, y: 0.2 });
+    
+        rect2.layer = 1;
+        rect3.layer = 3;
+    
+        renderObjects.push(player);
+        renderObjects.push(rect2);
+        renderObjects.push(rect3);
+    
+        this.setMap(renderObjects);
+        this.setPlayer(player);
 
+        return renderObjects;
+    };
 
     return world;
 });
