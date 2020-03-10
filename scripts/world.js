@@ -55,7 +55,15 @@ class World {
     }
 
     get worldCenter() {
-        return new Point(this.center.x - this.pos.x, this.center.y - this.pos.y);
+        return this.toWorldOffset(this.center); // new Point(this.center.x - this.pos.x, this.center.y - this.pos.y);
+    }
+
+    toWorldPositition(a){
+        return new Point(a.x + this.pos.x, a.y + this.pos.y);
+    }
+
+    toWorldOffset(a){
+        return new Point(a.x - this.pos.x, a.y - this.pos.y);
     }
 
     generateMap() {
@@ -80,6 +88,7 @@ define(['./objects'], function() {
         renderObjects.push(new Rectangle(ID_CONST.Street, '#000000', streetWidth + 5, world.center.y - (streetWidth/2), 400, streetWidth)); //left street
 
         renderObjects.push(new Rectangle(ID_CONST.Ground, '#043511', -1000, -1000, 2000, 2000)); //global ground
+        renderObjects.push(new Spawner('#00405e', 100, 100));
     
         this.setMap(renderObjects);
         this.setPlayer(player);

@@ -14,7 +14,7 @@ define(function (require) {
 
     var lastTime = 0;
     function frame(timespan) {
-        const dt = lastTime - timespan;
+        const dt = timespan - lastTime;
 
         Debug.time("Timespan", timespan);
         Debug.time("DT", dt);
@@ -39,7 +39,7 @@ define(function (require) {
 
     var mouse = new Mouse(0, canvas);
     mouse.press = () => {
-        const force = Point.subtract(world.canvasCenter, mouse.pos).normalized().multiply(0.06);
+        const force = Point.subtract(mouse.pos, world.canvasCenter).normalized().multiply(0.06);
         const bullet = new Bullet(world.worldCenter, force);
         Debug.mouse("Fire", mouse.pos, "c", world.worldCenter);
         renderer.add(bullet);

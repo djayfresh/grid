@@ -1,6 +1,6 @@
-var ID_CONST = { Player: 100, Enemy: 2, PowerUp: -3, Grid: -1, Flag: 9001, Wall: -101, Ground: -100, Bullet: 101, Street: -80 }
+var ID_CONST = { Player: 100, Enemy: 2, PowerUp: -3, Grid: -1, Flag: 9001, Wall: -101, Ground: -100, Bullet: 101, Street: -80, Spawner: 10 }
 var KEY_CONST = { left: 65, right: 68, up: 87, down: 83 };
-var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false };
+var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false };
 
 class Debug {
     static log() {
@@ -44,6 +44,12 @@ class Debug {
             console.log(...arguments);
         }
     }
+
+    static game() {
+        if (_DEBUG.game) {
+            console.log(...arguments);
+        }
+    }
 }
 
 class Mouse {
@@ -75,7 +81,7 @@ class Mouse {
     }
 
     getMousePos(mouseEvent) {
-        var rect = this._canvas.getBoundingClientRect();
+        const rect = this._canvas.getBoundingClientRect();
         return new Point(mouseEvent.clientX - rect.left, mouseEvent.clientY - rect.top);
     }
 

@@ -20,6 +20,11 @@ class RenderObject {
 
     };
 
+    //should have individual types overwrite
+    center() {
+        return new Point(this.x, this.y);
+    };
+
     //Helper function to allow for world translate to to impact drawing an element
     //Use for UI & Player
     drawSticky(ctx, world, drawFunc) {
@@ -70,7 +75,13 @@ class Renderer {
     };
 
     add() {
-        this.renderObjects.push(...arguments);
+        const renderObjects = [...arguments];
+        renderObjects.forEach(ro => {
+            if (ro.setRenderer){ 
+                ro.setRenderer(this);
+            }
+        });
+        this.renderObjects.push(...renderObjects);
     };
 
     remove(id) {
@@ -101,6 +112,10 @@ class Point {
     
     multiply(value){
         return new Point(this.x * value, this.y * value);
+    }
+
+    magnitude() {
+        return Math.hypot(this.x, this.y);
     }
 
     static subtract(a, b) {
