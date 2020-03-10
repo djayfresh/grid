@@ -22,8 +22,8 @@ define(function (require) {
     var renderer = new render.Renderer();
     renderer.add(...world.map);
 
-    function frame(timespan, forced) {
-        const worldMove = physics.worldMove();
+    function frame(timespan) {
+        const worldMove = physics.keyboardMoves();
         world.setPos(world.pos.x + worldMove.x, world.pos.y + worldMove.y);
 
         renderer.draw(ctx, world);
@@ -32,7 +32,7 @@ define(function (require) {
         window.requestAnimationFrame(frame)
     }
 
-    frame(0, true);
+    frame(0);
 
     var down = utility.KeyboardManager.track(KEY_CONST.down);
 

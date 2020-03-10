@@ -1,4 +1,4 @@
-define(['./renderer', './utility'], function(render, utility) {
+define(['./renderer', './utility', './physics'], function(render, utility, physics) {
     class Rectangle extends render.RenderObject {
         color = '';
         constructor(id, color, x, y, width, height){
@@ -19,6 +19,18 @@ define(['./renderer', './utility'], function(render, utility) {
         draw(ctx, _world){
             ctx.fillStyle = this.color;
             ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
+        }
+
+        checkViewVisibility(world) {
+            this._isVisible = physics.boxInBounds(this.pos, this.width, this.height, world);
+
+            if (!this._isVisible){
+                Debug.physics("Hidden", this);
+            }
+        }
+
+        update(_dt, world) {
+            this.checkViewVisibility(world);
         }
     }
 

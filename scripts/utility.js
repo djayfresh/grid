@@ -1,6 +1,6 @@
 var ID_CONST = { Player: 100, Enemy: 2, PowerUp: -3, Grid: -1, Flag: 9001, Wall: -101, Ground: -100, Bullet: 101 }
 var KEY_CONST = { left: 65, right: 68, up: 87, down: 83 };
-var _DEBUG = { draw: true, time: false, physics: false, keyboard: false, generation: false, mouse: false };
+var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false };
 
 var Debug = {
     log: function() {

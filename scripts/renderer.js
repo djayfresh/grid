@@ -4,6 +4,7 @@ class RenderObject {
     layer = 0;
     bounds = { w: 0, h: 0 };
     _isVisible = true;
+    _deleted = false;
 
     constructor(id, x, y) {
         this.id = id;
@@ -33,8 +34,12 @@ class RenderObject {
     };
 
     isVisible() {
-        return this._isVisible;
+        return this._isVisible && !this._deleted;
     };
+
+    isDeleted() {
+        return this._deleted;
+    }
 }
 
 class Renderer {
@@ -50,6 +55,7 @@ class Renderer {
         this.renderObjects
             .sort((a, b) => b.layer - a.layer)
             .filter(ro => !layer || ro.layer === layer)
+            .filter(ro => ro.isVisible())
             .forEach(ro => {
                 Debug.draw('Draw RO', ro.id, ro);
                 ro.draw(ctx, world);
@@ -57,7 +63,9 @@ class Renderer {
     };
 
     update(dt, world) {
-        this.renderObjects.forEach(ro => ro.update(dt, world));
+        this.renderObjects
+            .filter(ro => !ro.isDeleted())
+            .forEach(ro => ro.update(dt, world));
     };
 
     add() {

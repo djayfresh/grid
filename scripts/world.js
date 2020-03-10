@@ -49,7 +49,15 @@ define(['./objects'], function(objects) {
 
     rect2.layer = 1;
     rect3.layer = 3;
-    rect3.update = function() { this.setPos(this.pos.x + 3, this.pos.y); };
+    const rect3Update = function(dt, world) { 
+        this.setPos(this.pos.x + 3, this.pos.y); 
+
+        this.checkViewVisibility(world); 
+        if(!this._isVisible) { 
+            this._deleted = true; 
+        } 
+    };
+    rect3.update = rect3Update.bind(rect3);
 
     renderObjects.push(player);
     renderObjects.push(rect2);
