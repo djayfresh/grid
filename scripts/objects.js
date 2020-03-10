@@ -1,5 +1,4 @@
-define(['./renderer', './utility', './physics'], function(render, utility, physics) {
-    class Rectangle extends render.RenderObject {
+    class Rectangle extends RenderObject {
         color = '';
         constructor(id, color, x, y, width, height){
             super(id, x, y);
@@ -22,7 +21,7 @@ define(['./renderer', './utility', './physics'], function(render, utility, physi
         }
 
         checkViewVisibility(world) {
-            this._isVisible = physics.boxInBounds(this.pos, this.width, this.height, world);
+            this._isVisible = Physics.boxInBounds(this.pos, this.width, this.height, world);
 
             if (!this._isVisible){
                 Debug.physics("Hidden", this);
@@ -34,7 +33,7 @@ define(['./renderer', './utility', './physics'], function(render, utility, physi
         }
     }
 
-    class Text extends render.RenderObject {
+    class Text extends RenderObject {
         text = '';
         font = 'Arial';
         size = '30px';
@@ -56,7 +55,7 @@ define(['./renderer', './utility', './physics'], function(render, utility, physi
         }
     }
 
-    class Line extends render.RenderObject {
+    class Line extends RenderObject {
         color = '#000000';
         bounds = { x: 0, y: 0 }
         constructor(id, pos, x2, y2, color) {
@@ -77,7 +76,7 @@ define(['./renderer', './utility', './physics'], function(render, utility, physi
 
     class Player extends Rectangle {
         constructor() {
-            super(utility.ID_CONST.Player, '#004600', 0, 0, 10, 10);
+            super(ID_CONST.Player, '#004600', 0, 0, 10, 10);
         }
 
         draw(ctx, world) {
@@ -114,6 +113,7 @@ define(['./renderer', './utility', './physics'], function(render, utility, physi
         }
     }
 
+define(['./renderer', './utility', './physics'], function(render) {
     return {
         Rectangle,
         Text,
