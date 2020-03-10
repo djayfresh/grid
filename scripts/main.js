@@ -39,11 +39,9 @@ define(function (require) {
 
     var mouse = new Mouse(0, canvas);
     mouse.press = () => {
-        const direction = Point.subtract(world.clientCenter, mouse.pos);
-        const normalized = direction.normalized();
-        const force = normalized.multiply(0.06);
-        const bullet = new Bullet(world.center, force);
-        Debug.mouse("Fire", mouse.pos, "c", world.clientCenter, "dir", direction, "norm", normalized, "f", force);
+        const force = Point.subtract(world.canvasCenter, mouse.pos).normalized().multiply(0.06);
+        const bullet = new Bullet(world.worldCenter, force);
+        Debug.mouse("Fire", mouse.pos, "c", world.worldCenter);
         renderer.add(bullet);
     };
 

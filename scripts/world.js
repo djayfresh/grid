@@ -4,7 +4,7 @@ class World {
     origin = new Point(0, 0);
     map = [];
     screen = { x: 500, y: 500 };
-    client = { x: 500, y: 500 };
+    canvas = { x: 500, y: 500 };
     player = null;
     moved = false;
     id;
@@ -50,12 +50,12 @@ class World {
         return new Point(this.screen.x / 2, this.screen.y / 2);
     }
 
-    get clientCenter() {
-        return new Point(this.client.x / 2, this.client.y / 2);
+    get canvasCenter() {
+        return new Point(this.canvas.x / 2, this.canvas.y / 2);
     }
 
     get worldCenter() {
-
+        return new Point(this.center.x - this.pos.x, this.center.y - this.pos.y);
     }
 
     generateMap() {

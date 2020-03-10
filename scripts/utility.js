@@ -83,7 +83,7 @@ class Mouse {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
-        if(!this.button || this.button == event.button){
+        if(this.button === undefined || this.button == event.button){
             if (this.isUp && this.press) {
                 this.press(event);
             }
@@ -99,7 +99,7 @@ class Mouse {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
-        if(!this.button || this.button == event.button){
+        if(this.button === undefined || this.button == event.button){
             if (this.isDown && this.release) {
                 this.release(event);
             }
