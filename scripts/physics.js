@@ -1,27 +1,5 @@
 
 class Physics {
-
-    //TOOD: Move to KeyboardManager
-    static keyboardMoves() {
-        let x = 0;
-        let y = 0;
-    
-        if(KeyboardManager.isKeyDown(KEY_CONST.right)){
-            x = -1;
-        }
-        if(KeyboardManager.isKeyDown(KEY_CONST.down)){
-            y = -1;
-        }
-        if(KeyboardManager.isKeyDown(KEY_CONST.left)){
-            x = 1;
-        }
-        if(KeyboardManager.isKeyDown(KEY_CONST.up)){
-            y = 1;
-        }
-    
-        return { x, y };
-    }
-
     static collision(x, y, w, h, x1, y1, w1, h1){
         if (x < x1 + w1 &&
             x + w > x1 &&
@@ -48,6 +26,6 @@ class Physics {
     }
 }
 
-define(['./utility'], function() {
+define(function() {
     return Physics;
 });

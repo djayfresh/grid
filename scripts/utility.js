@@ -2,38 +2,44 @@ var ID_CONST = { Player: 100, Enemy: 2, PowerUp: -3, Grid: -1, Flag: 9001, Wall:
 var KEY_CONST = { left: 65, right: 68, up: 87, down: 83 };
 var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false };
 
-var Debug = {
-    log: function() {
+class Debug {
+    static log() {
         if (_DEBUG){
             console.log(...arguments);
         }
-    },
-    draw: function() {
+    }
+
+    static draw() {
         if (_DEBUG.draw){
             console.log(...arguments);
         }
-    },
-    time: function() {
+    }
+
+    static time() {
         if (_DEBUG.time){
             console.log(...arguments);
         }
-    },
-    physics: function() {
+    }
+
+    static physics() {
         if (_DEBUG.physics){
             console.log(...arguments);
         }
-    },
-    keyboard: function() {
+    }
+
+    static keyboard() {
         if (_DEBUG.keyboard){
             console.log(...arguments);
         }
-    },
-    generation: function() {
+    }
+
+    static generation() {
         if (_DEBUG.generation){
             console.log(...arguments);
         }
-    },
-    mouse: function() {
+    }
+
+    static mouse() {
         if (_DEBUG.mouse){
             console.log(...arguments);
         }
@@ -192,13 +198,15 @@ Math.range = function(min, max){
     return Math.floor((Math.random() * max) + min);
 }
 
-var KeyboardManager = {
-    downKeys: {},
-    trackedKeys: {},
-    isKeyDown: function(keyCode) {
+class KeyboardManager {
+    static downKeys = {};
+    static trackedKeys = {};
+
+    static isKeyDown(keyCode) {
         return KeyboardManager.downKeys[keyCode];
-    },
-    track: function(keyCode) {
+    }
+
+    static track(keyCode) {
         if (!this.trackedKeys[keyCode]) {
             const key = new Key(keyCode);
             key.onClick(() => this.downKeys[keyCode] = true, () => this.downKeys[keyCode] = false);
@@ -206,6 +214,26 @@ var KeyboardManager = {
         }
 
         return this.trackedKeys[keyCode];
+    }
+
+    static moves() {
+        let x = 0;
+        let y = 0;
+    
+        if(KeyboardManager.isKeyDown(KEY_CONST.right)){
+            x = -1;
+        }
+        if(KeyboardManager.isKeyDown(KEY_CONST.down)){
+            y = -1;
+        }
+        if(KeyboardManager.isKeyDown(KEY_CONST.left)){
+            x = 1;
+        }
+        if(KeyboardManager.isKeyDown(KEY_CONST.up)){
+            y = 1;
+        }
+    
+        return { x, y };
     }
 }
 

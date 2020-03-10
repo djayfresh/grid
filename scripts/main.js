@@ -19,7 +19,7 @@ define(function (require) {
         Debug.time("Timespan", timespan);
         Debug.time("DT", dt);
 
-        const worldMove = Physics.keyboardMoves();
+        const worldMove = KeyboardManager.moves();
         
         if (!checkStreets(world, { x: world.pos.x + (worldMove.x * 2), y: world.pos.y + (worldMove.y * 2) })){
             world.setPos(world.lastPos.x, world.lastPos.y);
