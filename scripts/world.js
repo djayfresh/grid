@@ -5,6 +5,7 @@ define(['./objects'], function(objects) {
         origin = new objects.Point(0, 0);
         map = [];
         screen = { x: 500, y: 500 };
+        client = { x: 500, y: 500 };
         player = null;
         moved = false;
         id;
@@ -24,8 +25,13 @@ define(['./objects'], function(objects) {
         setPlayer(player){
             this.player = player;
         }
+
+        setClient(x, y) {
+            console.warn('Set Client', x, y);
+        }
     
         setScreen(x, y) {
+            console.warn('Set Screen', x, y);
             this.screen = { x, y };
         }
     
@@ -33,16 +39,20 @@ define(['./objects'], function(objects) {
             this.moved = this.pos.x !== x || this.pos.y !== y;
             this.origin = new objects.Point(this.pos.x - x, this.pos.y - y);
             this.lastPos = this.pos;
+
             this.pos = new objects.Point(x, y);
         }
     
         getPosDelta() {
-            const delta = objects.Point.delta(this.pos, this.lastPos);
-            return new objects.Point(delta.dx, delta.dy);
+            return objects.Point.subtract(this.pos, this.lastPos);
         }
 
         get center() {
             return new objects.Point(this.screen.x / 2, this.screen.y / 2);
+        }
+
+        get clientCenter() {
+            return new objects.Point(this.client.x / 2, this.client.y / 2);
         }
 
         generateMap() {
@@ -52,6 +62,7 @@ define(['./objects'], function(objects) {
 
     const world = new World(1);
 
+    //TODO: Move to board
     world.generateMap = function() {
         const renderObjects = [];
         const streetWidth = 40;

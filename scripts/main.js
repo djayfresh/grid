@@ -5,6 +5,7 @@ define(function (require) {
     var game = require('./game');
     var launcher = require('./launcher');
     var physics = require('./physics');
+    var objects = require('./objects');
     var world = require('./world');
     var render = require('./renderer');
     var gameMaster = game.gameMaster;
@@ -27,9 +28,16 @@ define(function (require) {
         const dt = lastTime - timespan;
 
         Debug.time("Timespan", timespan);
+        Debug.time("DT", dt);
 
         const worldMove = physics.keyboardMoves();
-        world.setPos(world.pos.x + worldMove.x, world.pos.y + worldMove.y);
+        
+        if (!checkStreets(world, { x: world.pos.x + (worldMove.x * 2), y: world.pos.y + (worldMove.y * 2) })){
+            world.setPos(world.lastPos.x, world.lastPos.y);
+        }
+        else {
+            world.setPos(world.pos.x + worldMove.x, world.pos.y + worldMove.y);
+        }
 
         renderer.draw(ctx, world);
         renderer.update(dt, world);
@@ -39,6 +47,16 @@ define(function (require) {
     }
 
     frame(1);
+
+    var mouse = new utility.Mouse(0, canvas);
+    mouse.press = () => {
+        const direction = Point.subtract(world.clientCenter, mouse.pos);
+        const normalized = direction.normalized();
+        const force = normalized.multiply(0.06);
+        const bullet = new objects.Bullet(world.center, force);
+        console.log("Fire", mouse.pos, "c", world.clientCenter, "dir", direction, "norm", normalized, "f", force);
+        renderer.add(bullet);
+    };
 
     var down = utility.KeyboardManager.track(KEY_CONST.down);
 
@@ -84,11 +102,15 @@ define(function (require) {
     function Resize() {
         canvas.height = canvas.width;
         world.setScreen(canvas.width, canvas.height);
+        world.setClient(canvas.clientWidth, canvas.clientHeight);
     }
 
-    window.requestAnimationFrame(() => {
-
-    })
+    function checkStreets(world, newPos) {
+        const streets = world.map.filter(ro => ro.id === ID_CONST.Street);
+        return streets.some(s => 
+            physics.collision(world.center.x - (world.player.width), world.center.y - (world.player.height), world.player.width, world.player.height, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
+        );
+    }
 
     window.addEventListener("resize", function () {
         Resize();

@@ -105,7 +105,7 @@ define(['./renderer', './utility', './physics'], function(render, utility, physi
         }
         
         update(dt, world) {
-            this.setPos(this.pos.x + (this.force.x * dt), this.pos.y + (this.force.y * dt)); 
+            this.setPos(this.pos.x + ( dt * this.force.x), this.pos.y + (dt * this.force.y)); 
 
             this.checkViewVisibility(world); 
             if(!this._isVisible) { 

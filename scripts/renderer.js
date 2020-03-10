@@ -94,16 +94,33 @@ class Point {
         this.y = y;
     }
 
-    static delta(a, b) {
+    normalized() {
+        const dis = Math.hypot(this.x, this.y);
+        return new Point(this.x/dis, this.y/dis);
+    }
+    
+    multiply(value){
+        return new Point(this.x * value, this.y * value);
+    }
+
+    static subtract(a, b) {
         const dx = a.x - b.x;
         const dy = a.y - b.y;
 
-        return { dx, dy };
+        return new Point(dx, dy);
     }
 
     static distance(a, b) {
-        const delta = Point.delta(a, b);
-        return Math.hypot(delta.dx, delta.dy);
+        const delta = Point.subtract(a, b);
+        return Math.hypot(delta.x, delta.y);
+    }
+
+    static dot(a, b){
+        return a.x * b.x + a.y * b.y;
+    }
+
+    static direction(a, b) {
+        return Point.delta().normalized();
     }
 }
 
