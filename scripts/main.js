@@ -12,6 +12,7 @@ define(function (require) {
     var renderer = new Renderer();
     renderer.add(...world.generateMap());
 
+    var s = frame; //state 
     var lastTime = 0;
     function frame(timespan) {
         const dt = timespan - lastTime;
@@ -31,7 +32,7 @@ define(function (require) {
         renderer.draw(ctx, world);
         renderer.update(dt, world);
 
-        window.requestAnimationFrame(frame)
+        window.requestAnimationFrame(s)
         lastTime = timespan;
     }
 
@@ -45,10 +46,26 @@ define(function (require) {
         renderer.add(bullet);
     };
 
+    function Pause() {
+        s = () => {};
+    }
+
     KeyboardManager.track(KEY_CONST.down);
     KeyboardManager.track(KEY_CONST.up);
     KeyboardManager.track(KEY_CONST.left);
     KeyboardManager.track(KEY_CONST.right);
+
+    var playToggle = true;
+    new Key(KEY_CONST.pause).onClick(() => {
+        playToggle = !playToggle;
+
+        if (playToggle) {
+            s = frame;
+        }
+        else {
+            s = Pause;
+        }
+    })
 
     function Resize() {
         canvas.height = canvas.width;
@@ -64,6 +81,8 @@ define(function (require) {
     }
 
     window.addEventListener("resize", function () {
-        Resize();
+        debounce(() => {
+            Resize()
+        }, 200)
     }, false);
 });

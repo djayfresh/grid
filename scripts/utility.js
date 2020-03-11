@@ -1,5 +1,5 @@
 var ID_CONST = { Player: 100, Enemy: 2, PowerUp: -3, Grid: -1, Flag: 9001, Wall: -101, Ground: -100, Bullet: 101, Street: -80, Spawner: 10 }
-var KEY_CONST = { left: 65, right: 68, up: 87, down: 83 };
+var KEY_CONST = { left: 65, right: 68, up: 87, down: 83, pause: 80 };
 var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false };
 
 class Debug {
@@ -242,6 +242,45 @@ class KeyboardManager {
         return { x, y };
     }
 }
+
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+        };
+        
+        var callNow = immediate && !timeout;
+        
+		clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        
+		if (callNow) {
+            func.apply(context, args);
+        }
+	};
+};
+
+// Returns a function that, after called N number of times will trigger the function. 
+// If `immediate` is passed, trigger the function on the leading edge, instead of the trailing.
+function invokeDebounce(func, invoked, immediate) {
+	const times = 0;
+	return function() {        
+        var callNow = immediate && times === 0;
+        times++;
+
+		if (callNow || times >= invoked) {
+            func.apply(context, args);
+            times = immediate? 1 : 0; //prevent a double call
+        }
+	};
+};
 
 define(['./canvas'], function() {
     return {
