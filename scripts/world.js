@@ -25,12 +25,7 @@ class World {
         this.player = player;
     }
 
-    setClient(x, y) {
-        console.warn('Set Client', x, y);
-    }
-
     setScreen(x, y) {
-        console.warn('Set Screen', x, y);
         this.screen = { x, y };
     }
 

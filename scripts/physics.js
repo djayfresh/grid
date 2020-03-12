@@ -1,4 +1,3 @@
-
 class Physics {
     static collision(x, y, w, h, x1, y1, w1, h1){
         if (x < x1 + w1 &&

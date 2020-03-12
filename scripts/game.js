@@ -1,11 +1,15 @@
 class Game {
     renderer = new Renderer();
-    _state; 
+    _state = () => {}; 
     _initialized = false;
     _timer;
 
+    constructor() {
+        this.Run();
+    }
+
     Pause() {
-        this.state = this._pause;
+        this._state = this._pause;
     }
 
     _pause() {
@@ -16,7 +20,7 @@ class Game {
     }
 
     Play() {
-        this.state = this._play;
+        this._state = this._play;
     }
 
     _play() {
@@ -26,9 +30,9 @@ class Game {
     }
 
     Run() {
-        this.state();
+        this._state();
 
-        window.requestAnimationFrame(this.Run);
+        window.requestAnimationFrame(() => this.Run());
     }
 
     _frame(_dt) {
@@ -42,7 +46,7 @@ class Game {
     Setup() {
         if (!this._initialized){
             this._initialized = true;
-
+            this.Resize();
             this._init();
         }
     }
