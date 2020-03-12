@@ -1,3 +1,13 @@
+class ZombieGame extends Game {
+    _frame(dt) {
+
+    }
+
+    _init() {
+        super._init();
+    }
+}
+
 define(['./utility', './renderer', './world'], function(_util, _render, world) {
     Resize();
 
@@ -48,16 +58,6 @@ define(['./utility', './renderer', './world'], function(_util, _render, world) {
     KeyboardManager.track(KEY_CONST.right);
 
     var playToggle = true;
-    new Key(KEY_CONST.pause).onClick(() => {
-        playToggle = !playToggle;
-
-        if (playToggle) {
-            s = frame;
-        }
-        else {
-            s = Pause;
-        }
-    });
 
     function checkStreets(world, newPos) {
         const streets = world.map.filter(ro => ro.id === ID_CONST.Street);
@@ -65,16 +65,4 @@ define(['./utility', './renderer', './world'], function(_util, _render, world) {
             Physics.collision(world.center.x - (world.player.width), world.center.y - (world.player.height), world.player.width, world.player.height, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
         );
     }
-
-    function Resize() {
-        canvas.height = canvas.width;
-        world.setScreen(canvas.width, canvas.height);
-        world.setClient(canvas.clientWidth, canvas.clientHeight);
-    }
-
-    window.addEventListener("resize", function () {
-        debounce(() => {
-            Resize()
-        }, 200)
-    }, false);
 })

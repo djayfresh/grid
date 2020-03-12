@@ -282,6 +282,36 @@ function invokeDebounce(func, invoked, immediate) {
 	};
 };
 
+class Timer {
+    lastTime = 0;
+    startTime = 0;
+    totalTime = 0;
+    step = 0;
+
+    constructor(){
+        this.Reset();
+    }
+
+    Start() {
+        this.Reset();
+    }
+
+    Reset() {
+        this.startTime = Date.now();
+        this.totalTime = 0;
+        this.step = 0;
+        this.lastTime = Date.now();
+    }
+
+    Step() {
+        this.step = Date.now() - this.lastTime;
+        this.totalTime += this.step;
+        this.lastTime = this.totalTime;
+
+        return this.step;
+    }
+}
+
 define(['./canvas'], function() {
     return {
         ID_CONST,
