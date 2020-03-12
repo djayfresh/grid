@@ -1,4 +1,4 @@
-define(['./utility', './renderer', './world', './game'], function(_util, _render, world) {
+define(['./world', './game'], function(world) {
     class ZombieGame extends Game {
         world;
     

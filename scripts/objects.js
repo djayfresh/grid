@@ -8,7 +8,7 @@ class Rectangle extends RenderObject {
     }
 
     get center() {
-        return new Point(this.x + (this.width/2), this.y + (this.height/2));
+        return new Point(this.pos.x + (this.width/2), this.pos.y + (this.height/2));
     }
 
     get width() {
@@ -131,6 +131,7 @@ class Enemy extends Rectangle {
 
     constructor(color, x, y, speed){
         super(ID_CONST.Enemy, color, x, y, 10, 10);
+        this.speed = speed;
     }
 
     update(dt, world){
@@ -138,10 +139,10 @@ class Enemy extends Rectangle {
         const bullets = this._renderer.renderObjects.filter(ro => ro.id === ID_CONST.Bullet && !ro.isDeleted());
 
         bullets.forEach(b => {
-            const dis = Point.distance(b.pos, this.pos);
+            const dis = Point.distance(b.pos, this.center);
 
-            if (dis < 3){ //dis ^2
-                b._deleted = true; //destroy the bullet too (till we do health)
+            if (dis < 4){ //dis ^2
+                b._deleted = true; //destroy the bullet too (till we do health/damage)
                 this._deleted = true;
             }
         });
@@ -150,7 +151,6 @@ class Enemy extends Rectangle {
         if (this._deleted){
             return;
         }
-
 
         const toPlayer = Point.subtract(world.player.center, world.toWorldPositition(this.pos));
         const norm = toPlayer.normalized();
@@ -175,8 +175,9 @@ class Spawner extends Rectangle {
     spawnPoint = new Point(0, 0);
     rate = 2000; //ms
     spawnCount = 0;
-    enemySpeed = 0.005;
+    enemySpeed = 0.5;
     currentSpawnTime = 0;
+    maxSpawns = 1;
     _renderer;
 
     constructor(color, x, y, rate, enemySpeed){
@@ -191,7 +192,7 @@ class Spawner extends Rectangle {
         this.currentSpawnTime += dt;
         Debug.time('Spawn Time', this.currentSpawnTime);
 
-        if (this.currentSpawnTime >= this.rate) {
+        if (this.currentSpawnTime >= this.rate && this.spawnCount < this.maxSpawns) {
             this.spawn(dt, world);
             this.currentSpawnTime = 0;
         }

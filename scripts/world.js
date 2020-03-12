@@ -66,7 +66,7 @@ class World {
     }
 }
 
-define(['./objects'], function() {
+define(['./renderer', './objects'], function() {
 
     const world = new World(1);
 

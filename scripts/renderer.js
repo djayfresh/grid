@@ -21,8 +21,8 @@ class RenderObject {
     };
 
     //should have individual types overwrite
-    center() {
-        return new Point(this.x, this.y);
+    get center() {
+        return new Point(this.pos.x, this.pos.y);
     };
 
     //Helper function to allow for world translate to to impact drawing an element
