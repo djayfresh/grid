@@ -18,6 +18,7 @@ define(['./utility', './renderer', './world', './game'], function(_util, _render
         }
     
         _frame(dt) {
+            Debug.time('DT:', dt);
             const worldMove = KeyboardManager.moves();
             
             //move the world
@@ -44,6 +45,10 @@ define(['./utility', './renderer', './world', './game'], function(_util, _render
             
             var mouse = new Mouse(0, canvas);
             mouse.press = () => {
+                if (this.isPaused()){
+                    return;
+                }
+                
                 const force = Point.subtract(mouse.pos, this.world.canvasCenter).normalized().multiply(0.06);
                 const bullet = new Bullet(this.world.worldCenter, force);
                 Debug.mouse("Fire", mouse.pos, "c", this.world.worldCenter);
@@ -56,7 +61,7 @@ define(['./utility', './renderer', './world', './game'], function(_util, _render
             KeyboardManager.track(KEY_CONST.right);
         }
     }
-    
+
     var game = new ZombieGame(world);
     game.Play();
 })

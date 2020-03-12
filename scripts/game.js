@@ -51,15 +51,19 @@ class Game {
         }
     }
 
+    isPaused() {
+        return this._state === this._pause;
+    }
+
     _init() {
         this._timer = new Timer();
 
         new Key(KEY_CONST.pause).onClick(() => {    
-            if (this.state !== this._play) {
-                this.state = this._play;
+            if (this._state !== this._play) {
+                this._state = this._play;
             }
             else {
-                this.state = this._pause;
+                this._state = this._pause;
             }
         });
 
