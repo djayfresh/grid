@@ -15,10 +15,6 @@ define(['./world', './game', './weapons'], function(world, _game, weapons) {
             this.weapons = weapons;
     
             this.Resize();
-    
-            this.renderer.add(...world.generateMap());
-
-            this.SetWeapon(this.weapons[Object.keys(this.weapons)[this.weaponIndex]]);
         }
 
         SwitchWeapons() {
@@ -84,12 +80,25 @@ define(['./world', './game', './weapons'], function(world, _game, weapons) {
     
         _init() {
             super._init();
+
+            this.renderer.reset();
+            this.renderer.add(...this.world.generateMap());
+            this.SetWeapon(this.weapons[Object.keys(this.weapons)[this.weaponIndex]]);
             
             KeyboardManager.track(KEY_CONST.down);
             KeyboardManager.track(KEY_CONST.up);
             KeyboardManager.track(KEY_CONST.left);
             KeyboardManager.track(KEY_CONST.right);
             KeyboardManager.track(KEY_CONST.x);
+            KeyboardManager.track(KEY_CONST.r);
+        }
+
+        Restart() {
+            super.Restart();
+
+            this.world.setPos(0, 0);
+
+            this.Resize();
         }
     }
 

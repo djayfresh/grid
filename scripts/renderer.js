@@ -88,6 +88,10 @@ class Renderer {
         this.renderObjects = this.renderObjects.filter(ro => ro.id !== id);
     };
 
+    reset() {
+        this.renderObjects = [];
+    }
+
     clearScreen(ctx, world) {
         ctx.translate(-world.pos.x, -world.pos.y); //reset world translate, move back to 0,0
 

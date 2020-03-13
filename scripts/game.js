@@ -67,11 +67,22 @@ class Game {
             }
         });
 
-        window.addEventListener("resize", function () {
-            debounce(() => {
-                this.Resize();
-            }, 200)
-        }, false);
+        new Key(KEY_CONST.r).onClick(() => {
+            this.Restart();
+        });
+
+        //Don't rebind key events
+        if (this._initialized) {
+            window.addEventListener("resize", function () {
+                debounce(() => {
+                    this.Resize();
+                }, 200)
+            }, false);
+        }
+    }
+
+    Restart() {       
+        this._init();  
     }
 }
 
