@@ -107,19 +107,24 @@ class Player extends Rectangle {
 }
 
 class Bullet extends Rectangle {
+    lifeSpan = 500;
+    lifeTime = 0;
     force = { x: 0, y: 0 };
 
-    constructor(startPos, force) {
+    constructor(startPos, force, range) {
         super(ID_CONST.Bullet, '#8e8702', startPos.x, startPos.y, 3, 3);
 
         this.force = force;
+        this.lifeSpan = range || this.lifeSpan;
     }
 
     update(dt, world) {
+        this.lifeTime += dt;
+
         this.setPos(this.pos.x + (dt * this.force.x), this.pos.y + (dt * this.force.y));
 
         this.checkViewVisibility(world);
-        if (!this._isVisible) {
+        if (!this._isVisible || this.lifeTime >= this.lifeSpan) {
             this._deleted = true;
         }
     }
@@ -177,7 +182,7 @@ class Spawner extends Rectangle {
     spawnCount = 0;
     enemySpeed = 0.5;
     currentSpawnTime = 0;
-    maxSpawns = 1;
+    maxSpawns = 10; //should get reset each day
     _renderer;
 
     constructor(color, x, y, rate, enemySpeed){
