@@ -109,13 +109,15 @@ class Player extends Rectangle {
 class Bullet extends Rectangle {
     lifeSpan = 500;
     lifeTime = 0;
+    damage = 1;
     force = { x: 0, y: 0 };
 
-    constructor(startPos, force, range) {
+    constructor(startPos, force, range, damage) {
         super(ID_CONST.Bullet, '#8e8702', startPos.x, startPos.y, 3, 3);
 
         this.force = force;
         this.lifeSpan = range || this.lifeSpan;
+        this.damage = damage || this.damage;
     }
 
     update(dt, world) {
@@ -124,7 +126,7 @@ class Bullet extends Rectangle {
         this.setPos(this.pos.x + (dt * this.force.x), this.pos.y + (dt * this.force.y));
 
         this.checkViewVisibility(world);
-        if (!this._isVisible || this.lifeTime >= this.lifeSpan) {
+        if (!this._isVisible || this.lifeTime >= this.lifeSpan || this.damage <= 0) {
             this._deleted = true;
         }
     }
@@ -132,11 +134,13 @@ class Bullet extends Rectangle {
 
 class Enemy extends Rectangle {
     speed = 1;
+    health = 1;
     _renderer;
 
-    constructor(color, x, y, speed){
+    constructor(color, x, y, speed, health){
         super(ID_CONST.Enemy, color, x, y, 10, 10);
         this.speed = speed;
+        this.health = health;
     }
 
     update(dt, world){
@@ -147,8 +151,18 @@ class Enemy extends Rectangle {
             const dis = Point.distance(b.pos, this.center);
 
             if (dis < 4){ //dis ^2
-                b._deleted = true; //destroy the bullet too (till we do health/damage)
-                this._deleted = true;
+                if (this.health > b.damage){
+                    b._deleted = true;
+                    this.health -= b.damage;
+                }
+                else if (this.health < b.damage){
+                    b.damage -= this.health;
+                    this._deleted = true;
+                }
+                else {
+                    b._deleted = true;
+                    this._deleted = true;
+                }
             }
         });
 
@@ -180,7 +194,7 @@ class Spawner extends Rectangle {
     spawnPoint = new Point(0, 0);
     rate = 2000; //ms
     spawnCount = 0;
-    enemySpeed = 0.5;
+    enemySpeed = 1;
     currentSpawnTime = 0;
     maxSpawns = 10; //should get reset each day
     _renderer;
@@ -211,10 +225,11 @@ class Spawner extends Rectangle {
     spawn(dt, world) {
         this.spawnCount++;
         const spawnPoint = this.spawnPoint;
-        Debug.game('Spawn', spawnPoint, "count", this.currentSpawnTime, "world", world.pos);
+        const enemyHealth = Math.range(1, 5);
+        const enemy = new Enemy('#820027', spawnPoint.x, spawnPoint.y, (this.enemySpeed / enemyHealth) + 0.5, enemyHealth);
+        Debug.game('Spawn ', spawnPoint, "Enemy ", enemy);
 
-        this._renderer.add(new Enemy('#820027', spawnPoint.x, spawnPoint.y, this.enemySpeed))
-
+        this._renderer.add(enemy);
     }
 }
 

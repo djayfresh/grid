@@ -76,12 +76,8 @@ define(['./world', './game', './weapons'], function(world, _game, weapons) {
         }
 
         _onWeaponFired(weapon, mouse){
-            if (weapon.damage){
-                //maybe set this on bullet
-            }
-
             const force = Point.subtract(mouse.pos, this.world.canvasCenter).normalized().multiply(0.06);
-            const bullet = new Bullet(this.world.worldCenter, force);
+            const bullet = new Bullet(this.world.worldCenter, force, weapon.range, weapon.damage);
             Debug.mouse("Fire", mouse.pos, "c", this.world.worldCenter);
             this.renderer.add(bullet);
         }

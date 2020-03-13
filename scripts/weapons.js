@@ -1,6 +1,7 @@
 class Weapon {
     mouse;
-    rate = 500; ms
+    rate = 500; //ms
+    range;
     damage = 1;
     _lastShot = 0;
     ammo = 0;
@@ -39,8 +40,8 @@ class Weapon {
 
 define(['./canvas', './utility'], function() {
     return {
-        pistol: new Weapon(null, { rate: 200, range: 200 }),
-        machineGun: new Weapon(null, { rate: 50, range: 700 }),
-        sniper: new Weapon(null, { rate: 500, range: 7000, damage: 10 })
+        pistol: new Weapon(null, { rate: 200, range: 1000 }),
+        machineGun: new Weapon(null, { rate: 75, range: 1700, damage: 0.5 }),
+        sniper: new Weapon(null, { rate: 750, range: 7000, damage: 10 })
     }
 })
