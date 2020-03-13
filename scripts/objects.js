@@ -122,8 +122,9 @@ class Bullet extends Rectangle {
 
     update(dt, world) {
         this.lifeTime += dt;
+        const worldMove = KeyboardManager.moves();
 
-        this.setPos(this.pos.x + (dt * this.force.x), this.pos.y + (dt * this.force.y));
+        this.setPos(this.pos.x + (dt * this.force.x) - worldMove.x, this.pos.y + (dt * this.force.y) - worldMove.y);
 
         this.checkViewVisibility(world);
         if (!this._isVisible || this.lifeTime >= this.lifeSpan || this.damage <= 0) {
