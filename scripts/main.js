@@ -1,3 +1,6 @@
 define(function (require) {
-    require('./zombie/game');
+    var ZombieGame = require('./zombie/game');
+
+    var game = ZombieGame;
+    game.Play();
 });

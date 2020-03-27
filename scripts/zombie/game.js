@@ -118,6 +118,5 @@ define(['./world', '../shared/game', './weapons'], function(world, _game, weapon
         }
     }
 
-    var game = new ZombieGame(world, weapons);
-    game.Play();
+    return new ZombieGame(world, weapons);
 })
