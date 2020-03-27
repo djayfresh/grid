@@ -1,3 +1,3 @@
 define(function (require) {
-    require('./zombie');
+    require('./zombie/game');
 });

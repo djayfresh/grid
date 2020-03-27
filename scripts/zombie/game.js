@@ -1,4 +1,4 @@
-define(['./world', './game', './weapons'], function(world, _game, weapons) {
+define(['./world', '../shared/game', './weapons'], function(world, _game, weapons) {
 
     class ZombieGame extends Game {
         world;
