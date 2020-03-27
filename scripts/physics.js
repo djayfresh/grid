@@ -6,8 +6,16 @@ class Physics {
             y + h > y1) {
                 return true;
         }
-
+        
         return false;
+    }
+
+    static outOfBounds(x, y, w, h, x1, y1, w1, h1){
+        return (x1 > (x + w) || (x1 + w1) < x || (y1 < (y + h) || (y1 + h1 > y)))
+    }
+
+    static insideBounds(x, y, w, h, x1, y1, w1, h1){
+        return x > x1 && (x + w) < (x1 + w1) && y > y1 && (y + h) < (y1 + h1);
     }
     
     static boxInBounds(pos, w, h, world, sticky) {   

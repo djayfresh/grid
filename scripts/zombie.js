@@ -49,11 +49,23 @@ define(['./world', './game', './weapons'], function(world, _game, weapons) {
             }
             
             //move the world
-            if (!this.checkStreets({ x: this.world.pos.x + (worldMove.x * 2), y: this.world.pos.y + (worldMove.y * 2) })){
-                this.world.setPos(this.world.lastPos.x, this.world.lastPos.y);
+            const worldX = this.world.pos.x;
+            const worldY = this.world.pos.y;
+            const move = { x: worldX + worldMove.x, y: worldY + worldMove.y };
+            if (this.checkStreets(move)){
+                this.world.setPos(move.x, move.y);
+            }
+            else if (this.checkStreets({x: worldX - worldMove.x, y: move.y})){
+                Debug.game("valid 1", worldMove);
+                this.world.setPos(worldX, move.y);
+            }
+            else if (this.checkStreets({x: move.x, y: worldY - worldMove.y})){
+                Debug.game("valid 2", worldMove);
+                this.world.setPos(move.x, worldY);
             }
             else {
-                this.world.setPos(this.world.pos.x + worldMove.x, this.world.pos.y + worldMove.y);
+                Debug.game("No valid moves", worldMove);
+                this.world.setPos(worldX, worldY);
             }
 
             if (this.activeWeapon){
@@ -66,9 +78,13 @@ define(['./world', './game', './weapons'], function(world, _game, weapons) {
     
         checkStreets(newPos) {
             const streets = this.world.map.filter(ro => ro.id === ID_CONST.Street);
-            return streets.some(s => 
-                Physics.collision(this.world.center.x - (this.world.player.width), this.world.center.y - (this.world.player.height), this.world.player.width, this.world.player.height, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
-            );
+
+            const playerX = this.world.player.actualPos.x;// + (this.world.player.width / 2);
+            const playerY = this.world.player.actualPos.y;// + (this.world.player.height / 2);
+
+            return streets.some(s => {
+                return Physics.insideBounds(playerX, playerY, this.world.player.width, this.world.player.height, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
+            });
         }
 
         _onWeaponFired(weapon, mouse){

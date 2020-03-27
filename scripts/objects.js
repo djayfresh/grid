@@ -85,7 +85,7 @@ class Player extends Rectangle {
         super(ID_CONST.Player, '#004600', 0, 0, 10, 10);
     }
 
-    get center() {
+    get actualPos() {
         return new Point(((this.screen.x / 2) - (this.width / 2)), ((this.screen.y / 2) - (this.height / 2)))
     }
 
@@ -94,8 +94,8 @@ class Player extends Rectangle {
 
         this.drawSticky(ctx, world, () => {
             ctx.fillStyle = this.color;
-            const posX = this.center.x;
-            const posY = this.center.y;
+            const posX = this.actualPos.x;
+            const posY = this.actualPos.y;
             Debug.draw('Player', 'x', posX, 'y', posY, 'w', this.width, 'h', this.height);
             ctx.fillRect(posX, posY, this.width, this.height);
         })
@@ -122,7 +122,7 @@ class Bullet extends Rectangle {
 
     update(dt, world) {
         this.lifeTime += dt;
-        const worldMove = KeyboardManager.moves();
+        const worldMove = world.getPosDelta();
 
         this.setPos(this.pos.x + (dt * this.force.x) - worldMove.x, this.pos.y + (dt * this.force.y) - worldMove.y);
 
@@ -172,7 +172,7 @@ class Enemy extends Rectangle {
             return;
         }
 
-        const toPlayer = Point.subtract(world.player.center, world.toWorldPositition(this.pos));
+        const toPlayer = Point.subtract(world.player.actualPos, world.toWorldPositition(this.pos));
         const norm = toPlayer.normalized();
         Debug.physics('To Player', toPlayer, 'norm', norm);
 
