@@ -2,16 +2,33 @@ define(function (require) {
     var zombieGame = require('./zombie/game');
     var lobby = require('./lobby/lobby');
     
-    //zombieGame.Play();
+    var menuOptions = [
+        {
+            id: LevelConst.Grid,
+            action: () => {
+                lobby.Pause();
+                console.log("play grid");
+            },
+            text: 'Grid'
+        },
+        { 
+            id: LevelConst.Zombie, 
+            action: () => {
+                lobby.Pause();
+                zombieGame.Play();
+            },
+            text: 'Zombie'
+        },
+        {
+            id: LevelConst.HighScore,
+            action: () => {
+                lobby.Pause();
+                console.log("Play highscores")
+            },
+            text: 'Highscores'
+        }
+    ]
 
+    lobby.SetMenu(menuOptions);
     lobby.Play();
-    lobby.onLevelSelect((id) => {
-        console.log("Selected level", id);
-        if (id === LevelConst.Zombie){
-            zombieGame.Play();
-        }
-        else if (id === LevelConst.HighScore){
-            console.log("Show highscores");
-        }
-    })
 });

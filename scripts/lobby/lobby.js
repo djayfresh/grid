@@ -1,5 +1,5 @@
-var LevelConst = { Zombie: 0, HighScore: 1 };
-var Levels = [LevelConst.Zombie, LevelConst.HighScore];
+var LevelConst = { Grid: 0, Zombie: 1, HighScore: 2 };
+var Levels = [LevelConst.Grid, LevelConst.Zombie, LevelConst.HighScore];
 
 define(['../shared/game', '../shared/world'], function(_game) {
 
@@ -14,8 +14,16 @@ define(['../shared/game', '../shared/world'], function(_game) {
             this.world.setScreen(canvas.width, canvas.height);
         }
 
-        onLevelSelect(callback){
-            this._levelSelected = callback;
+        SetMenu(menuOptions){
+            this.menuOptions = menuOptions;
+        }
+
+        _selectMenuOption(id) {
+            this.menuOptions.forEach(mo => {
+                if (mo.id === id){
+                    mo.action();
+                }
+            })
         }
 
         _frame(dt) {
@@ -42,7 +50,7 @@ define(['../shared/game', '../shared/world'], function(_game) {
 
                         if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
                             setTimeout(() => {
-                                this._levelSelected(ro.id);
+                                this._selectMenuOption(ro.id);
                             }, 100);
                         }
                     });
@@ -69,33 +77,31 @@ define(['../shared/game', '../shared/world'], function(_game) {
             this.world.setPos(0, 0);
 
             this.Resize();
+            this.Play();
         }
 
         _buildLobbyButtons() {
-            const buttons = [];
-            canvas.width, canvas.height
             const left = canvas.width * 0.25;
-            const height = canvas.height * 0.25;
             const buttonH = 50;
             const buttonW = canvas.width / 2;
+            const white = '#FFFFFF';
+            const black = '#000000';
 
-            const zombiePlayBtn = new Rectangle(LevelConst.Zombie, '#FFFFFF', left, height, buttonW, buttonH);
-            buttons.push(zombiePlayBtn); //Play Zombie
+            const height = (canvas.height / this.menuOptions.length) - (buttonH + 10);
 
-            const highScoreBtn = new Rectangle(LevelConst.HighScore, '#FFFFFF', left - 20, height + buttonH + 20, buttonW + 40, buttonH);
-            buttons.push(highScoreBtn); //High Score
+            this.menuOptions.forEach((mo, i) => {
 
-            console.log("Buttons", buttons);
+                const textOffset = mo.text.length > 8 ? 10 : 0; //Do real pixel centering
+                const y = (height * i) + buttonH + (20 * (i + 1));
+                const x = left - textOffset;
+                const btn = new Rectangle(mo.id, white, x, y, buttonW + (textOffset * 2), buttonH);
+                this.renderer.add(btn);
 
-            this.renderer.add(...buttons);
+                const btnTextPos = new Point(btn.pos.x + 20 - textOffset, btn.pos.y + (buttonH * 0.75));
+                this.renderer.add(new Text(100, mo.text, undefined, black, undefined, btnTextPos));
+            });
+
             this.renderer.add(new Rectangle(ID_CONST.Ground, '#000000', 0, 0, canvas.width, canvas.height));
-
-
-            const zombiePlayTextPos = new Point(zombiePlayBtn.pos.x + 20, zombiePlayBtn.pos.y + (buttonH * 0.75));
-            this.renderer.add(new Text(100, 'Zombie', undefined, '#000000', undefined, zombiePlayTextPos));
-
-            const highScoreTextPos = new Point(highScoreBtn.pos.x + 15, highScoreBtn.pos.y + (buttonH * 0.75));
-            this.renderer.add(new Text(100, 'Highscores', undefined, '#000000', undefined, highScoreTextPos));
         }
     }
 
