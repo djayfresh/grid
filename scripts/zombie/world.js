@@ -1,6 +1,6 @@
 define(['../shared/renderer', '../shared/objects', './objects', '../shared/world', '../shared/canvas'], function() {
 
-    const world = new World(1);
+    const world = new World(LevelConst.Zombie);
 
     //TODO: Move to board
     world.generateMap = function() {
