@@ -1,13 +1,14 @@
 define(function (require) {
-    var zombieGame = require('./zombie/game');
+    var zombieGame = require('./zombie/zombie');
     var lobby = require('./lobby/lobby');
+    var grid = require('./grid/grid');
     
     var menuOptions = [
         {
             id: LevelConst.Grid,
             action: () => {
                 lobby.Pause();
-                console.log("play grid");
+                grid.Play();
             },
             text: 'Grid'
         },
