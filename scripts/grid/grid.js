@@ -21,6 +21,7 @@ define(['../shared/game', './world'], function(_game, world) {
             }
             else {
                 if (this.wasDownLastFrame) {
+                    this.world.player.pos.x += this.world.squareSize.x;
                 }
                 this.wasDownLastFrame = false;
             }

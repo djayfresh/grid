@@ -1,21 +1,14 @@
 class GridPlayer extends Rectangle {
-    screen;
-
-    constructor() {
-        super(ID_CONST.Player, '#004600', 0, 0, 10, 10);
-    }
-
-    get actualPos() {
-        return new Point(((this.screen.x / 2) - (this.width / 2)), ((this.screen.y / 2) - (this.height / 2)))
+    constructor(x, y, w, h) {
+        super(ID_CONST.Player, '#004600', x, y, w, h);
     }
 
     draw(ctx, world) {
-        this.screen = world.screen;
-
         this.drawSticky(ctx, world, () => {
+            const posX = this.pos.x;
+            const posY = this.pos.y;
+
             ctx.fillStyle = this.color;
-            const posX = this.actualPos.x;
-            const posY = this.actualPos.y;
             Debug.draw('Player', 'x', posX, 'y', posY, 'w', this.width, 'h', this.height);
             ctx.fillRect(posX, posY, this.width, this.height);
         })
@@ -28,7 +21,7 @@ class GridPlayer extends Rectangle {
 
 define(['../shared/renderer', '../shared/utility', '../shared/physics', '../shared/objects'], function (render) {
     return {
-        Player,
+        GridPlayer,
         Point: render.Point
     }
 });
