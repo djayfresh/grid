@@ -1,15 +1,13 @@
 class RenderObject {
-    id;
-    pos;
-    layer = 0;
-    bounds = { w: 0, h: 0 };
-    _isVisible = true;
-    _deleted = false;
-
     constructor(id, x, y) {
         this.id = id;
         this.layer = id;
         this.pos = new Point(x || 0, y || 0);
+        
+        this.layer = 0;
+        this.bounds = { w: 0, h: 0 };
+        this._isVisible = true;
+        this._deleted = false;
     }
 
     setPos(x, y) {
@@ -49,7 +47,9 @@ class RenderObject {
 }
 
 class Renderer {
-    renderObjects = [];
+    constructor() {
+        this.renderObjects = [];
+    }
 
     draw(ctx, world, layer) {
         this.clearScreen(ctx, world);

@@ -53,20 +53,12 @@ class Debug {
 }
 
 class Mouse {
-    button = undefined;
-    isDown = false;
-    isUp = true;
-    press = undefined;
-    release = undefined;
-    move = undefined;
-    lastPos = new Point(0, 0);
-    pos = new Point(0, 0);
-
-    _canvas;
-
     constructor(button, canvas) {
         this.button = button;
         this._canvas = canvas;
+        
+        this.lastPos = new Point(0, 0);
+        this.pos = new Point(0, 0);
 
         //Attach event listeners to canvas
         canvas.addEventListener(
@@ -136,16 +128,14 @@ class Mouse {
 }
 
 class Key {
-    code;
-    isDown = false;
-    isUp = true;
-
-    //callbacks
-    onPress = [];
-    onRelease = [];
-
     constructor(keyCode) {
         this.code = keyCode;
+        this.isUp = true;
+        this.isDown = false;
+
+        //callbacks
+        this.onPress = [];
+        this.onRelease = [];
 
         //Attach event listeners
         window.addEventListener(
@@ -209,21 +199,31 @@ Math.range = function (min, max) {
 }
 
 class KeyboardManager {
-    static downKeys = {};
-    static trackedKeys = {};
-
     static isKeyDown(keyCode) {
+        KeyboardManager.init();
+
         return KeyboardManager.downKeys[keyCode];
     }
 
     static track(keyCode) {
-        if (!this.trackedKeys[keyCode]) {
+        KeyboardManager.init();
+
+        if (!KeyboardManager.trackedKeys[keyCode]) {
             const key = new Key(keyCode);
-            key.onClick(() => this.downKeys[keyCode] = true, () => this.downKeys[keyCode] = false);
-            this.trackedKeys[keyCode] = key;
+            key.onClick(() => KeyboardManager.downKeys[keyCode] = true, () => KeyboardManager.downKeys[keyCode] = false);
+            KeyboardManager.trackedKeys[keyCode] = key;
         }
 
-        return this.trackedKeys[keyCode];
+        return KeyboardManager.trackedKeys[keyCode];
+    }
+
+    static init() {
+        if(!KeyboardManager.downKeys){
+            KeyboardManager.downKeys = {};
+        }
+        if(!KeyboardManager.trackedKeys){
+            KeyboardManager.trackedKeys = {};
+        }
     }
 
     static moves() {
@@ -287,10 +287,6 @@ function invokeDebounce(func, invoked, immediate) {
 };
 
 class Timer {
-    lastTime = 0;
-    startTime = 0;
-    totalTime = 0;
-    step = 0;
 
     constructor() {
         this.Reset();

@@ -1,10 +1,10 @@
 class Game {
-    renderer = new Renderer();
-    _state = () => {}; 
-    _initialized = false;
-    _timer;
-
     constructor() {
+        this.renderer = new Renderer();
+        this._state = () => {}; 
+        this._initialized = false;
+        this._timer;
+
         this.Run();
     }
 
@@ -76,7 +76,7 @@ class Game {
             window.addEventListener("resize", function () {
                 debounce(() => {
                     this.Resize();
-                }, 200)
+                }, 200);
             }, false);
         }
     }

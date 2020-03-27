@@ -1,5 +1,4 @@
 class Rectangle extends RenderObject {
-    color = '';
     constructor(id, color, x, y, width, height) {
         super(id, x, y);
 
@@ -38,18 +37,13 @@ class Rectangle extends RenderObject {
 }
 
 class Text extends RenderObject {
-    text = '';
-    font = 'Arial';
-    size = '30px';
-    color = '#000000';
-
     constructor(id, text, size, color, font) {
         super(id);
 
-        this.text = text;
-        this.size = size || this.size;
-        this.font = font || this.font;
-        this.color = color || this.color;
+        this.text = text || '';
+        this.size = size || '30px';
+        this.font = font || 'Arial';
+        this.color = color || '#000000';
     }
 
     draw(ctx) {
@@ -60,14 +54,12 @@ class Text extends RenderObject {
 }
 
 class Line extends RenderObject {
-    color = '#000000';
-    bounds = { x: 0, y: 0 }
     constructor(id, pos, x2, y2, color) {
         super(id);
 
         this.pos = pos;
         this.bounds = { x: x2, y: y2 };
-        this.color = color || this.color;
+        this.color = color || '#000000';
     }
 
     draw(ctx) {
@@ -79,8 +71,6 @@ class Line extends RenderObject {
 }
 
 class Player extends Rectangle {
-    screen;
-
     constructor() {
         super(ID_CONST.Player, '#004600', 0, 0, 10, 10);
     }
@@ -107,17 +97,13 @@ class Player extends Rectangle {
 }
 
 class Bullet extends Rectangle {
-    lifeSpan = 500;
-    lifeTime = 0;
-    damage = 1;
-    force = { x: 0, y: 0 };
-
     constructor(startPos, force, range, damage) {
         super(ID_CONST.Bullet, '#8e8702', startPos.x, startPos.y, 3, 3);
 
         this.force = force;
-        this.lifeSpan = range || this.lifeSpan;
-        this.damage = damage || this.damage;
+        this.lifeSpan = range || 500;
+        this.lifeTime = 0;
+        this.damage = damage || 1;
     }
 
     update(dt, world) {
@@ -134,10 +120,6 @@ class Bullet extends Rectangle {
 }
 
 class Enemy extends Rectangle {
-    speed = 1;
-    health = 1;
-    _renderer;
-
     constructor(color, x, y, speed, health){
         super(ID_CONST.Enemy, color, x, y, 10, 10);
         this.speed = speed;
@@ -192,20 +174,17 @@ class Enemy extends Rectangle {
 }
 
 class Spawner extends Rectangle {
-    spawnPoint = new Point(0, 0);
-    rate = 2000; //ms
-    spawnCount = 0;
-    enemySpeed = 1;
-    currentSpawnTime = 0;
-    maxSpawns = 10; //should get reset each day
-    _renderer;
 
     constructor(color, x, y, rate, enemySpeed){
         super(ID_CONST.Spawner, color, x, y, 20, 20);
 
-        this.rate = rate || this.rate;
-        this.enemySpeed = enemySpeed || this.enemySpeed;
+        this.rate = rate || 2000; //ms
+        this.enemySpeed = enemySpeed || 1;
         this.spawnPoint = new Point(x + (this.width/2), y + (this.height/2));
+        
+        this.spawnCount = 0;
+        this.currentSpawnTime = 0;
+        this.maxSpawns = 10; //should get reset each day
     }
 
     update(dt, world){

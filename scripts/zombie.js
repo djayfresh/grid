@@ -1,15 +1,12 @@
-define(['./world', './game', './weapons'], function(world, _game, weapons) {
+define(['world', 'game', 'weapons'], function(world, _game, weapons) {
 
     class ZombieGame extends Game {
-        world;
-        mouse;
-        weaponIndex = 0;
-        activeWeapon;
-        weapons;
-        weaponSwitched = false;
     
         constructor(world, weapons){
             super();
+
+            this.weaponIndex = 0;
+            this.weaponSwitched = false;
             
             this.world = world;
             this.weapons = weapons;
@@ -49,7 +46,7 @@ define(['./world', './game', './weapons'], function(world, _game, weapons) {
             }
             
             //move the world
-            if (!this.checkStreets({ x: this.world.pos.x + (worldMove.x * 2), y: this.world.pos.y + (worldMove.y * 2) })){
+            if (!this.checkStreets({ x: this.world.pos.x + (worldMove.x), y: this.world.pos.y + (worldMove.y) })){
                 this.world.setPos(this.world.lastPos.x, this.world.lastPos.y);
             }
             else {
@@ -67,7 +64,7 @@ define(['./world', './game', './weapons'], function(world, _game, weapons) {
         checkStreets(newPos) {
             const streets = this.world.map.filter(ro => ro.id === ID_CONST.Street);
             return streets.some(s => 
-                Physics.collision(this.world.center.x - (this.world.player.width), this.world.center.y - (this.world.player.height), this.world.player.width, this.world.player.height, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
+                Physics.collision(this.world.center.x - (this.world.player.width/2), this.world.center.y - (this.world.player.height/2), this.world.player.width, this.world.player.height, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
             );
         }
 

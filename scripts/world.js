@@ -1,20 +1,14 @@
 class World {
-    pos = new Point(0, 0);
-    lastPos = new Point(0, 0);
-    origin = new Point(0, 0);
-    map = [];
-    screen = { x: 500, y: 500 };
-    canvas = { x: 500, y: 500 };
-    player = null;
-    moved = false;
-    id;
-
     constructor(id){
         this.id = id;
-        
         this.pos = new Point(0, 0);
         this.lastPos = new Point(0, 0);
         this.origin = new Point(0, 0);
+        this.map = [];
+        this.screen = { x: 500, y: 500 };
+        this.canvas = { x: 500, y: 500 };
+        this.player = null;
+        this.moved = false;
     }
 
     setMap(map){

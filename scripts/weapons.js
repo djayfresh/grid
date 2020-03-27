@@ -1,17 +1,14 @@
 class Weapon {
-    mouse;
-    rate = 500; //ms
-    range;
-    damage = 1;
-    _lastShot = 0;
-    ammo = 0;
-    maxAmmo = 0;
-    onFire = () => {};
-
     constructor(onFire, options) {
         this.mouse = new Mouse(0, canvas);
 
-        this.onFire = onFire || this.onFire;
+        this.rate = 500; //ms
+        this.damage = 1;
+        this._lastShot = 0;
+        this.ammo = 0;
+        this.maxAmmo = 0;
+
+        this.onFire = onFire || (() => {});
 
         Object.assign(this, options);
 
