@@ -43,13 +43,14 @@ class Text extends RenderObject {
     size = '30px';
     color = '#000000';
 
-    constructor(id, text, size, color, font) {
+    constructor(id, text, size, color, font, pos) {
         super(id);
 
         this.text = text;
         this.size = size || this.size;
         this.font = font || this.font;
         this.color = color || this.color;
+        this.pos = pos || new Point(0, 0);
     }
 
     draw(ctx) {

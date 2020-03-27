@@ -38,3 +38,6 @@ class Weapon {
     }
 }
 
+define(['./utility'], function() {
+    return Weapon;
+})

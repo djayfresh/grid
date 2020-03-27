@@ -64,9 +64,10 @@ class Mouse {
 
     _canvas;
 
-    constructor(button, canvas) {
+    constructor(button, canvas, canvasRelative) {
         this.button = button;
         this._canvas = canvas;
+        this._relative = canvasRelative;
 
         //Attach event listeners to canvas
         canvas.addEventListener(
@@ -81,6 +82,15 @@ class Mouse {
     }
 
     getMousePos(mouseEvent) {
+        if (this._relative){
+            const rect = this._canvas.getBoundingClientRect(); // abs. size of element
+            const scaleX = this._canvas.width / rect.width;   // relationship bitmap vs. element for X
+            const scaleY = this._canvas.height / rect.height;  // relationship bitmap vs. element for Y
+
+            return new Point((mouseEvent.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
+                            (mouseEvent.clientY - rect.top) * scaleY);     // been adjusted to be relative to element
+        }
+        
         const rect = this._canvas.getBoundingClientRect();
         return new Point(mouseEvent.clientX - rect.left, mouseEvent.clientY - rect.top);
     }
@@ -92,9 +102,10 @@ class Mouse {
 
     //The `downHandler`
     downHandler(event) {
-        Debug.mouse("Down", event);
         const pos = this.getMousePos(event);
         this.setPos(pos);
+
+        Debug.mouse("Down", event, pos);
 
         if (this.button === undefined || this.button === event.button) {
             if (this.isUp && this.press) {
@@ -109,9 +120,10 @@ class Mouse {
 
     //The `upHandler`
     upHandler(event) {
-        Debug.mouse("Up", event);
         const pos = this.getMousePos(event);
         this.setPos(pos);
+
+        Debug.mouse("Up", event, pos);
 
         if (this.button === undefined || this.button == event.button) {
             if (this.isDown && this.release) {
