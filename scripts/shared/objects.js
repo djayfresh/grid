@@ -11,8 +11,16 @@ class Rectangle extends RenderObject {
         return new Point(this.pos.x + (this.width/2), this.pos.y + (this.height/2));
     }
 
+    set width(value) {
+        this.bounds.w = value;
+    }
+
     get width() {
         return this.bounds.w;
+    }
+
+    set height(value) {
+        this.bounds.h = value;
     }
 
     get height() {

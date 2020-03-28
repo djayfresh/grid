@@ -141,6 +141,13 @@ class Point {
     static direction(a, b) {
         return Point.delta().normalized();
     }
+
+    static lerp(t, a, b){ 
+        const sub = Point.subtract(b, a);
+        const percent = sub.multiply(t > 1? 1 : t < -1 ? -1 : t);
+
+        return new Point(a.x + percent.x, a.y + percent.y);
+    }
 }
 
 define(function () {

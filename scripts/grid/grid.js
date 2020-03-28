@@ -1,6 +1,3 @@
-var LevelConst = { Grid: 0, Zombie: 1, HighScore: 2 };
-var Levels = [LevelConst.Grid, LevelConst.Zombie, LevelConst.HighScore];
-
 define(['../shared/game', './world'], function(_game, world) {
 
     class Grid extends Game {
@@ -21,6 +18,7 @@ define(['../shared/game', './world'], function(_game, world) {
             }
             else {
                 if (this.wasDownLastFrame) {
+                    //temp
                     this.world.player.pos.x += this.world.squareSize.x;
                 }
                 this.wasDownLastFrame = false;
@@ -37,6 +35,7 @@ define(['../shared/game', './world'], function(_game, world) {
             this.renderer.add(...this.world.generateMap())
             
             this.mouse = new Mouse(0, canvas, true);
+            canvas.style.cursor = 'pointer'; //change mouse pointer
         }
 
         Restart() {

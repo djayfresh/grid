@@ -31,6 +31,10 @@ class Physics {
     
         return Physics.collision(x + tx, y + ty, 0, 0, 0, 0, world.screen.x, world.screen.y)
     }
+    
+    static lerp(value, x, y){
+        return (1 - value) * x + value * y;
+    }
 }
 
 define(function() {
