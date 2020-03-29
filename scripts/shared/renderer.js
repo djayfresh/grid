@@ -16,6 +16,16 @@ class RenderObject {
         this.pos = new Point(x, y);
     }
 
+    setContext(h_canvas) {
+        this.canvas = h_canvas;
+        var h_context = this.canvas.getContext('2d');
+        this.preDraw(h_context);
+    }
+
+    preDraw(_ctx) {
+
+    }
+
     draw(_ctx, _world) {
 
     };

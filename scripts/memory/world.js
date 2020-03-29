@@ -57,16 +57,24 @@ define(['../shared/renderer', '../shared/objects', '../shared/world', '../shared
             }
         }
 
+        var m_canvas = document.createElement('canvas');
+        m_canvas.width = canvas.width;
+        m_canvas.height = canvas.height;
+
         //grid
         for(let i = 0; i <= gridSize; i++){
             let x = squareX * i;
             let y = squareY * i;
 
             //Down
-            // renderObjects.push(new Line(ID_CONST.Line, new Point(x, 0), x, canvas.height));
+            const down = new Line(ID_CONST.Line, new Point(x, 0), x, canvas.height);
+            down.setContext(m_canvas);
+            renderObjects.push(down);
 
-            // //Accross
-            // renderObjects.push(new Line(ID_CONST.Line, new Point(0, y), canvas.width, y));
+            //Accross
+            const accross = new Line(ID_CONST.Line, new Point(0, y), canvas.width, y);
+            accross.setContext(m_canvas);
+            renderObjects.push(accross);
         }
     
         this.setMap(renderObjects);

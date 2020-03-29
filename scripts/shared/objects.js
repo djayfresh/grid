@@ -61,10 +61,19 @@ class Text extends RenderObject {
         this.pos = pos || new Point(0, 0);
     }
 
-    draw(ctx) {
+    preDraw(ctx) {
         ctx.font = `${this.size} ${this.font}`;
         ctx.fillStyle = this.color;
         ctx.fillText(this.text, this.pos.x, this.pos.y);
+    }
+
+    draw(ctx) {
+        if (this.canvas) {
+            ctx.drawImage(this.canvas, 0, 0);
+        }
+        else {
+            this.preDraw(ctx);
+        }
     }
 }
 
@@ -79,11 +88,20 @@ class Line extends RenderObject {
         this.color = color || this.color;
     }
 
-    draw(ctx) {
+    preDraw(ctx) {
         ctx.moveTo(this.pos.x, this.pos.y);
         ctx.lineTo(this.bounds.x, this.bounds.y);
         ctx.strokeStyle = this.color;
         ctx.stroke()
+    }
+
+    draw(ctx) {
+        if (this.canvas) {
+            ctx.drawImage(this.canvas, 0, 0);
+        }
+        else {
+            this.preDraw(ctx);
+        }
     }
 }
 
