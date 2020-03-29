@@ -9,10 +9,10 @@ export class GridWorld extends World {
     squareSize: Point;
     gridSize: number;
 
-    constructor() {
+    constructor(gridSize: number) {
         super(1);
 
-        this.gridSize = 6;
+        this.gridSize = gridSize;
         const squareX = (canvas.width / this.gridSize);
         const squareY = (canvas.height / this.gridSize);
 
@@ -52,4 +52,4 @@ export class GridWorld extends World {
     }
 };
 
-export var world = new GridWorld();
+export var world = new GridWorld(6);

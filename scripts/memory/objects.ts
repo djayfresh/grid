@@ -1,10 +1,18 @@
-class Card extends Rectangle {
+import { Rectangle } from '../shared/objects';
+import { ID_CONST } from '../shared/utility';
+import { Point } from '../shared/renderer';
+import { Physics } from '../shared/physics';
+
+export class Card extends Rectangle {
     flipSpeed = 0.03;
     flipped = false;
     currentState = 0;
 
     locked = false;
     flipLocked = false;
+
+    quarterFlipPos: Point;
+    halfFlipPos: Point;
 
     originalPos;
     originalBounds;
@@ -26,7 +34,7 @@ class Card extends Rectangle {
         this.halfFlipPos = new Point(this.originalPos.x + (this.originalBounds.x / 2), this.originalPos.y);
     }
 
-    Flip(forced) {
+    Flip(forced: boolean = false) {
         if ((this.locked || this.flipLocked) && !forced) {
             return;
         }
@@ -82,10 +90,3 @@ class Card extends Rectangle {
         }
     }
 }
-
-define(['../shared/renderer', '../shared/utility', '../shared/physics', '../shared/objects'], function (render) {
-    return {
-        GridPlayer,
-        Point: render.Point
-    }
-});

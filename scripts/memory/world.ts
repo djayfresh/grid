@@ -1,30 +1,24 @@
-define(['../shared/renderer', '../shared/objects', '../shared/world', '../shared/canvas', './objects'], function() {
+import { GridWorld } from '../grid/world';
+import { canvas } from '../shared/canvas';
+import { ID_CONST } from '../shared/utility';
+import { PreRender, Point, RenderObject } from '../shared/renderer';
+import { Line } from '../shared/objects';
+import { Card } from './objects';
 
-    const world = new World(1);
+export class MemoryWorld extends GridWorld {
 
-    world.gridToPos = function(x, y) {
-        return new Point(x * world.squareSize.x, y * world.squareSize.y);
-    }
+    generateMap(): RenderObject[] {
+        const renderObjects: RenderObject[] = [];
 
-    //TODO: Move to board
-    world.generateMap = function() {
-        const renderObjects = [];
-        const gridSize = 6;
-        const squareX = (canvas.width / gridSize);
-        const squareY = (canvas.height / gridSize);
-
-        world.squareSize = {x: squareX, y: squareY};
-        world.gridSize = gridSize;
-
-        const addCard = function(color, x, y){
+        const addCard = (color: string, x: number, y: number) => {
             const pos = world.gridToPos(x, y);
-            const card = new Card(color, pos.x, pos.y, squareX, squareY);
+            const card = new Card(color, pos.x, pos.y, this.squareSize.x, this.squareSize.y);
             renderObjects.push(card);
         }
 
-        let colorList = undefined;
+        let colorList: {[color: string]: number};
 
-        const randomColor = function() {
+        const randomColor = () => {
             var letters = '0123456789ABCDEF';
             var color = '#';
             for (var i = 0; i < 6; i++) {
@@ -33,10 +27,10 @@ define(['../shared/renderer', '../shared/objects', '../shared/world', '../shared
             return color;
         }
 
-        const getColor = function() {
-            const numColors = (gridSize * gridSize) / 2; 
+        const getColor = () => {
             if (!colorList) {
                 colorList = {};
+                const numColors = (this.gridSize * this.gridSize) / 2; 
                 for (let i = 0; i < numColors; i++) {
                     let color = randomColor();
                     colorList[color] = 0;
@@ -51,8 +45,8 @@ define(['../shared/renderer', '../shared/objects', '../shared/world', '../shared
         }
 
         
-        for(let i = 0; i < gridSize; i++){
-            for(let j = 0; j < gridSize; j++){
+        for(let i = 0; i < this.gridSize; i++){
+            for(let j = 0; j < this.gridSize; j++){
                 addCard(getColor(), j, i);
             }
         }
@@ -63,21 +57,21 @@ define(['../shared/renderer', '../shared/objects', '../shared/world', '../shared
         m_canvas.width = canvas.width;
         m_canvas.height = canvas.height;
 
-        const preRender = new PreRender(ID_CONST.Line, m_canvas);
+        const preRender = new PreRender(ID_CONST.Grid, m_canvas);
         renderObjects.push(preRender);
 
         //grid
-        for(let i = 0; i <= gridSize; i++){
-            let x = squareX * i;
-            let y = squareY * i;
+        for(let i = 0; i <= this.gridSize; i++){
+            let x = this.squareSize.x * i;
+            let y = this.squareSize.y * i;
 
             //Down
-            const down = new Line(ID_CONST.Line, new Point(x, 0), x, canvas.height);
+            const down = new Line(ID_CONST.Grid, new Point(x, 0), new Point(x, canvas.height));
             down.setContext(m_canvas);
             // renderObjects.push(down);
 
             //Accross
-            const accross = new Line(ID_CONST.Line, new Point(0, y), canvas.width, y);
+            const accross = new Line(ID_CONST.Grid, new Point(0, y), new Point(canvas.width, y));
             accross.setContext(m_canvas);
             // renderObjects.push(accross);
         }
@@ -85,7 +79,7 @@ define(['../shared/renderer', '../shared/objects', '../shared/world', '../shared
         this.setMap(renderObjects);
 
         return renderObjects;
-    };
+    }
+}
 
-    return world;
-});
+export var world = new MemoryWorld(6);
