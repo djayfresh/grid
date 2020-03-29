@@ -59,4 +59,4 @@ class Grid extends Game {
 }
 
 
-export = new Grid(world);
+export var grid = new Grid(world);

@@ -129,4 +129,4 @@ class ZombieGame extends Game {
     }
 }
 
-export var zombieGame = new ZombieGame(world, [pistol, machineGun, sniper]);
+export var zombie = new ZombieGame(world, [pistol, machineGun, sniper]);
