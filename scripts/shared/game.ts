@@ -7,6 +7,7 @@ export class Game {
     _initialized = false;
     _timer: Timer;
     score = 0;
+    focusPaused: boolean = false;
 
     constructor() {
         this.Run();
@@ -81,11 +82,23 @@ export class Game {
 
         //Don't rebind key events
         if (this._initialized) {
-            window.addEventListener("resize", () => {
+            window.addEventListener('resize', () => {
                 debounce(() => {
                     this.Resize();
                 }, 200, false)
             }, false);
+
+            window.addEventListener('focus', () => {
+                if (this.focusPaused && this._state == this._pause){
+                    this.focusPaused = false;
+                    this.Play();
+                }
+            });
+
+            window.addEventListener('blur', () => {
+                this.focusPaused = this._state !== this._pause; //we paused for another reason
+                this.Pause();
+            });
         }
     }
 

@@ -4,7 +4,7 @@ import { canvas, ctx } from '../shared/canvas';
 import { Physics } from '../shared/physics';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Rectangle, RenderText } from '../shared/objects';
-import { Point } from '../shared/renderer';
+import { Point, PreRender } from '../shared/renderer';
 
 export var LevelConst = { Grid: 0, Zombie: 1, HighScore: 2, Memory: 3 };
 export var Levels = [LevelConst.Grid, LevelConst.Zombie, LevelConst.HighScore, LevelConst.Memory];
@@ -117,6 +117,12 @@ export class Lobby extends Game {
 
         const height = (canvas.height / this.menuOptions.length) - (buttonH + 10);
 
+        const t_canvas = document.createElement('canvas');
+        t_canvas.width = canvas.width;
+        t_canvas.height = canvas.height;
+
+        const preRender = new PreRender(100, t_canvas);
+
         this.menuOptions.forEach((mo, i) => {
 
             const textOffset = mo.text.length > 8 ? 10 : 0; //Do real pixel centering
@@ -126,8 +132,11 @@ export class Lobby extends Game {
             this.renderer.add(btn);
 
             const btnTextPos = new Point(btn.pos.x + buttonW / 2, btn.pos.y + buttonH * 0.75);
-            this.renderer.add(new RenderText(100, {text: mo.text, color: black, pos: btnTextPos, centered: true}));
+            const btnText = new RenderText(100, {text: mo.text, color: black, pos: btnTextPos, centered: true});
+            btnText.setContext(t_canvas);
         });
+
+        this.renderer.add(preRender);
 
         this.renderer.add(new Rectangle(ID_CONST.Ground, '#000000', 0, 0, canvas.width, canvas.height));
     }
