@@ -3,7 +3,7 @@ import { World } from '../shared/world';
 import { canvas, ctx } from '../shared/canvas';
 import { Physics } from '../shared/physics';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
-import { Rectangle, Text } from '../shared/objects';
+import { Rectangle, RenderText } from '../shared/objects';
 import { Point } from '../shared/renderer';
 
 export var LevelConst = { Grid: 0, Zombie: 1, HighScore: 2, Memory: 3 };
@@ -125,8 +125,8 @@ export class Lobby extends Game {
             const btn = new Rectangle(mo.id, white, x, y, buttonW + (textOffset * 2), buttonH);
             this.renderer.add(btn);
 
-            const btnTextPos = new Point(btn.pos.x + 20 - textOffset, btn.pos.y + (buttonH * 0.75));
-            this.renderer.add(new Text(100, mo.text, undefined, black, undefined, btnTextPos));
+            const btnTextPos = new Point(btn.pos.x + buttonW / 2, btn.pos.y + buttonH * 0.75);
+            this.renderer.add(new RenderText(100, {text: mo.text, color: black, pos: btnTextPos, centered: true}));
         });
 
         this.renderer.add(new Rectangle(ID_CONST.Ground, '#000000', 0, 0, canvas.width, canvas.height));

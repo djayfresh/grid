@@ -50,25 +50,23 @@ export class Rectangle extends RenderObject {
     }
 }
 
-export class Text extends RenderObject {
-    text = '';
-    font = 'Arial';
-    size = '30px';
-    color = '#000000';
+export class RenderText extends RenderObject {
+    text: string = '';
+    font: string = 'Arial';
+    size: string = '30px';
+    color: string = '#000000';
+    centered: boolean = false;
 
-    constructor(id, text, size, color, font, pos) {
+    constructor(id: number, options: Partial<RenderText>) {
         super(id);
 
-        this.text = text;
-        this.size = size || this.size;
-        this.font = font || this.font;
-        this.color = color || this.color;
-        this.pos = pos || new Point(0, 0);
+        Object.assign(this, options);
     }
 
     preDraw(ctx: CanvasRenderingContext2D) {
         ctx.font = `${this.size} ${this.font}`;
         ctx.fillStyle = this.color;
+        if(this.centered) ctx.textAlign = 'center';
         ctx.fillText(this.text, this.pos.x, this.pos.y);
     }
 
