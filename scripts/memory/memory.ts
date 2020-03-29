@@ -15,7 +15,6 @@ class Memory extends Game {
     constructor(world: MemoryWorld) {
         super();
         this.world = world;
-        this.score = 100;
     }
 
     Resize() {
@@ -91,8 +90,11 @@ class Memory extends Game {
     _init() {
         super._init();
 
+        this.score = 100;
+
         this.renderer.reset();
         this.renderer.add(...this.world.generateMap());
+
         this.cards = this.renderer.renderObjects.filter(ro => ro.id === ID_CONST.Player) as Card[];
 
         this.mouse = new Mouse(0, canvas, true);
@@ -105,7 +107,6 @@ class Memory extends Game {
         this.world.setPos(0, 0);
 
         this.Resize();
-        this.Play();
     }
 }
 

@@ -6,6 +6,11 @@ import { LevelConst } from '../lobby/lobby';
 
 export class ZombieWorld extends World {
     player: Player;
+    
+    setPlayer(player: Player){
+        this.player = player;
+        this.player.screen = this.screen;
+    }
 
     //TODO: Move to board
     generateMap() {

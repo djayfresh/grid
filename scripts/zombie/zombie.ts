@@ -112,6 +112,8 @@ class ZombieGame extends Game {
         this.renderer.add(...this.world.generateMap());
         this.SetWeapon(this.weapons[Object.keys(this.weapons)[this.weaponIndex]]);
 
+        canvas.style.cursor = 'default';
+
         KeyboardManager.track(KEY_CONST.down);
         KeyboardManager.track(KEY_CONST.up);
         KeyboardManager.track(KEY_CONST.left);

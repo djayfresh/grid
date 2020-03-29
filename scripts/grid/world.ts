@@ -1,5 +1,5 @@
 import { World } from '../shared/world';
-import { Point } from '../shared/renderer';
+import { Point, PreRender } from '../shared/renderer';
 import { Rectangle, Line } from '../shared/objects';
 import { canvas } from '../shared/canvas';
 import { ID_CONST } from '../shared/utility';
@@ -33,16 +33,27 @@ export class GridWorld extends World {
         //Enemy
         renderObjects.push(new Rectangle(ID_CONST.Enemy, '#FF0000', 1, 1, this.squareSize.x, this.squareSize.y)); //Enemy
 
+        //Since lines and text are expensive to re-draw
+        //create a hidden canvas to render the lines onto
+        var m_canvas = document.createElement('canvas');
+        m_canvas.width = canvas.width;
+        m_canvas.height = canvas.height;
+
+        const preRender = new PreRender(ID_CONST.Grid, m_canvas);
+        renderObjects.push(preRender);
+        
         //grid
         for(let i = 0; i <= this.gridSize; i++){
             let x = this.squareSize.x * i;
             let y = this.squareSize.y * i;
 
             //Down
-            renderObjects.push(new Line(ID_CONST.Grid, new Point(x, 0), new Point(x, canvas.height)));
+            const down = new Line(ID_CONST.Grid, new Point(x, 0), new Point(x, canvas.height));
+            down.setContext(m_canvas);
 
             //Accross
-            renderObjects.push(new Line(ID_CONST.Grid, new Point(0, y), new Point(canvas.width, y)));
+            const accross = new Line(ID_CONST.Grid, new Point(0, y), new Point(canvas.width, y));
+            accross.setContext(m_canvas);
         }
 
         this.setMap(renderObjects);

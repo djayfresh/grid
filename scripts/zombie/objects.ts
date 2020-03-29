@@ -5,7 +5,7 @@ import { World } from '../shared/world';
 import { ZombieWorld } from './world';
 
 export class Player extends Rectangle {
-    screen;
+    screen: {x: number, y: number};
 
     constructor() {
         super(ID_CONST.Player, '#004600', 0, 0, 10, 10);

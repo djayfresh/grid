@@ -1,7 +1,7 @@
 import { Point } from './renderer';
 
-export enum ID_CONST { Player = 100, Enemy = 2, PowerUp = -3, Grid = -1, Flag = 9001, Wall = -101, Ground = -100, Bullet = 101, Street = -80, Spawner = 10 }
-export enum KEY_CONST { left = 65, right = 68, up = 87, down = 83, pause = 80, x = 88, r = 82 };
+export enum ID_CONST { Player = 100, Enemy = 2, PowerUp = -3, Grid = 1000, Flag = 9001, Wall = -101, Ground = -100, Bullet = 101, Street = -80, Spawner = 10 }
+export enum KEY_CONST { left = 65, right = 68, up = 87, down = 83, pause = 80, x = 88, r = 82, menu = 77 };
 
 var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false };
 

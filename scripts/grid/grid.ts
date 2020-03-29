@@ -18,6 +18,7 @@ class Grid extends Game {
         canvas.height = canvas.width;
         this.world.setScreen(canvas.width, canvas.height);
     }
+    
     _frame(dt) {
         super._frame(dt);
 
@@ -54,7 +55,6 @@ class Grid extends Game {
         this.world.setPos(0, 0);
 
         this.Resize();
-        this.Play();
     }
 }
 

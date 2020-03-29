@@ -35,7 +35,7 @@ export class Lobby extends Game {
         this.menuOptions = menuOptions;
     }
 
-    _selectMenuOption(id) {
+    _selectMenuOption(id: number) {
         this.menuOptions.forEach(mo => {
             if (mo.id === id) {
                 mo.action();
@@ -43,7 +43,7 @@ export class Lobby extends Game {
         })
     }
 
-    _frame(dt) {
+    _frame(dt: number) {
         Debug.time('DT:', dt);
 
         let isMouseOverButon = false;
@@ -95,6 +95,7 @@ export class Lobby extends Game {
 
         this.renderer.reset();
         this._buildLobbyButtons();
+        this.wasDownLastFrame = false;
 
         this.mouse = new Mouse(0, canvas, true);
     }
@@ -105,7 +106,6 @@ export class Lobby extends Game {
         this.world.setPos(0, 0);
 
         this.Resize();
-        this.Play();
     }
 
     _buildLobbyButtons() {
