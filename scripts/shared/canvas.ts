@@ -1,9 +1,7 @@
-var canvas = document.getElementById("grid-canvas");
+var canvas = document.getElementById("grid-canvas") as HTMLCanvasElement;
 var ctx = canvas.getContext("2d");
 
-define(function() {
-    return {
-        canvas,
-        ctx
-    };
-});
+export = {
+    canvas,
+    ctx
+};

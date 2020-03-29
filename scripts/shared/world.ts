@@ -1,15 +1,17 @@
-class World {
+import { Point, RenderObject } from './renderer';
+
+export class World {
     pos = new Point(0, 0);
     lastPos = new Point(0, 0);
     origin = new Point(0, 0);
-    map = [];
+    map: RenderObject[] = [];
     screen = { x: 500, y: 500 };
     canvas = { x: 500, y: 500 };
-    player = null;
+    player: RenderObject = null;
     moved = false;
-    id;
+    id: number;
 
-    constructor(id){
+    constructor(id: number){
         this.id = id;
         
         this.pos = new Point(0, 0);
@@ -17,16 +19,15 @@ class World {
         this.origin = new Point(0, 0);
     }
 
-    setMap(map){
+    setMap(map: RenderObject[]){
         this.map = map;
     }
 
-    setPlayer(player){
+    setPlayer(player: RenderObject){
         this.player = player;
-        this.player.screen = this.screen;
     }
 
-    setScreen(x, y) {
+    setScreen(x: number, y: number) {
         this.screen = { x, y };
     }
 
@@ -54,11 +55,11 @@ class World {
         return this.toWorldOffset(this.center); // new Point(this.center.x - this.pos.x, this.center.y - this.pos.y);
     }
 
-    toWorldPositition(a){
+    toWorldPositition(a: Point){
         return new Point(a.x + this.pos.x, a.y + this.pos.y);
     }
 
-    toWorldOffset(a){
+    toWorldOffset(a: Point){
         return new Point(a.x - this.pos.x, a.y - this.pos.y);
     }
 
@@ -66,7 +67,3 @@ class World {
         //placeholder
     }
 }
-
-define(['./renderer', './objects'], function() {
-    return World;
-});

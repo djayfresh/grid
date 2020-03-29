@@ -1,15 +1,18 @@
-class Weapon {
-    mouse;
+import { Mouse } from './utility';
+import canvas = require('./canvas');
+
+export class Weapon {
+    mouse: Mouse;
     rate = 500; //ms
     range;
     damage = 1;
     _lastShot = 0;
     ammo = 0;
     maxAmmo = 0;
-    onFire = () => {};
+    onFire: (weapon: Weapon, mouse: Mouse) => void = () => {};
 
     constructor(onFire, options) {
-        this.mouse = new Mouse(0, canvas);
+        this.mouse = new Mouse(0, canvas.canvas);
 
         this.onFire = onFire || this.onFire;
 
@@ -37,7 +40,3 @@ class Weapon {
         this.ammo = this.maxAmmo;
     }
 }
-
-define(['./utility'], function() {
-    return Weapon;
-})

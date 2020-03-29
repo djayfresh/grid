@@ -1,32 +1,37 @@
-class RenderObject {
-    id;
-    pos;
+import { Debug } from './utility';
+import { World } from './world';
+
+export class RenderObject {
+    id: number;
+    pos: Point;
     layer = 0;
-    bounds = { w: 0, h: 0 };
+    bounds: any = { w: 0, h: 0 };
     _isVisible = true;
     _deleted = false;
+    canvas: HTMLCanvasElement;
+    renderer?: Renderer;
 
-    constructor(id, x, y) {
+    constructor(id: number, x?: number, y?: number) {
         this.id = id;
         this.layer = id;
         this.pos = new Point(x || 0, y || 0);
     }
 
-    setPos(x, y) {
+    setPos(x: number, y: number) {
         this.pos = new Point(x, y);
     }
 
-    setContext(h_canvas) {
+    setContext(h_canvas: HTMLCanvasElement) {
         this.canvas = h_canvas;
         var h_context = this.canvas.getContext('2d');
         this.preDraw(h_context);
     }
 
-    preDraw(_ctx) {
+    preDraw(_ctx: CanvasRenderingContext2D) {
 
     }
 
-    draw(_ctx, _world) {
+    draw(_ctx: CanvasRenderingContext2D, _world: World) {
 
     };
 
@@ -37,7 +42,7 @@ class RenderObject {
 
     //Helper function to allow for world translate to to impact drawing an element
     //Use for UI & Player
-    drawSticky(ctx, world, drawFunc) {
+    drawSticky(ctx: CanvasRenderingContext2D, world: World, drawFunc: () => void) {
         ctx.translate(-world.pos.x, -world.pos.y); //reset world translate, move back to 0,0
 
         drawFunc();
@@ -45,7 +50,7 @@ class RenderObject {
         ctx.translate(world.pos.x, world.pos.y); //reset the translate to w/e the world has been translated to
     }
 
-    update(_dt) {
+    update(_dt: number, _world: World) {
 
     };
 
@@ -56,24 +61,28 @@ class RenderObject {
     isDeleted() {
         return this._deleted;
     }
+
+    setRenderer(renderer: Renderer){
+        this.renderer = renderer;
+    }
 }
 
-class PreRender extends RenderObject {
-    constructor(id, canvas) {
+export class PreRender extends RenderObject {
+    constructor(id: number, canvas: HTMLCanvasElement) {
         super(id, 0, 0);
         
         this.canvas = canvas;
     }
 
-    draw(ctx) {
+    draw(ctx: CanvasRenderingContext2D) {
         ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
     }
 }
 
-class Renderer {
-    renderObjects = [];
+export class Renderer {
+    renderObjects: RenderObject[] = [];
 
-    draw(ctx, world, layer) {
+    draw(ctx: CanvasRenderingContext2D, world: World, layer?: number) {
         this.clearScreen(ctx, world);
 
         const worldDelta = world.getPosDelta();
@@ -90,14 +99,13 @@ class Renderer {
             });
     };
 
-    update(dt, world) {
+    update(dt: number, world: World) {
         this.renderObjects
             .filter(ro => !ro.isDeleted())
             .forEach(ro => ro.update(dt, world));
     };
 
-    add() {
-        const renderObjects = [...arguments];
+    add(...renderObjects: RenderObject[]) {
         renderObjects.forEach(ro => {
             if (ro.setRenderer){ 
                 ro.setRenderer(this);
@@ -106,7 +114,7 @@ class Renderer {
         this.renderObjects.push(...renderObjects);
     };
 
-    remove(id) {
+    remove(id: number) {
         this.renderObjects = this.renderObjects.filter(ro => ro.id !== id);
     };
 
@@ -114,7 +122,7 @@ class Renderer {
         this.renderObjects = [];
     }
 
-    clearScreen(ctx, world) {
+    clearScreen(ctx: CanvasRenderingContext2D, world: World) {
         ctx.translate(-world.pos.x, -world.pos.y); //reset world translate, move back to 0,0
 
         ctx.clearRect(-10, -10, world.screen.x + 10, world.screen.y + 10); //clear off boarder too
@@ -125,8 +133,11 @@ class Renderer {
     }
 }
 
-class Point {
-    constructor(x, y) {
+export class Point {
+    x: number;
+    y: number;
+
+    constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
     }
@@ -144,38 +155,30 @@ class Point {
         return Math.hypot(this.x, this.y);
     }
 
-    static subtract(a, b) {
+    static subtract(a: Point, b: Point) {
         const dx = a.x - b.x;
         const dy = a.y - b.y;
 
         return new Point(dx, dy);
     }
 
-    static distance(a, b) {
+    static distance(a: Point, b: Point) {
         const delta = Point.subtract(a, b);
         return Math.hypot(delta.x, delta.y);
     }
 
-    static dot(a, b){
+    static dot(a: Point, b: Point){
         return a.x * b.x + a.y * b.y;
     }
 
-    static direction(a, b) {
-        return Point.delta().normalized();
+    static direction(a: Point, b: Point) {
+        return Point.subtract(a, b).normalized();
     }
 
-    static lerp(t, a, b){ 
+    static lerp(t: number, a: Point, b: Point){ 
         const sub = Point.subtract(b, a);
         const percent = sub.multiply(t > 1? 1 : t < -1 ? -1 : t);
 
         return new Point(a.x + percent.x, a.y + percent.y);
     }
 }
-
-define(function () {
-    return {
-        Point,
-        Renderer,
-        RenderObject
-    }
-})

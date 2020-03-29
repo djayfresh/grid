@@ -1,4 +1,8 @@
-class Rectangle extends RenderObject {
+import { RenderObject, Point } from './renderer';
+import { Physics } from './physics';
+import { Debug } from './utility';
+
+export class Rectangle extends RenderObject {
     color = '';
     constructor(id, color, x, y, width, height) {
         super(id, x, y);
@@ -45,7 +49,7 @@ class Rectangle extends RenderObject {
     }
 }
 
-class Text extends RenderObject {
+export class Text extends RenderObject {
     text = '';
     font = 'Arial';
     size = '30px';
@@ -61,13 +65,13 @@ class Text extends RenderObject {
         this.pos = pos || new Point(0, 0);
     }
 
-    preDraw(ctx) {
+    preDraw(ctx: CanvasRenderingContext2D) {
         ctx.font = `${this.size} ${this.font}`;
         ctx.fillStyle = this.color;
         ctx.fillText(this.text, this.pos.x, this.pos.y);
     }
 
-    draw(ctx) {
+    draw(ctx: CanvasRenderingContext2D) {
         if (this.canvas) {
             ctx.drawImage(this.canvas, 0, 0);
         }
@@ -77,25 +81,25 @@ class Text extends RenderObject {
     }
 }
 
-class Line extends RenderObject {
+export class Line extends RenderObject {
     color = '#000000';
     bounds = { x: 0, y: 0 }
-    constructor(id, pos, x2, y2, color) {
+    constructor(id: number, pos: Point, pos2: Point, color: string) {
         super(id);
 
         this.pos = pos;
-        this.bounds = { x: x2, y: y2 };
+        this.bounds = pos2;
         this.color = color || this.color;
     }
 
-    preDraw(ctx) {
+    preDraw(ctx: CanvasRenderingContext2D) {
         ctx.moveTo(this.pos.x, this.pos.y);
         ctx.lineTo(this.bounds.x, this.bounds.y);
         ctx.strokeStyle = this.color;
         ctx.stroke()
     }
 
-    draw(ctx) {
+    draw(ctx: CanvasRenderingContext2D) {
         if (this.canvas) {
             ctx.drawImage(this.canvas, 0, 0);
         }
@@ -104,12 +108,3 @@ class Line extends RenderObject {
         }
     }
 }
-
-define(['./renderer', './utility', './physics'], function (render) {
-    return {
-        Rectangle,
-        Text,
-        Line,
-        Point: render.Point,
-    }
-});

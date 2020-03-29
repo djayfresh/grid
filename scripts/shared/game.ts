@@ -1,4 +1,7 @@
-class Game {
+import { Renderer } from './renderer';
+import { Timer, KEY_CONST, Key, debounce } from './utility';
+
+export class Game {
     renderer = new Renderer();
     _state = () => {}; 
     _initialized = false;
@@ -40,7 +43,7 @@ class Game {
 
         const $score = document.getElementById('game-score');
         if (!!$score){
-            $score.innerText = this.score;
+            $score.innerText = '' + this.score;
         }
     }
 
@@ -78,10 +81,10 @@ class Game {
 
         //Don't rebind key events
         if (this._initialized) {
-            window.addEventListener("resize", function () {
+            window.addEventListener("resize", () => {
                 debounce(() => {
                     this.Resize();
-                }, 200)
+                }, 200, false)
             }, false);
         }
     }
@@ -90,9 +93,3 @@ class Game {
         this._init();  
     }
 }
-
-define(['./utility'], function() {
-    return {
-        Game
-    };
-})

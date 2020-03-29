@@ -1,73 +1,77 @@
-var ID_CONST = { Player: 100, Enemy: 2, PowerUp: -3, Grid: -1, Flag: 9001, Wall: -101, Ground: -100, Bullet: 101, Street: -80, Spawner: 10 }
-var KEY_CONST = { left: 65, right: 68, up: 87, down: 83, pause: 80, x: 88, r: 82 };
+import { Point } from './renderer';
+
+export enum ID_Const { Player = 100, Enemy = 2, PowerUp = -3, Grid = -1, Flag = 9001, Wall = -101, Ground = -100, Bullet = 101, Street = -80, Spawner = 10 }
+export enum KEY_CONST { left = 65, right = 68, up = 87, down = 83, pause = 80, x = 88, r = 82 };
+
 var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false };
 
-class Debug {
-    static log() {
+export class Debug {
+    static log(...logMessages: any[]) {
         if (_DEBUG) {
-            console.log('LOG: ', ...arguments);
+            console.log('LOG: ', logMessages);
         }
     }
 
-    static draw() {
+    static draw(...logMessages: any[]) {
         if (_DEBUG.draw) {
-            console.log('DRAW: ', ...arguments);
+            console.log('DRAW: ', logMessages);
         }
     }
 
-    static time() {
+    static time(...logMessages: any[]) {
         if (_DEBUG.time) {
-            console.log('TIME: ', ...arguments);
+            console.log('TIME: ', logMessages);
         }
     }
 
-    static physics() {
+    static physics(...logMessages: any[]) {
         if (_DEBUG.physics) {
-            console.log('PHYSICS: ', ...arguments);
+            console.log('PHYSICS: ', logMessages);
         }
     }
 
-    static keyboard() {
+    static keyboard(...logMessages: any[]) {
         if (_DEBUG.keyboard) {
-            console.log('KEYBOARD: ', ...arguments);
+            console.log('KEYBOARD: ', logMessages);
         }
     }
 
-    static generation() {
+    static generation(...logMessages: any[]) {
         if (_DEBUG.generation) {
-            console.log('GENERATION: ', ...arguments);
+            console.log('GENERATION: ', logMessages);
         }
     }
 
-    static mouse() {
+    static mouse(...logMessages: any[]) {
         if (_DEBUG.mouse) {
-            console.log('MOUSE: ', ...arguments);
+            console.log('MOUSE: ', logMessages);
         }
     }
 
-    static game() {
+    static game(...logMessages: any[]) {
         if (_DEBUG.game) {
-            console.log('GAME: ', ...arguments);
+            console.log('GAME: ', logMessages);
         }
     }
 }
 
-class Mouse {
-    button = undefined;
-    isDown = false;
-    isUp = true;
-    press = undefined;
-    release = undefined;
-    move = undefined;
-    lastPos = new Point(0, 0);
-    pos = new Point(0, 0);
+export class Mouse {
+    button: number;
+    isDown: boolean = false;
+    isUp: boolean = true;
+    press: (e: MouseEvent) => void;
+    release: (e: MouseEvent) => void;
+    move: (ps: Point) => void;
+    lastPos: Point = new Point(0, 0);
+    pos: Point = new Point(0, 0);
 
-    _canvas;
+    _canvas: HTMLCanvasElement;
+    relative: boolean = false;
 
-    constructor(button, canvas, canvasRelative) {
+    constructor(button: number, canvas: HTMLCanvasElement, canvasRelative: boolean = false) {
         this.button = button;
         this._canvas = canvas;
-        this._relative = canvasRelative;
+        this.relative = canvasRelative;
 
         //Attach event listeners to canvas
         canvas.addEventListener(
@@ -81,8 +85,8 @@ class Mouse {
         );
     }
 
-    getMousePos(mouseEvent) {
-        if (this._relative){
+    getMousePos(mouseEvent: MouseEvent) {
+        if (this.relative){
             const rect = this._canvas.getBoundingClientRect(); // abs. size of element
             const scaleX = this._canvas.width / rect.width;   // relationship bitmap vs. element for X
             const scaleY = this._canvas.height / rect.height;  // relationship bitmap vs. element for Y
@@ -95,13 +99,13 @@ class Mouse {
         return new Point(mouseEvent.clientX - rect.left, mouseEvent.clientY - rect.top);
     }
 
-    setPos(pos) {
+    setPos(pos: Point) {
         this.lastPos = this.pos;
         this.pos = pos;
     }
 
     //The `downHandler`
-    downHandler(event) {
+    downHandler(event: MouseEvent) {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
@@ -119,7 +123,7 @@ class Mouse {
     };
 
     //The `upHandler`
-    upHandler(event) {
+    upHandler(event: MouseEvent) {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
@@ -137,7 +141,7 @@ class Mouse {
     };
 
     //The `moveHandler`
-    moveHandler(event) {
+    moveHandler(event: MouseEvent) {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
@@ -147,7 +151,7 @@ class Mouse {
     };
 }
 
-class Key {
+export class Key {
     code;
     isDown = false;
     isUp = true;
@@ -179,7 +183,7 @@ class Key {
         Debug.keyboard("Key Released", this.code);
     }
 
-    onClick(onPress, onRelease) {
+    onClick(onPress?: () => void, onRelease?: () => void) {
         if (onPress) {
             this.onPress.push(onPress);
         }
@@ -216,11 +220,11 @@ class Key {
 }
 
 //Extends Math library to have a range method
-Math.range = function (min, max) {
+Math['range'] = function (min: number, max: number) {
     return Math.floor((Math.random() * max) + min);
 }
 
-class KeyboardManager {
+export class KeyboardManager {
     static downKeys = {};
     static trackedKeys = {};
 
@@ -263,7 +267,7 @@ class KeyboardManager {
 // be triggered. The function will be called after it stops being called for
 // N milliseconds. If `immediate` is passed, trigger the function on the
 // leading edge, instead of the trailing.
-function debounce(func, wait, immediate) {
+export function debounce(func, wait, immediate) {
     var timeout;
     return function () {
         var context = this, args = arguments;
@@ -285,9 +289,10 @@ function debounce(func, wait, immediate) {
 
 // Returns a function that, after called N number of times will trigger the function. 
 // If `immediate` is passed, trigger the function on the leading edge, instead of the trailing.
-function invokeDebounce(func, invoked, immediate) {
-    const times = 0;
+export function invokeDebounce(func, invoked, immediate) {
+    let times = 0;
     return function () {
+        var context = this, args = arguments;
         var callNow = immediate && times === 0;
         times++;
 
@@ -298,7 +303,7 @@ function invokeDebounce(func, invoked, immediate) {
     };
 };
 
-class Timer {
+export class Timer {
     lastTime = 0;
     startTime = 0;
     totalTime = 0;
@@ -327,14 +332,3 @@ class Timer {
         return this.step;
     }
 }
-
-define(['./canvas'], function () {
-    return {
-        ID_CONST,
-        KEY_CONST,
-        Debug,
-        Mouse,
-        Key,
-        KeyboardManager
-    };
-});
