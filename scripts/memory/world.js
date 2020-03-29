@@ -57,9 +57,14 @@ define(['../shared/renderer', '../shared/objects', '../shared/world', '../shared
             }
         }
 
+        //Since lines and text are expensive to re-draw
+        //create a hidden canvas to render the lines onto
         var m_canvas = document.createElement('canvas');
         m_canvas.width = canvas.width;
         m_canvas.height = canvas.height;
+
+        const preRender = new PreRender(ID_CONST.Line, m_canvas);
+        renderObjects.push(preRender);
 
         //grid
         for(let i = 0; i <= gridSize; i++){
@@ -69,12 +74,12 @@ define(['../shared/renderer', '../shared/objects', '../shared/world', '../shared
             //Down
             const down = new Line(ID_CONST.Line, new Point(x, 0), x, canvas.height);
             down.setContext(m_canvas);
-            renderObjects.push(down);
+            // renderObjects.push(down);
 
             //Accross
             const accross = new Line(ID_CONST.Line, new Point(0, y), canvas.width, y);
             accross.setContext(m_canvas);
-            renderObjects.push(accross);
+            // renderObjects.push(accross);
         }
     
         this.setMap(renderObjects);
