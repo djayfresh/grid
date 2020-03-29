@@ -219,8 +219,13 @@ export class Key {
     };
 }
 
-//Extends Math library to have a range method
-Math['range'] = function (min: number, max: number) {
+declare global {
+    interface Math {
+        range: (min: number, max: number) => number;
+    }
+}
+
+Math.range.prototype = function (min: number, max: number) {
     return Math.floor((Math.random() * max) + min);
 }
 

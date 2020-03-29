@@ -4,14 +4,14 @@ import canvas = require('./canvas');
 export class Weapon {
     mouse: Mouse;
     rate = 500; //ms
-    range;
+    range: number;
     damage = 1;
     _lastShot = 0;
     ammo = 0;
     maxAmmo = 0;
     onFire: (weapon: Weapon, mouse: Mouse) => void = () => {};
 
-    constructor(onFire, options) {
+    constructor(onFire: (weapon: Weapon, mouse: Mouse) => void, options: Partial<Weapon>) {
         this.mouse = new Mouse(0, canvas.canvas);
 
         this.onFire = onFire || this.onFire;

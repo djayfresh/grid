@@ -1,4 +1,10 @@
-class Player extends Rectangle {
+import { Rectangle } from '../shared/objects';
+import { ID_CONST, Debug } from '../shared/utility';
+import { Point, Renderer } from '../shared/renderer';
+import { World } from '../shared/world';
+import { ZombieWorld } from './world';
+
+export class Player extends Rectangle {
     screen;
 
     constructor() {
@@ -9,7 +15,7 @@ class Player extends Rectangle {
         return new Point(((this.screen.x / 2) - (this.width / 2)), ((this.screen.y / 2) - (this.height / 2)))
     }
 
-    draw(ctx, world) {
+    draw(ctx: CanvasRenderingContext2D, world: World) {
         this.screen = world.screen;
 
         this.drawSticky(ctx, world, () => {
@@ -21,26 +27,24 @@ class Player extends Rectangle {
         })
     }
 
-    update(_dt, _world) {
+    update(_dt: number, _world: World) {
 
     }
 }
 
-class Bullet extends Rectangle {
+export class Bullet extends Rectangle {
     lifeSpan = 500;
     lifeTime = 0;
     damage = 1;
     force = { x: 0, y: 0 };
 
-    constructor(startPos, force, range, damage) {
+    constructor(startPos: Point, options: Partial<Bullet>) {
         super(ID_CONST.Bullet, '#8e8702', startPos.x, startPos.y, 3, 3);
 
-        this.force = force;
-        this.lifeSpan = range || this.lifeSpan;
-        this.damage = damage || this.damage;
+        Object.assign(this, options);
     }
 
-    update(dt, world) {
+    update(dt: number, world: World) {
         this.lifeTime += dt;
         const worldMove = world.getPosDelta();
 
@@ -53,7 +57,7 @@ class Bullet extends Rectangle {
     }
 }
 
-class Enemy extends Rectangle {
+export class Enemy extends Rectangle {
     speed = 1;
     health = 1;
     _renderer;
@@ -64,7 +68,7 @@ class Enemy extends Rectangle {
         this.health = health;
     }
 
-    update(dt, world){
+    update(_dt: number, world: ZombieWorld){
 
         const bullets = this._renderer.renderObjects.filter(ro => ro.id === ID_CONST.Bullet && !ro.isDeleted());
 
@@ -111,7 +115,7 @@ class Enemy extends Rectangle {
     }
 }
 
-class Spawner extends Rectangle {
+export class Spawner extends Rectangle {
     spawnPoint = new Point(0, 0);
     rate = 2000; //ms
     spawnCount = 0;
@@ -120,11 +124,10 @@ class Spawner extends Rectangle {
     maxSpawns = 10; //should get reset each day
     _renderer;
 
-    constructor(color, x, y, rate, enemySpeed){
+    constructor(color: string, x: number, y: number, options?: Partial<Spawner>){
         super(ID_CONST.Spawner, color, x, y, 20, 20);
 
-        this.rate = rate || this.rate;
-        this.enemySpeed = enemySpeed || this.enemySpeed;
+        Object.assign(this, options || {});
         this.spawnPoint = new Point(x + (this.width/2), y + (this.height/2));
     }
 
@@ -139,11 +142,11 @@ class Spawner extends Rectangle {
     }
 
     //only some objects need this, probably /shrug
-    setRenderer(renderer){
+    setRenderer(renderer: Renderer){
         this._renderer = renderer;
     }
 
-    spawn(dt, world) {
+    spawn(_dt: number, _world: World) {
         this.spawnCount++;
         const spawnPoint = this.spawnPoint;
         const enemyHealth = Math.range(1, 5);
@@ -153,12 +156,3 @@ class Spawner extends Rectangle {
         this._renderer.add(enemy);
     }
 }
-
-define(['../shared/renderer', '../shared/utility', '../shared/physics', '../shared/objects'], function (render) {
-    return {
-        Player,
-        Point: render.Point,
-        Bullet,
-        Spawner
-    }
-});
