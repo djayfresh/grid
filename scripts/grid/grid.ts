@@ -14,7 +14,7 @@ class Grid extends Game {
     constructor() {
         super();
 
-        this.StartWorld();
+        this.world = new GridWorld(this.gridSize, this.difficulty);
     }
 
     Resize() {
@@ -99,7 +99,7 @@ class Grid extends Game {
 
     StartWorld() {
         console.log("Start world", this.difficulty);
-        this.world = new GridWorld(this.gridSize, this.difficulty);
+        this.world.difficulty = this.difficulty;
 
         this.renderer.reset();
         this.renderer.add(...this.world.generateMap());
