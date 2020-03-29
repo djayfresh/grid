@@ -4,6 +4,7 @@ class Card extends Rectangle {
     currentState = 0;
 
     locked = false;
+    flipLocked = false;
 
     originalPos;
     originalBounds;
@@ -25,8 +26,8 @@ class Card extends Rectangle {
         this.halfFlipPos = new Point(this.originalPos.x + (this.originalBounds.x / 2), this.originalPos.y);
     }
 
-    Flip() {
-        if (this.locked) {
+    Flip(forced) {
+        if ((this.locked || this.flipLocked) && !forced) {
             return;
         }
 
@@ -41,6 +42,7 @@ class Card extends Rectangle {
 
     update(_dt, _world) {
         if (this.flipped && this.currentState < 1){
+            this.flipLocked = true;
             this.currentState += this.flipSpeed;
 
             if (this.currentState > 0.5){
@@ -51,6 +53,7 @@ class Card extends Rectangle {
             
         }
         else if (!this.flipped && this.currentState > 0){
+            this.flipLocked = true;
             this.currentState -= this.flipSpeed;
 
             if (this.currentState < 0.5){
@@ -61,6 +64,7 @@ class Card extends Rectangle {
         }
         else {
             this.currentState = this.flipped ? 1 : 0;
+            this.flipLocked = this.flipped;
 
             this.pos = this.originalPos;
             this.width = this.originalBounds.x;

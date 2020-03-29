@@ -4,6 +4,7 @@ define(['../shared/game', './world'], function(_game, world) {
         constructor(world) {
             super();
             this.world = world;
+            this.score = 100;
         }
 
         Resize() {
@@ -12,13 +13,15 @@ define(['../shared/game', './world'], function(_game, world) {
         }
 
         _frame(dt) {
+            super._frame(dt);
+            
             Debug.time('DT:', dt);
 
             let isMouseOverButon = false;
 
             //hover mouse
             this.cards.filter(c => !c.locked).forEach(ro => {
-                if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
+                if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height) && !ro.flipped) {
                     Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
 
                     //button highlight
@@ -46,8 +49,7 @@ define(['../shared/game', './world'], function(_game, world) {
                     this.cards.filter(c => !c.locked).forEach(ro => {
                         if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
                             Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
-        
-                            console.log("Flip card", ro);
+
                             ro.Flip();
                         }
                     });
@@ -55,18 +57,23 @@ define(['../shared/game', './world'], function(_game, world) {
                 this.wasDownLastFrame = false;
             }
 
-            const flippedCards = [...this.cards.filter(c => c.isFlipped)];
-            if (flippedCards.length == 2){
-
+            const flippedCards = this.cards.filter(c => c.isFlipped);
+            if (flippedCards.length >= 2){
                 if (flippedCards[0].cardColor === flippedCards[1].cardColor) {
                     console.log("Scored");
+                    this.score += 2;
                     flippedCards.forEach(c => c.Lock()); //prevent clicking again
+                }else {
+                    this.score -= flippedCards.length;
                 }
 
-                flippedCards.forEach(c => c.Flip());
+                flippedCards.forEach(c => c.Flip(true));
             }
     
-            this.renderer.draw(ctx, this.world);
+            if (this.cards.some(c => c.currentState !== 0 && c.currentState !== 1) || this.firstFrame) {
+                this.firstFrame = false;
+                this.renderer.draw(ctx, this.world);
+            }
             this.renderer.update(dt, this.world);
         }
     
@@ -78,7 +85,7 @@ define(['../shared/game', './world'], function(_game, world) {
             this.cards = this.renderer.renderObjects.filter(ro => ro.id === ID_CONST.Player);
             
             this.mouse = new Mouse(0, canvas, true);
-            canvas.style.cursor = 'pointer'; //change mouse pointer
+            this.firstFrame = true;
         }
 
         Restart() {

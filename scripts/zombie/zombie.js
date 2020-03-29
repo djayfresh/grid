@@ -35,6 +35,8 @@ define(['./world', '../shared/game', './weapons'], function(world, _game, weapon
         }
     
         _frame(dt) {
+            super._frame(dt);
+            
             Debug.time('DT:', dt);
             const worldMove = KeyboardManager.moves();
 

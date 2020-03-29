@@ -11,6 +11,8 @@ define(['../shared/game', './world'], function(_game, world) {
             this.world.setScreen(canvas.width, canvas.height);
         }
         _frame(dt) {
+            super._frame(dt);
+            
             Debug.time('DT:', dt);
 
             if (this.mouse.isDown){

@@ -3,6 +3,7 @@ class Game {
     _state = () => {}; 
     _initialized = false;
     _timer;
+    score = 0;
 
     constructor() {
         this.Run();
@@ -37,6 +38,10 @@ class Game {
 
     _frame(_dt) {
 
+        const $score = document.getElementById('game-score');
+        if (!!$score){
+            $score.innerText = this.score;
+        }
     }
 
     Resize() {
