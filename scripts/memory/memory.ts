@@ -70,7 +70,6 @@ class Memory extends Game {
         const flippedCards = this.cards.filter(c => c.isFlipped);
         if (flippedCards.length >= 2) {
             if (flippedCards[0].cardColor === flippedCards[1].cardColor) {
-                console.log("Scored");
                 this.score += 2;
                 flippedCards.forEach(c => c.Lock()); //prevent clicking again
             } else {

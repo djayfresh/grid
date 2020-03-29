@@ -42,15 +42,14 @@ var menuOptions = [
             memory.Play();
         },
         text: 'Memory'
-    },
-    {
-        id: LevelConst.HighScore,
-        action: () => {
-            lobby.Pause();
-            console.log("Play highscores")
-        },
-        text: 'Highscores'
     }
+    // {
+    //     id: LevelConst.HighScore,
+    //     action: () => {
+    //         console.log("Play highscores")
+    //     },
+    //     text: 'Highscores'
+    // }
 ]
 
 lobby.SetMenu(menuOptions);

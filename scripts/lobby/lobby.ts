@@ -130,8 +130,6 @@ export class Lobby extends Game {
         });
 
         this.renderer.add(new Rectangle(ID_CONST.Ground, '#000000', 0, 0, canvas.width, canvas.height));
-
-        console.log("World", this.renderer.renderObjects, Levels);
     }
 }
 
