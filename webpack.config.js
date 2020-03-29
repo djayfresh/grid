@@ -1,7 +1,7 @@
 module.exports = {
-    entry: "./scripts/main.ts",
+    entry: "./build/main.js",
     output: {
-        filename: "./dist/launcher.js",
+        filename: "./launcher.js",
     },
 
     // Enable sourcemaps for debugging webpack's output.
@@ -16,8 +16,8 @@ module.exports = {
         rules: [
             {
                 enforce: 'pre',
-                test: /\.tsx?$/,
-                loader: 'tslint',
+                test: /\.js$/,
+                loader: 'source-map-loader',
                 exclude: /(node_modules)/,
             },
             {

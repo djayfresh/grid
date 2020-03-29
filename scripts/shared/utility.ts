@@ -225,7 +225,7 @@ declare global {
     }
 }
 
-Math.range.prototype = function (min: number, max: number) {
+Math.range = function (min: number, max: number) {
     return Math.floor((Math.random() * max) + min);
 }
 
