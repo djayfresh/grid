@@ -1,9 +1,13 @@
-class GridPlayer extends Rectangle {
-    constructor(x, y, w, h) {
+import { Rectangle } from '../shared/objects';
+import { ID_CONST, Debug } from '../shared/utility';
+import { World } from '../shared/world';
+
+export class GridPlayer extends Rectangle {
+    constructor(x: number, y: number, w: number, h: number) {
         super(ID_CONST.Player, '#004600', x, y, w, h);
     }
 
-    draw(ctx, world) {
+    draw(ctx: CanvasRenderingContext2D, world: World) {
         this.drawSticky(ctx, world, () => {
             const posX = this.pos.x;
             const posY = this.pos.y;
@@ -14,14 +18,7 @@ class GridPlayer extends Rectangle {
         })
     }
 
-    update(_dt, _world) {
-
+    update() {
+        
     }
 }
-
-define(['../shared/renderer', '../shared/utility', '../shared/physics', '../shared/objects'], function (render) {
-    return {
-        GridPlayer,
-        Point: render.Point
-    }
-});

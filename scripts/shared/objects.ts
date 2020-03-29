@@ -1,10 +1,11 @@
 import { RenderObject, Point } from './renderer';
 import { Physics } from './physics';
 import { Debug } from './utility';
+import { World } from './world';
 
 export class Rectangle extends RenderObject {
     color = '';
-    constructor(id, color, x, y, width, height) {
+    constructor(id: number, color: string, x: number, y: number, width: number, height: number) {
         super(id, x, y);
 
         this.color = color;
@@ -15,7 +16,7 @@ export class Rectangle extends RenderObject {
         return new Point(this.pos.x + (this.width/2), this.pos.y + (this.height/2));
     }
 
-    set width(value) {
+    set width(value: number) {
         this.bounds.w = value;
     }
 
@@ -23,7 +24,7 @@ export class Rectangle extends RenderObject {
         return this.bounds.w;
     }
 
-    set height(value) {
+    set height(value: number) {
         this.bounds.h = value;
     }
 
@@ -31,12 +32,12 @@ export class Rectangle extends RenderObject {
         return this.bounds.h;
     }
 
-    draw(ctx, _world) {
+    draw(ctx: CanvasRenderingContext2D, _world: World) {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
     }
 
-    checkViewVisibility(world) {
+    checkViewVisibility(world: World) {
         this._isVisible = Physics.boxInBounds(this.pos, this.width, this.height, world);
 
         if (!this._isVisible) {
@@ -44,7 +45,7 @@ export class Rectangle extends RenderObject {
         }
     }
 
-    update(_dt, world) {
+    update(_dt: number, world: World) {
         this.checkViewVisibility(world);
     }
 }
@@ -84,7 +85,7 @@ export class Text extends RenderObject {
 export class Line extends RenderObject {
     color = '#000000';
     bounds = { x: 0, y: 0 }
-    constructor(id: number, pos: Point, pos2: Point, color: string) {
+    constructor(id: number, pos: Point, pos2: Point, color?: string) {
         super(id);
 
         this.pos = pos;
