@@ -5,7 +5,7 @@ export class Game {
     renderer = new Renderer();
     _state = () => {}; 
     _initialized = false;
-    _timer;
+    _timer: Timer;
     score = 0;
 
     constructor() {

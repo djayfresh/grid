@@ -1,24 +1,27 @@
 import { Game } from '../shared/game';
 import { canvas, ctx } from '../shared/canvas';
-import { World } from '../shared/world';
 import { GridWorld, world } from './world';
-import { Debug, Mouse } from '../shared/utility';
+import { Debug, Mouse, ID_CONST } from '../shared/utility';
+import { Point } from '../shared/renderer';
 
 class Grid extends Game {
     world: GridWorld;
     mouse: Mouse;
     wasDownLastFrame: boolean;
-    
-    constructor(world: GridWorld) {
+    gridSize: number = 6;
+    difficulty: number = 1;
+
+    constructor() {
         super();
-        this.world = world;
+
+        this.StartWorld();
     }
 
     Resize() {
         canvas.height = canvas.width;
         this.world.setScreen(canvas.width, canvas.height);
     }
-    
+
     _frame(dt) {
         super._frame(dt);
 
@@ -29,8 +32,17 @@ class Grid extends Game {
         }
         else {
             if (this.wasDownLastFrame) {
-                //temp
-                this.world.player.pos.x += this.world.squareSize.x;
+                const pos = this.world.board.posToBoard(this.mouse.pos);
+                const player = this.world.board.posToBoard(this.world.player.pos);
+
+                const moveX = pos.x - player.x;
+                const moveY = pos.y - player.y;
+
+                Debug.mouse("Move player", player, pos, moveX, moveY);
+
+                if (1 >= moveX && moveX >= -1 && 1 >= moveY && moveY >= -1) {
+                    this.movePlayer(player.x, player.y, moveX, moveY);
+                }
             }
             this.wasDownLastFrame = false;
         }
@@ -39,14 +51,58 @@ class Grid extends Game {
         this.renderer.update(dt, this.world);
     }
 
+    movePlayer(playerX: number, playerY: number, moveX: number, moveY: number) {
+        const movement = this.world.board.getMove(new Point(playerX, playerY), moveX, moveY);
+        if (movement) {
+            const move = () => this.world.board.move(this.world.player, moveX, moveY, movement);
+
+            switch (movement.destination) {
+                case ID_CONST.Wall:
+                    //no move
+                    break;
+                case ID_CONST.Enemy:
+                    Debug.log("Lost Game");
+                    this.StartWorld();
+                    this.score += 1;
+                    break;
+                case ID_CONST.Flag:
+                    move();
+                    Debug.log("Win Game");
+                    this.score += 1;
+                    this.difficulty += 1;
+                    this.StartWorld();
+                    break;
+                case ID_CONST.PowerUp:
+                    //Enable PowerUP
+                    Debug.log("Power Up");
+                    this.score += 1;
+                    this.difficulty - 2;
+                    move();
+                    break;
+                default:
+                    this.score += 1;
+                    move();
+                    break;
+            }
+        }
+    }
+
     _init() {
         super._init();
 
         this.renderer.reset();
-        this.renderer.add(...this.world.generateMap())
+        this.renderer.add(...this.world.generateMap());
 
         this.mouse = new Mouse(0, canvas, true);
         canvas.style.cursor = 'pointer'; //change mouse pointer
+    }
+
+    StartWorld() {
+        console.log("Start world", this.difficulty);
+        this.world = new GridWorld(this.gridSize, this.difficulty);
+
+        this.renderer.reset();
+        this.renderer.add(...this.world.generateMap());
     }
 
     Restart() {
@@ -59,4 +115,4 @@ class Grid extends Game {
 }
 
 
-export var grid = new Grid(world);
+export var grid = new Grid();

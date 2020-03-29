@@ -4,63 +4,76 @@ import { Rectangle, Line } from '../shared/objects';
 import { canvas } from '../shared/canvas';
 import { ID_CONST } from '../shared/utility';
 import { GridPlayer } from './objects';
+import { Board } from './board';
 
 export class GridWorld extends World {
-    squareSize: Point;
-    gridSize: number;
+    board: Board;
+    difficulty: number;
 
-    constructor(gridSize: number) {
+    constructor(gridSize: number, difficulty: number) {
         super(1);
 
-        this.gridSize = gridSize;
-        const squareX = (canvas.width / this.gridSize);
-        const squareY = (canvas.height / this.gridSize);
-
-        this.squareSize = new Point(squareX, squareY);
-    }
-
-    gridToPos(x: number, y: number) {
-        return new Point(x * this.squareSize.x, y * this.squareSize.y);
+        this.difficulty = difficulty;
+        this.board = new Board(gridSize);
     }
 
     generateMap() {
         const renderObjects = [];
 
-        const playerPos = this.gridToPos(3, 2);
-        const player = new GridPlayer(playerPos.x, playerPos.y, this.squareSize.x, this.squareSize.y);
-        renderObjects.push(player);
-
-        //Enemy
-        renderObjects.push(new Rectangle(ID_CONST.Enemy, '#FF0000', 1, 1, this.squareSize.x, this.squareSize.y)); //Enemy
-
-        //Since lines and text are expensive to re-draw
-        //create a hidden canvas to render the lines onto
-        var m_canvas = document.createElement('canvas');
-        m_canvas.width = canvas.width;
-        m_canvas.height = canvas.height;
-
-        const preRender = new PreRender(ID_CONST.Grid, m_canvas);
-        renderObjects.push(preRender);
+        renderObjects.push(this.board.createGrid());
         
-        //grid
-        for(let i = 0; i <= this.gridSize; i++){
-            let x = this.squareSize.x * i;
-            let y = this.squareSize.y * i;
+        const map = this.board.generateMap((map) => {
+            
+            this.board.insert(map, { id: ID_CONST.Player }); // player randomly on the map
+            this.board.insert(map, { id: ID_CONST.Flag }); // flag randomly on the map
 
-            //Down
-            const down = new Line(ID_CONST.Grid, new Point(x, 0), new Point(x, canvas.height));
-            down.setContext(m_canvas);
+            if (this.difficulty > 10 && Math.random() > 0.75) {
+                this.board.insert(map, { id: ID_CONST.PowerUp });
+            }
 
-            //Accross
-            const accross = new Line(ID_CONST.Grid, new Point(0, y), new Point(canvas.width, y));
-            accross.setContext(m_canvas);
+            for (let i = 0; i < this.difficulty; i++) {
+                this.board.insert(map, { id: ID_CONST.Enemy }); // enemy randomly on the map
+            }
+        });
+
+        const squareX = this.board.squareSize.x;
+        const squareY = this.board.squareSize.y;
+        
+        for (let i = 0; i < map.length; i++) {
+            for (let j = 0; j < map.length; j++) {
+                const id = map[i][j];
+                if (id === ID_CONST.Player){
+                    const playerPos = this.board.boardToPos(i, j);
+                    const player = new GridPlayer(playerPos.x, playerPos.y, squareX, squareY);
+                    renderObjects.push(player);
+                    this.setPlayer(player);
+                }
+                else if (id === ID_CONST.Enemy) {
+                    const pos = this.board.boardToPos(i, j);
+                    renderObjects.push(new Rectangle(ID_CONST.Enemy, this.board.getColorForId(ID_CONST.Enemy), pos.x, pos.y, squareX, squareY));
+                }
+                else if (id === ID_CONST.Flag) {
+                    const pos = this.board.boardToPos(i, j);
+                    renderObjects.push(new Rectangle(ID_CONST.Flag, this.board.getColorForId(ID_CONST.Flag), pos.x, pos.y, squareX, squareY));
+                }
+                else if (id === ID_CONST.PowerUp) {
+                    const pos = this.board.boardToPos(i, j);
+                    renderObjects.push(new Rectangle(ID_CONST.PowerUp, this.board.getColorForId(ID_CONST.PowerUp), pos.x, pos.y, squareX, squareY));
+                }
+                else if (id === ID_CONST.Wall) {
+                    const pos = this.board.boardToPos(i, j);
+                    renderObjects.push(new Rectangle(ID_CONST.Wall, this.board.getColorForId(ID_CONST.Wall), pos.x, pos.y, squareX, squareY));
+                }
+            }
+            
         }
 
+
+
         this.setMap(renderObjects);
-        this.setPlayer(player);
 
         return renderObjects;
     }
 };
 
-export var world = new GridWorld(6);
+export var world = new GridWorld(6, 1);

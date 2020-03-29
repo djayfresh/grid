@@ -11,8 +11,8 @@ export class MemoryWorld extends GridWorld {
         const renderObjects: RenderObject[] = [];
 
         const addCard = (color: string, x: number, y: number) => {
-            const pos = world.gridToPos(x, y);
-            const card = new Card(color, pos.x, pos.y, this.squareSize.x, this.squareSize.y);
+            const pos = this.board.boardToPos(x, y);
+            const card = new Card(color, pos.x, pos.y, this.board.squareSize.x, this.board.squareSize.y);
             renderObjects.push(card);
         }
 
@@ -30,7 +30,7 @@ export class MemoryWorld extends GridWorld {
         const getColor = () => {
             if (!colorList) {
                 colorList = {};
-                const numColors = (this.gridSize * this.gridSize) / 2; 
+                const numColors = (this.board.gridSize * this.board.gridSize) / 2; 
                 for (let i = 0; i < numColors; i++) {
                     let color = randomColor();
                     colorList[color] = 0;
@@ -44,37 +44,13 @@ export class MemoryWorld extends GridWorld {
             return ranColor;
         }
 
-        
-        for(let i = 0; i < this.gridSize; i++){
-            for(let j = 0; j < this.gridSize; j++){
+        for(let i = 0; i < this.board.gridSize; i++){
+            for(let j = 0; j < this.board.gridSize; j++){
                 addCard(getColor(), j, i);
             }
         }
 
-        //Since lines and text are expensive to re-draw
-        //create a hidden canvas to render the lines onto
-        var m_canvas = document.createElement('canvas');
-        m_canvas.width = canvas.width;
-        m_canvas.height = canvas.height;
-
-        const preRender = new PreRender(ID_CONST.Grid, m_canvas);
-        renderObjects.push(preRender);
-
-        //grid
-        for(let i = 0; i <= this.gridSize; i++){
-            let x = this.squareSize.x * i;
-            let y = this.squareSize.y * i;
-
-            //Down
-            const down = new Line(ID_CONST.Grid, new Point(x, 0), new Point(x, canvas.height));
-            down.setContext(m_canvas);
-            // renderObjects.push(down);
-
-            //Accross
-            const accross = new Line(ID_CONST.Grid, new Point(0, y), new Point(canvas.width, y));
-            accross.setContext(m_canvas);
-            // renderObjects.push(accross);
-        }
+        renderObjects.push(this.board.createGrid());
     
         this.setMap(renderObjects);
 
@@ -82,4 +58,4 @@ export class MemoryWorld extends GridWorld {
     }
 }
 
-export var world = new MemoryWorld(6);
+export var world = new MemoryWorld(6, 0);

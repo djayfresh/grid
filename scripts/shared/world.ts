@@ -63,7 +63,8 @@ export class World {
         return new Point(a.x - this.pos.x, a.y - this.pos.y);
     }
 
-    generateMap() {
+    generateMap(): RenderObject[] {
         //placeholder
+        return [];
     }
 }
