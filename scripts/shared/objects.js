@@ -105,18 +105,6 @@ class Line extends RenderObject {
     }
 }
 
-class PreRender extends RenderObject {
-    constructor(id, canvas) {
-        super(id, 0, 0);
-        
-        this.canvas = canvas;
-    }
-
-    draw(ctx) {
-        ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
-    }
-}
-
 define(['./renderer', './utility', './physics'], function (render) {
     return {
         Rectangle,
