@@ -85,7 +85,8 @@ export class Mouse {
         );
         
         canvas.addEventListener("touchstart", this.downHandler.bind(this));
-        canvas.addEventListener("touchend", this.upHandler.bind(this), false);
+        canvas.addEventListener("touchend", this.upHandler.bind(this));
+        canvas.addEventListener("touchmove", this.moveHandler.bind(this));
     }
 
     getMousePos(mouseEvent: MouseEvent | TouchEvent) {
