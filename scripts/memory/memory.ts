@@ -1,4 +1,4 @@
-import { world, MemoryWorld } from './world';
+import { MemoryWorld } from './world';
 import { Game } from '../shared/game';
 import { GameCanvas } from '../shared/canvas';
 import { Debug, ID_CONST, Mouse } from '../shared/utility';
@@ -12,14 +12,16 @@ class Memory extends Game {
     wasDownLastFrame: boolean;
     firstFrame: boolean;
 
-    constructor(world: MemoryWorld) {
+    constructor() {
         super();
-        this.world = world;
     }
 
     Resize() {
         GameCanvas.height = GameCanvas.width;
-        this.world.setScreen(GameCanvas.width, GameCanvas.height);
+        
+        if (this.world) {
+            this.world.setScreen(GameCanvas.width, GameCanvas.height);
+        }
     }
 
     _frame(dt) {
@@ -83,6 +85,11 @@ class Memory extends Game {
     _init() {
         super._init();
 
+        if (!this._initialized){
+            this.world = new MemoryWorld(6, 0);
+            this.mouse = new Mouse(0, GameCanvas.canvas, true);
+        }
+
         this.score = 100;
 
         this.renderer.reset();
@@ -90,7 +97,6 @@ class Memory extends Game {
 
         this.cards = this.renderer.renderObjects.filter(ro => ro.id === ID_CONST.Player) as Card[];
 
-        this.mouse = new Mouse(0, GameCanvas.canvas, true);
         this.firstFrame = true;
     }
 
@@ -103,5 +109,4 @@ class Memory extends Game {
     }
 }
 
-
-export var memory = new Memory(world);
+export var memory = new Memory();

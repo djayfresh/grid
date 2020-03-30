@@ -2,10 +2,12 @@ import { GridWorld } from '../grid/world';
 import { RenderObject } from '../shared/renderer';
 import { Card } from './objects';
 import { Color } from '../shared/colors';
+import { Board } from '../grid/board';
 
 export class MemoryWorld extends GridWorld {
 
     generateMap(): RenderObject[] {
+        this.board = new Board(this.gridSize);
         const renderObjects: RenderObject[] = [];
 
         const addCard = (color: string, x: number, y: number) => {
@@ -19,7 +21,7 @@ export class MemoryWorld extends GridWorld {
         const getColor = () => {
             if (!colorList) {
                 colorList = {};
-                const numColors = (this.board.gridSize * this.board.gridSize) / 2; 
+                const numColors = (this.gridSize * this.gridSize) / 2; 
                 for (let i = 0; i < numColors; i++) {
                     let color = Color.randomColor();
                     colorList[color] = 0;
@@ -33,8 +35,8 @@ export class MemoryWorld extends GridWorld {
             return ranColor;
         }
 
-        for(let i = 0; i < this.board.gridSize; i++){
-            for(let j = 0; j < this.board.gridSize; j++){
+        for(let i = 0; i < this.gridSize; i++){
+            for(let j = 0; j < this.gridSize; j++){
                 addCard(getColor(), j, i);
             }
         }
@@ -46,5 +48,3 @@ export class MemoryWorld extends GridWorld {
         return renderObjects;
     }
 }
-
-export var world = new MemoryWorld(6, 0);

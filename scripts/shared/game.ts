@@ -92,7 +92,11 @@ export class Game {
             
             const onResize = debounce(() => {
                 this.Resize();
-            }, 200, false);
+
+                if (this.focusPaused){
+                    this._play();
+                }
+            }, 200, true);
             window.addEventListener('resize', onResize, false);
 
             window.addEventListener('focus', () => {

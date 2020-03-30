@@ -1,5 +1,5 @@
 import { Game } from '../shared/game';
-import { ZombieWorld, world } from './world';
+import { ZombieWorld } from './world';
 import { Weapon } from '../shared/weapons';
 import { Mouse, Debug, KeyboardManager, KEY_CONST, ID_CONST } from '../shared/utility';
 import { GameCanvas } from '../shared/canvas';
@@ -8,6 +8,7 @@ import { Point } from '../shared/renderer';
 import { Bullet } from './objects';
 import { Rectangle } from '../shared/objects';
 import { GenerateGuns } from './weapons';
+import { LevelConst } from '../lobby/lobby';
 
 class ZombieGame extends Game {
     world: ZombieWorld;
@@ -17,12 +18,8 @@ class ZombieGame extends Game {
     weapons: Weapon[];
     weaponSwitched = false;
 
-    constructor(world: ZombieWorld) {
+    constructor() {
         super();
-
-        this.world = world;
-
-        this.Resize();
     }
 
     SwitchWeapons() {
@@ -40,6 +37,7 @@ class ZombieGame extends Game {
     Resize() {
         GameCanvas.height = GameCanvas.width;
         this.world.setScreen(GameCanvas.width, GameCanvas.height);
+        this.world.setCanvas(GameCanvas.canvas.clientWidth, GameCanvas.canvas.clientHeight);
     }
 
     _frame(dt) {
@@ -106,6 +104,7 @@ class ZombieGame extends Game {
 
     _init() {
         super._init();
+        this.world = new ZombieWorld(LevelConst.Zombie);
 
         const guns = GenerateGuns();
         this.weapons = Object.keys(guns).map(k => guns[k]);
@@ -135,4 +134,4 @@ class ZombieGame extends Game {
     }
 }
 
-export var zombie = new ZombieGame(world);
+export var zombie = new ZombieGame();

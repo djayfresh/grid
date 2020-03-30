@@ -6,20 +6,23 @@ import { Board } from './board';
 import { RenderObject, Point } from '../shared/renderer';
 import { GameCanvas } from '../shared/canvas';
 import { Colors } from '../shared/colors';
+import { LevelConst } from '../lobby/lobby';
 
 export class GridWorld extends World {
     board: Board;
     difficulty: number;
+    gridSize: number;
 
     constructor(gridSize: number, difficulty: number) {
-        super(1);
+        super(LevelConst.Grid);
 
+        this.gridSize = gridSize;
         this.difficulty = difficulty;
-        this.board = new Board(gridSize);
     }
 
     generateMap() {
         const renderObjects = [];
+        this.board = new Board(this.gridSize);
 
         renderObjects.push(this.board.createGrid());
         

@@ -17,13 +17,13 @@ class Grid extends Game {
 
     constructor() {
         super();
-
-        this.world = new GridWorld(this.gridSize, this.difficulty);
     }
 
     Resize() {
         GameCanvas.height = GameCanvas.width;
-        this.world.setScreen(GameCanvas.width, GameCanvas.height);
+        if (this.world) {
+            this.world.setScreen(GameCanvas.width, GameCanvas.height);
+        }
     }
 
     _frame(dt) {
@@ -33,14 +33,12 @@ class Grid extends Game {
 
         if (this.currentDelay >= this.roundDelay && this.hasRoundStarted === false){
             this.hasRoundStarted = true;
-            console.log("Round started", this.currentDelay, this.roundDelay);
             this.StartRound();
         }
 
         if(this.hasRoundStarted){
             this.checkForPlayerMove();
         }
-
 
         this.renderer.draw(GameCanvas.ctx, this.world);
         this.renderer.update(dt, this.world);
@@ -110,15 +108,17 @@ class Grid extends Game {
     _init() {
         super._init();
 
+        if (!this._initialized) {
+            this.world = new GridWorld(this.gridSize, this.difficulty);
+            this.mouse = new Mouse(0, GameCanvas.canvas, true);
+        }
+
         this.currentDelay = 0;
         this.hasRoundStarted = false;
 
         this.renderer.reset();
         this.renderer.add(...this.world.getRoundStart(1));
 
-        if (!this._initialized) {
-            this.mouse = new Mouse(0, GameCanvas.canvas, true);
-        }
         GameCanvas.canvas.style.cursor = 'pointer'; //change mouse pointer
     }
 

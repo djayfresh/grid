@@ -22,14 +22,15 @@ export class Lobby extends Game {
     mouse: Mouse;
     wasDownLastFrame: boolean;
 
-    constructor(world: World) {
+    constructor() {
         super();
-        this.world = world;
     }
 
     Resize() {
         GameCanvas.height = GameCanvas.width;
-        this.world.setScreen(GameCanvas.width, GameCanvas.height);
+        if (this.world){
+            this.world.setScreen(GameCanvas.width, GameCanvas.height);
+        }
     }
 
     SetMenu(menuOptions: MenuOption[]) {
@@ -97,13 +98,14 @@ export class Lobby extends Game {
         super._init();
         this.score = 0;
 
+        if (!this._initialized) {
+            this.world = new World(0);
+            this.mouse = new Mouse(0, GameCanvas.canvas, true);
+        }
+
         this.renderer.reset();
         this._buildLobbyButtons();
         this.wasDownLastFrame = false;
-
-        if (!this._initialized) {
-            this.mouse = new Mouse(0, GameCanvas.canvas, true);
-        }
     }
 
     Restart() {
@@ -168,4 +170,4 @@ export class Lobby extends Game {
 }
 
 
-export var lobby = new Lobby(new World(0));
+export var lobby = new Lobby();

@@ -27,6 +27,10 @@ export class World {
         this.player = player;
     }
 
+    setCanvas(x: number, y: number){
+        this.canvas = {x, y};
+    }
+
     setScreen(x: number, y: number) {
         this.screen = { x, y };
     }
