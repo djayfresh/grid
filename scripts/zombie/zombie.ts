@@ -114,12 +114,14 @@ class ZombieGame extends Game {
 
         canvas.style.cursor = 'default';
 
-        KeyboardManager.track(KEY_CONST.down);
-        KeyboardManager.track(KEY_CONST.up);
-        KeyboardManager.track(KEY_CONST.left);
-        KeyboardManager.track(KEY_CONST.right);
-        KeyboardManager.track(KEY_CONST.x);
-        KeyboardManager.track(KEY_CONST.r);
+        if (!this._initialized){
+            KeyboardManager.track(KEY_CONST.down);
+            KeyboardManager.track(KEY_CONST.up);
+            KeyboardManager.track(KEY_CONST.left);
+            KeyboardManager.track(KEY_CONST.right);
+            KeyboardManager.track(KEY_CONST.x);
+            KeyboardManager.track(KEY_CONST.r);
+        }
     }
 
     Restart() {

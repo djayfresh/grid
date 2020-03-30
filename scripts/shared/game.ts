@@ -1,5 +1,6 @@
 import { Renderer } from './renderer';
-import { Timer, KEY_CONST, Key, debounce } from './utility';
+import { Timer, KEY_CONST, Key, debounce, Mouse } from './utility';
+import { canvas } from './canvas';
 
 export class Game {
     renderer = new Renderer();
@@ -8,6 +9,7 @@ export class Game {
     _timer: Timer;
     score = 0;
     focusPaused: boolean = false;
+    mouse: Mouse;
 
     constructor() {
         this.Run();
@@ -54,9 +56,10 @@ export class Game {
 
     Setup() {
         if (!this._initialized){
-            this._initialized = true;
             this.Resize();
             this._init();
+
+            this._initialized = true;
         }
     }
 
@@ -68,26 +71,30 @@ export class Game {
         this._timer = new Timer();
         this._timer.Start();
 
-        new Key(KEY_CONST.pause).onClick(() => {    
-            if (this._state !== this._play) {
-                this._state = this._play;
-            }
-            else {
-                this._state = this._pause;
-            }
-        });
-
-        new Key(KEY_CONST.r).onClick(() => {
-            this.Restart();
-        });
-
         //Don't rebind key events
-        if (this._initialized) {
-            window.addEventListener('resize', () => {
-                debounce(() => {
-                    this.Resize();
-                }, 200, false)
-            }, false);
+        if (!this._initialized) {
+
+            this.mouse = new Mouse(0, canvas);
+
+            new Key(KEY_CONST.pause).onClick(() => {    
+                if (this._state !== this._play) {
+                    this._state = this._play;
+                }
+                else {
+                    this._state = this._pause;
+                }
+            });
+    
+            const onReset = debounce(() => {
+                console.log("Restart", this);
+                this.Restart();
+            }, 500, true);
+            new Key(KEY_CONST.r).onClick(onReset);
+            
+            const onResize = debounce(() => {
+                this.Resize();
+            }, 200, false);
+            window.addEventListener('resize', onResize, false);
 
             window.addEventListener('focus', () => {
                 if (this.focusPaused && this._state == this._pause){

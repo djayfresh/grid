@@ -81,8 +81,8 @@ class Grid extends Game {
                     break;
                 case ID_CONST.Enemy:
                     Debug.log("Lost Game");
-                    this.NextRound();
                     this.score += 1;
+                    this.NextRound();
                     break;
                 case ID_CONST.Flag:
                     move();
@@ -96,8 +96,7 @@ class Grid extends Game {
                     Debug.log("Power Up");
                     this.renderer.remove(ID_CONST.PowerUp); //player picked up
 
-                    this.score += 1;
-                    this.difficulty - 2;
+                    this.score -= 10;
                     move();
                     break;
                 default:
@@ -117,7 +116,9 @@ class Grid extends Game {
         this.renderer.reset();
         this.renderer.add(...this.world.getRoundStart(1));
 
-        this.mouse = new Mouse(0, canvas, true);
+        if (!this._initialized) {
+            this.mouse = new Mouse(0, canvas, true);
+        }
         canvas.style.cursor = 'pointer'; //change mouse pointer
     }
 

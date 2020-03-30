@@ -45,6 +45,8 @@ export class Lobby extends Game {
     }
 
     _frame(dt: number) {
+        super._frame(dt);
+        
         Debug.time('DT:', dt);
 
         let isMouseOverButon = false;
@@ -93,12 +95,15 @@ export class Lobby extends Game {
 
     _init() {
         super._init();
+        this.score = 0;
 
         this.renderer.reset();
         this._buildLobbyButtons();
         this.wasDownLastFrame = false;
 
-        this.mouse = new Mouse(0, canvas, true);
+        if (!this._initialized) {
+            this.mouse = new Mouse(0, canvas, true);
+        }
     }
 
     Restart() {

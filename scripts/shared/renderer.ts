@@ -123,7 +123,13 @@ export class Renderer {
 
     remove(id: number) {
         this.renderObjects = this.renderObjects.filter(ro => ro.id !== id);
-    };
+    }
+
+    _removeCanvasObjects() {
+        this.renderObjects.filter(ro => !!ro.canvas).forEach(ro => {
+            document.removeChild(ro.canvas);
+        });
+    }
 
     reset() {
         this.renderObjects = [];
