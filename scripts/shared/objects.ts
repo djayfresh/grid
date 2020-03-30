@@ -2,6 +2,7 @@ import { RenderObject, Point } from './renderer';
 import { Physics } from './physics';
 import { Debug } from './utility';
 import { World } from './world';
+import { Colors } from './colors';
 
 export class Rectangle extends RenderObject {
     color = '';
@@ -54,7 +55,7 @@ export class RenderText extends RenderObject {
     text: string = '';
     font: string = 'Arial';
     size: string = '30px';
-    color: string = '#000000';
+    color: string = Colors.Black;
     centered: boolean = false;
 
     constructor(id: number, options: Partial<RenderText>) {
@@ -81,7 +82,7 @@ export class RenderText extends RenderObject {
 }
 
 export class Line extends RenderObject {
-    color = '#000000';
+    color: string = Colors.Black;
     bounds = { x: 0, y: 0 }
     constructor(id: number, pos: Point, pos2: Point, color?: string) {
         super(id);

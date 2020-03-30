@@ -3,12 +3,13 @@ import { ID_CONST, Debug } from '../shared/utility';
 import { Point, Renderer } from '../shared/renderer';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
+import { Colors } from '../shared/colors';
 
 export class Player extends Rectangle {
     screen: {x: number, y: number};
 
     constructor() {
-        super(ID_CONST.Player, '#004600', 0, 0, 10, 10);
+        super(ID_CONST.Player, Colors.Player, 0, 0, 10, 10);
     }
 
     get actualPos() {
@@ -39,7 +40,7 @@ export class Bullet extends Rectangle {
     force = { x: 0, y: 0 };
 
     constructor(startPos: Point, options: Partial<Bullet>) {
-        super(ID_CONST.Bullet, '#8e8702', startPos.x, startPos.y, 3, 3);
+        super(ID_CONST.Bullet, Colors.Bullet, startPos.x, startPos.y, 3, 3);
 
         Object.assign(this, options);
     }
@@ -150,7 +151,7 @@ export class Spawner extends Rectangle {
         this.spawnCount++;
         const spawnPoint = this.spawnPoint;
         const enemyHealth = Math.range(1, 5);
-        const enemy = new Enemy('#820027', spawnPoint.x, spawnPoint.y, (this.enemySpeed / enemyHealth) + 0.5, enemyHealth);
+        const enemy = new Enemy(Colors.Enemy, spawnPoint.x, spawnPoint.y, (this.enemySpeed / enemyHealth) + 0.5, enemyHealth);
         Debug.game('Spawn ', spawnPoint, "Enemy ", enemy);
 
         this._renderer.add(enemy);

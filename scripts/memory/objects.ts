@@ -2,6 +2,7 @@ import { Rectangle } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Point } from '../shared/renderer';
 import { Physics } from '../shared/physics';
+import { Colors } from '../shared/colors';
 
 export class Card extends Rectangle {
     flipSpeed = 0.03;
@@ -24,7 +25,7 @@ export class Card extends Rectangle {
     }
 
     constructor(cardColor, x, y, w, h) {
-        super(ID_CONST.Player, '#002200', x, y, w, h);
+        super(ID_CONST.Player, Colors.Player, x, y, w, h);
 
         this.originalPos = new Point(x, y);
         this.originalBounds = new Point(w, h);
@@ -44,7 +45,7 @@ export class Card extends Rectangle {
 
     Lock() {
         this.Flip();
-        this.originalColor = '#FFFFFF';
+        this.originalColor = Colors.White;
         this.locked = true;
     }
 

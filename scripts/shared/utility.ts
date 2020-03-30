@@ -330,9 +330,10 @@ export class Timer {
     }
 
     Step() {
-        this.step = Date.now() - this.lastTime;
+        const now = Date.now();
+        this.step = now - this.lastTime;
         this.totalTime += this.step;
-        this.lastTime = this.totalTime;
+        this.lastTime = now;
 
         return this.step;
     }

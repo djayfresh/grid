@@ -67,11 +67,18 @@ export class RenderObject {
     }
 }
 
-export class PreRender extends RenderObject {
+export class CanvasRender extends RenderObject {
     constructor(id: number, canvas: HTMLCanvasElement) {
         super(id, 0, 0);
         
         this.canvas = canvas;
+    }
+
+    static createCanvas(width: number, height: number) {
+        var m_canvas = document.createElement('canvas');
+        m_canvas.width = width;
+        m_canvas.height = height;
+        return m_canvas;
     }
 
     draw(ctx: CanvasRenderingContext2D) {

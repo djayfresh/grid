@@ -1,9 +1,7 @@
 import { GridWorld } from '../grid/world';
-import { canvas } from '../shared/canvas';
-import { ID_CONST } from '../shared/utility';
-import { PreRender, Point, RenderObject } from '../shared/renderer';
-import { Line } from '../shared/objects';
+import { RenderObject } from '../shared/renderer';
 import { Card } from './objects';
+import { Color } from '../shared/colors';
 
 export class MemoryWorld extends GridWorld {
 
@@ -18,21 +16,12 @@ export class MemoryWorld extends GridWorld {
 
         let colorList: {[color: string]: number};
 
-        const randomColor = () => {
-            var letters = '0123456789ABCDEF';
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
         const getColor = () => {
             if (!colorList) {
                 colorList = {};
                 const numColors = (this.board.gridSize * this.board.gridSize) / 2; 
                 for (let i = 0; i < numColors; i++) {
-                    let color = randomColor();
+                    let color = Color.randomColor();
                     colorList[color] = 0;
                 }
             }

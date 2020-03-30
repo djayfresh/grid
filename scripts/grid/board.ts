@@ -1,7 +1,8 @@
 import { ID_CONST, Debug } from '../shared/utility';
-import { Point, RenderObject, PreRender } from '../shared/renderer';
+import { Point, RenderObject, CanvasRender } from '../shared/renderer';
 import { canvas } from '../shared/canvas';
 import { Line } from '../shared/objects';
+import { Colors } from '../shared/colors';
 
 export class Board {
     squareSize: Point;
@@ -31,21 +32,21 @@ export class Board {
 
     getColorForId(id: ID_CONST) {
         if (id === ID_CONST.Player) {
-            return '#004600'
+            return Colors.Player;
         }
         else if (id === ID_CONST.Enemy) {
-            return '#820027'
+            return Colors.Enemy;
         }
         else if (id === ID_CONST.PowerUp) {
-            return '#005ac6'
+            return Colors.PowerUp;
         }
         else if (id === ID_CONST.Flag) {
-            return '#c6b600'
+            return Colors.Flag;
         }
         else if (id === ID_CONST.Wall) {
-            return '#441d00'
+            return Colors.Wall;
         }
-        return '#FFFFFF'
+        return Colors.White;
     }
 
     posToBoard(pos: { x: number, y: number }) {
@@ -165,12 +166,11 @@ export class Board {
         return map;
     }
 
+
     createGrid() {
         //Since lines and text are expensive to re-draw
         //create a hidden canvas to render the lines onto
-        var m_canvas = document.createElement('canvas');
-        m_canvas.width = canvas.width;
-        m_canvas.height = canvas.height;
+        const m_canvas = CanvasRender.createCanvas(canvas.width, canvas.height);
 
         //grid
         for(let i = 0; i <= this.gridSize; i++){
@@ -186,6 +186,6 @@ export class Board {
             accross.setContext(m_canvas);
         }
 
-        return new PreRender(ID_CONST.Grid, m_canvas);
+        return new CanvasRender(ID_CONST.Grid, m_canvas);
     }
 }

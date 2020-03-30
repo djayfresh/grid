@@ -33,13 +33,7 @@ class Memory extends Game {
         this.cards.filter(c => !c.locked).forEach(ro => {
             if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height) && !ro.flipped) {
                 Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
-
-                //button highlight
-                //ro.color = '#333333';
                 isMouseOverButon = true;
-            }
-            else {
-                //ro.color = '#FFFFFF';
             }
         });
 

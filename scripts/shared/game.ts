@@ -66,6 +66,7 @@ export class Game {
 
     _init() {
         this._timer = new Timer();
+        this._timer.Start();
 
         new Key(KEY_CONST.pause).onClick(() => {    
             if (this._state !== this._play) {

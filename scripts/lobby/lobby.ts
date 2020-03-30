@@ -4,7 +4,8 @@ import { canvas, ctx } from '../shared/canvas';
 import { Physics } from '../shared/physics';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Rectangle, RenderText } from '../shared/objects';
-import { Point, PreRender } from '../shared/renderer';
+import { Point, CanvasRender } from '../shared/renderer';
+import { Colors } from '../shared/colors';
 
 export var LevelConst = { Grid: 0, Zombie: 1, HighScore: 2, Memory: 3 };
 export var Levels = [LevelConst.Grid, LevelConst.Zombie, LevelConst.HighScore, LevelConst.Memory];
@@ -53,11 +54,11 @@ export class Lobby extends Game {
                 Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
 
                 //button highlight
-                ro.color = '#333333';
+                ro.color = Colors.HoverDark;
                 isMouseOverButon = true;
             }
             else {
-                ro.color = '#FFFFFF';
+                ro.color = Colors.White;
             }
         });
 
@@ -74,7 +75,7 @@ export class Lobby extends Game {
         else {
             if (this.wasDownLastFrame) {
                 this.renderer.renderObjects.filter(ro => Levels.indexOf(ro.id) >= 0).forEach((ro: Rectangle) => {
-                    ro.color = '#FFFFFF';
+                    ro.color = Colors.White;
 
                     if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
                         setTimeout(() => {
@@ -112,33 +113,52 @@ export class Lobby extends Game {
         const left = canvas.width * 0.25;
         const buttonH = 50;
         const buttonW = canvas.width / 2;
-        const white = '#FFFFFF';
-        const black = '#000000';
 
         const height = (canvas.height / this.menuOptions.length) - (buttonH + 10);
 
-        const t_canvas = document.createElement('canvas');
-        t_canvas.width = canvas.width;
-        t_canvas.height = canvas.height;
+        const t_canvas = CanvasRender.createCanvas(canvas.width, canvas.height);
 
-        const preRender = new PreRender(100, t_canvas);
+        const preRender = new CanvasRender(100, t_canvas);
 
         this.menuOptions.forEach((mo, i) => {
 
             const textOffset = mo.text.length > 8 ? 10 : 0; //Do real pixel centering
             const y = (height * i) + (buttonH * i) + height;
             const x = left - textOffset;
-            const btn = new Rectangle(mo.id, white, x, y, buttonW + (textOffset * 2), buttonH);
+            const btn = new Rectangle(mo.id, Colors.White, x, y, buttonW + (textOffset * 2), buttonH);
             this.renderer.add(btn);
 
             const btnTextPos = new Point(btn.pos.x + buttonW / 2, btn.pos.y + buttonH * 0.75);
-            const btnText = new RenderText(100, {text: mo.text, color: black, pos: btnTextPos, centered: true});
+            const btnText = new RenderText(100, {text: mo.text, color: Colors.Black, pos: btnTextPos, centered: true});
             btnText.setContext(t_canvas);
         });
 
         this.renderer.add(preRender);
 
-        this.renderer.add(new Rectangle(ID_CONST.Ground, '#000000', 0, 0, canvas.width, canvas.height));
+        this.renderer.add(new Rectangle(ID_CONST.Ground, Colors.Black, 0, 0, canvas.width, canvas.height));
+
+        const cubeSizes = 60;
+        const colorCubes = [Colors.Player, Colors.Flag, Colors.PowerUp, Colors.Enemy, Colors.Wall];
+
+        const genCords: {x: number, y: number}[] = []
+
+        const cubeSub = cubeSizes/3;
+        const cubeW = canvas.width - cubeSub;
+        const cubeH = canvas.height - cubeSub;
+
+        colorCubes.forEach(color => {
+            let ranX = Math.range(-cubeSub, cubeW);
+            let ranY = Math.range(-cubeSub, cubeH);
+
+            while(genCords.some(c => Physics.collision(ranX, ranY, cubeSizes, cubeSizes, c.x, c.y, cubeSizes, cubeSizes))){
+                ranX = Math.range(-cubeSub, cubeW);
+                ranY = Math.range(-cubeSub, cubeH);
+            }
+
+            genCords.push({x: ranX, y: ranY});
+
+            this.renderer.add(new Rectangle(-10, color, ranX, ranY, cubeSizes, cubeSizes));
+        });
     }
 }
 

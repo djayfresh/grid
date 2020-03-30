@@ -1,10 +1,11 @@
 import { World } from '../shared/world';
-import { Point, PreRender } from '../shared/renderer';
-import { Rectangle, Line } from '../shared/objects';
-import { canvas } from '../shared/canvas';
+import { Rectangle, RenderText } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { GridPlayer } from './objects';
 import { Board } from './board';
+import { RenderObject, Point } from '../shared/renderer';
+import { canvas } from '../shared/canvas';
+import { Colors } from '../shared/colors';
 
 export class GridWorld extends World {
     board: Board;
@@ -65,13 +66,32 @@ export class GridWorld extends World {
                     renderObjects.push(new Rectangle(ID_CONST.Wall, this.board.getColorForId(ID_CONST.Wall), pos.x, pos.y, squareX, squareY));
                 }
             }
-            
         }
-
-
-
         this.setMap(renderObjects);
 
+        return renderObjects;
+    }
+
+    getRoundStart(roundNumber: number, score?: number): RenderObject[] {
+        const renderObjects = [];
+
+        renderObjects.push(new Rectangle(0, Colors.White, 0, 0, canvas.width, canvas.height));
+        renderObjects.push(new RenderText(1, { text: `Round Starting - ${roundNumber}`, color: Colors.Black, centered: true, pos: new Point(canvas.width/2, canvas.height/3) }));
+        
+        if (score !== undefined){
+            renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(canvas.width/2, canvas.height/2) }));
+        }
+        
+        return renderObjects;
+    }
+
+    getGameOver(score: number){
+        const renderObjects = [];
+        
+        renderObjects.push(new Rectangle(0, Colors.White, 0, 0, canvas.width, canvas.height));
+        renderObjects.push(new RenderText(1, { text: `Game Over`, color: Colors.Black, centered: true, pos: new Point(canvas.width/2, canvas.height/3) }));
+        renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(canvas.width/2, canvas.height/2) }));
+        
         return renderObjects;
     }
 };

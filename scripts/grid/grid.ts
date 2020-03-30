@@ -11,6 +11,10 @@ class Grid extends Game {
     gridSize: number = 6;
     difficulty: number = 1;
 
+    roundDelay: number = 2000;
+    currentDelay: number = 0;
+    hasRoundStarted: boolean = false;
+
     constructor() {
         super();
 
@@ -27,6 +31,24 @@ class Grid extends Game {
 
         Debug.time('DT:', dt);
 
+        if (this.currentDelay >= this.roundDelay && this.hasRoundStarted === false){
+            this.hasRoundStarted = true;
+            console.log("Round started", this.currentDelay, this.roundDelay);
+            this.StartRound();
+        }
+
+        if(this.hasRoundStarted){
+            this.checkForPlayerMove();
+        }
+
+
+        this.renderer.draw(ctx, this.world);
+        this.renderer.update(dt, this.world);
+
+        this.currentDelay += dt;
+    }
+
+    checkForPlayerMove() {
         if (this.mouse.isDown) {
             this.wasDownLastFrame = true;
         }
@@ -46,9 +68,6 @@ class Grid extends Game {
             }
             this.wasDownLastFrame = false;
         }
-
-        this.renderer.draw(ctx, this.world);
-        this.renderer.update(dt, this.world);
     }
 
     movePlayer(playerX: number, playerY: number, moveX: number, moveY: number) {
@@ -62,7 +81,7 @@ class Grid extends Game {
                     break;
                 case ID_CONST.Enemy:
                     Debug.log("Lost Game");
-                    this.StartWorld();
+                    this.NextRound();
                     this.score += 1;
                     break;
                 case ID_CONST.Flag:
@@ -70,11 +89,13 @@ class Grid extends Game {
                     Debug.log("Win Game");
                     this.score += 1;
                     this.difficulty += 1;
-                    this.StartWorld();
+                    this.NextRound();
                     break;
                 case ID_CONST.PowerUp:
                     //Enable PowerUP
                     Debug.log("Power Up");
+                    this.renderer.remove(ID_CONST.PowerUp); //player picked up
+
                     this.score += 1;
                     this.difficulty - 2;
                     move();
@@ -90,19 +111,46 @@ class Grid extends Game {
     _init() {
         super._init();
 
+        this.currentDelay = 0;
+        this.hasRoundStarted = false;
+
         this.renderer.reset();
-        this.renderer.add(...this.world.generateMap());
+        this.renderer.add(...this.world.getRoundStart(1));
 
         this.mouse = new Mouse(0, canvas, true);
         canvas.style.cursor = 'pointer'; //change mouse pointer
     }
 
-    StartWorld() {
-        console.log("Start world", this.difficulty);
+    StartRound() {
+        this.renderer.reset();
+        this.renderer.add(...this.world.generateMap());
+    }
+
+    NextRound() {
+        this.hasRoundStarted = false;
+        if (this.difficulty > ((this.gridSize - 1) * (this.gridSize - 1))){
+            this.GameOver();
+            return;
+        }
+
+        this.world.difficulty = this.difficulty;
+
+        this.currentDelay = 0;
+
+        this.renderer.reset();
+        this.renderer.add(...this.world.getRoundStart(this.difficulty, this.score));
+    }
+
+    GameOver() {
+        this.currentDelay = 0;
+        this.difficulty = 1;
+
         this.world.difficulty = this.difficulty;
 
         this.renderer.reset();
-        this.renderer.add(...this.world.generateMap());
+        this.renderer.add(...this.world.getGameOver(this.score));
+
+        this.score = 0;
     }
 
     Restart() {
