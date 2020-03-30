@@ -11,10 +11,6 @@ class Grid extends Game {
     gridSize: number = 6;
     difficulty: number = 1;
 
-    roundDelay: number = 2000;
-    currentDelay: number = 0;
-    hasRoundStarted: boolean = false;
-
     constructor() {
         super();
     }
@@ -26,19 +22,8 @@ class Grid extends Game {
         }
     }
 
-    _frame(dt) {
+    _frame(dt: number) {
         super._frame(dt);
-
-        Debug.time('DT:', dt);
-
-        if (this.currentDelay >= this.roundDelay && this.hasRoundStarted === false){
-            this.hasRoundStarted = true;
-            this.StartRound();
-        }
-
-        if(this.hasRoundStarted){
-            this.checkForPlayerMove();
-        }
 
         this.renderer.draw(GameCanvas.ctx, this.world);
         this.renderer.update(dt, this.world);
@@ -46,7 +31,7 @@ class Grid extends Game {
         this.currentDelay += dt;
     }
 
-    checkForPlayerMove() {
+    RunRound() {
         if (this.mouse.isDown) {
             this.wasDownLastFrame = true;
         }

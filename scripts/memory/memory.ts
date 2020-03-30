@@ -29,6 +29,25 @@ class Memory extends Game {
 
         Debug.time('DT:', dt);
 
+        if (this.cards.some(c => c.currentState !== 0 && c.currentState !== 1) || this.firstFrame || !this.hasRoundStarted) {
+            this.firstFrame = false;
+            this.renderer.draw(GameCanvas.ctx, this.world);
+        }
+        this.renderer.update(dt, this.world);
+    }
+
+    StartRound() {
+        this.score = 100;
+
+        this.renderer.reset();
+        this.renderer.add(...this.world.generateMap());
+
+        this.cards = this.renderer.renderObjects.filter(ro => ro.id === ID_CONST.Player) as Card[];
+
+        this.firstFrame = true;
+    }
+
+    RunRound() {
         let isMouseOverButon = false;
 
         //hover mouse
@@ -75,29 +94,34 @@ class Memory extends Game {
             flippedCards.forEach(c => c.Flip(true));
         }
 
-        if (this.cards.some(c => c.currentState !== 0 && c.currentState !== 1) || this.firstFrame) {
-            this.firstFrame = false;
-            this.renderer.draw(GameCanvas.ctx, this.world);
+        if (this.cards.every(c => c.locked)){
+            this.NextRound();
         }
-        this.renderer.update(dt, this.world);
+    }
+
+    NextRound() {
+        this.roundDelay = 2000;
+        this.currentDelay = 0;
+        this.hasRoundStarted = false;
+
+        this.currentDelay = 0;
+        this.cards = [];
+
+        this.renderer.reset();
+        this.renderer.add(...this.world.getGameOver(this.score));
     }
 
     _init() {
         super._init();
 
         if (!this._initialized){
-            this.world = new MemoryWorld(6, 0);
+            this.world = new MemoryWorld(6, 0); //must be an even number of cards
             this.mouse = new Mouse(0, GameCanvas.canvas, true);
         }
 
-        this.score = 100;
+        this.roundDelay = 0;
 
-        this.renderer.reset();
-        this.renderer.add(...this.world.generateMap());
-
-        this.cards = this.renderer.renderObjects.filter(ro => ro.id === ID_CONST.Player) as Card[];
-
-        this.firstFrame = true;
+        this.StartRound();
     }
 
     Restart() {

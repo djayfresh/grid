@@ -1,5 +1,5 @@
 import { Renderer } from './renderer';
-import { Timer, KEY_CONST, Key, debounce, Mouse } from './utility';
+import { Timer, KEY_CONST, Key, debounce, Mouse, Debug } from './utility';
 import { GameCanvas } from './canvas';
 
 export class Game {
@@ -8,8 +8,13 @@ export class Game {
     _initialized = false;
     _timer: Timer;
     score = 0;
+    $score: HTMLElement;
     focusPaused: boolean = false;
     mouse: Mouse;
+
+    roundDelay: number = 2000;
+    currentDelay: number = 0;
+    hasRoundStarted: boolean = false;
 
     constructor() {
         this.Run();
@@ -42,12 +47,32 @@ export class Game {
         window.requestAnimationFrame(() => this.Run());
     }
 
-    _frame(_dt) {
-
-        const $score = document.getElementById('game-score');
-        if (!!$score){
-            $score.innerText = '' + this.score;
+    _frame(dt) {
+        Debug.time('DT:', dt);
+        
+        if (!!this.$score){
+            this.$score.innerText = '' + this.score;
         }
+
+        if (this.currentDelay >= this.roundDelay && this.hasRoundStarted === false){
+            this.hasRoundStarted = true;
+            this.StartRound(dt);
+        }
+
+        if(this.hasRoundStarted){
+            this.RunRound(dt);
+        }
+
+        this.currentDelay += dt;
+
+    }
+
+    StartRound(_dt: number) {
+
+    }
+
+    RunRound(_dt: number) {
+
     }
 
     Resize() {
@@ -73,6 +98,7 @@ export class Game {
 
         //Don't rebind key events
         if (!this._initialized) {
+            this.$score = document.getElementById('game-score');
 
             this.mouse = new Mouse(0, GameCanvas.canvas);
 
