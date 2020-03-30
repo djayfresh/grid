@@ -117,6 +117,8 @@ class Memory extends Game {
         if (!this._initialized){
             this.world = new MemoryWorld(6, 0); //must be an even number of cards
             this.mouse = new Mouse(0, GameCanvas.canvas, true);
+            
+            this.Resize();
         }
 
         this.roundDelay = 0;

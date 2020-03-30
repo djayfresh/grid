@@ -36,8 +36,10 @@ class ZombieGame extends Game {
 
     Resize() {
         GameCanvas.height = GameCanvas.width;
-        this.world.setScreen(GameCanvas.width, GameCanvas.height);
-        this.world.setCanvas(GameCanvas.canvas.clientWidth, GameCanvas.canvas.clientHeight);
+        if (this.world){
+            this.world.setScreen(GameCanvas.width, GameCanvas.height);
+            this.world.setCanvas(GameCanvas.canvas.clientWidth, GameCanvas.canvas.clientHeight);
+        }
     }
 
     _frame(dt) {
@@ -104,7 +106,19 @@ class ZombieGame extends Game {
 
     _init() {
         super._init();
-        this.world = new ZombieWorld(LevelConst.Zombie);
+
+        if (!this._initialized){
+            this.world = new ZombieWorld(LevelConst.Zombie);
+            this.Resize();
+        
+            KeyboardManager.track(KEY_CONST.down);
+            KeyboardManager.track(KEY_CONST.up);
+            KeyboardManager.track(KEY_CONST.left);
+            KeyboardManager.track(KEY_CONST.right);
+            KeyboardManager.track(KEY_CONST.x);
+            KeyboardManager.track(KEY_CONST.r);
+        }
+        
 
         const guns = GenerateGuns();
         this.weapons = Object.keys(guns).map(k => guns[k]);
@@ -115,14 +129,6 @@ class ZombieGame extends Game {
 
         GameCanvas.canvas.style.cursor = 'default';
 
-        if (!this._initialized){
-            KeyboardManager.track(KEY_CONST.down);
-            KeyboardManager.track(KEY_CONST.up);
-            KeyboardManager.track(KEY_CONST.left);
-            KeyboardManager.track(KEY_CONST.right);
-            KeyboardManager.track(KEY_CONST.x);
-            KeyboardManager.track(KEY_CONST.r);
-        }
     }
 
     Restart() {

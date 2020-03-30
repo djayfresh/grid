@@ -101,6 +101,8 @@ export class Lobby extends Game {
         if (!this._initialized) {
             this.world = new World(0);
             this.mouse = new Mouse(0, GameCanvas.canvas, true);
+            
+            this.Resize();
         }
 
         this.renderer.reset();

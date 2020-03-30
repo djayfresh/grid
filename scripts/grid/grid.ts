@@ -95,6 +95,7 @@ class Grid extends Game {
 
         if (!this._initialized) {
             this.world = new GridWorld(this.gridSize, this.difficulty);
+            this.Resize();
             this.mouse = new Mouse(0, GameCanvas.canvas, true);
         }
 
