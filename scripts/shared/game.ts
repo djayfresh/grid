@@ -86,7 +86,6 @@ export class Game {
             });
     
             const onReset = debounce(() => {
-                console.log("Restart", this);
                 this.Restart();
             }, 500, true);
             new Key(KEY_CONST.r).onClick(onReset);
