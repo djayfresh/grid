@@ -1,6 +1,6 @@
 import { ID_CONST, Debug } from '../shared/utility';
 import { Point, RenderObject, CanvasRender } from '../shared/renderer';
-import { canvas } from '../shared/canvas';
+import { GameCanvas } from '../shared/canvas';
 import { Line } from '../shared/objects';
 import { Colors } from '../shared/colors';
 
@@ -13,8 +13,8 @@ export class Board {
     constructor(gridSize: number) {
 
         this.gridSize = gridSize;
-        const squareX = (canvas.width / this.gridSize);
-        const squareY = (canvas.height / this.gridSize);
+        const squareX = (GameCanvas.width / this.gridSize);
+        const squareY = (GameCanvas.height / this.gridSize);
 
         this.squareSize = new Point(squareX, squareY);
 
@@ -170,7 +170,7 @@ export class Board {
     createGrid() {
         //Since lines and text are expensive to re-draw
         //create a hidden canvas to render the lines onto
-        const m_canvas = CanvasRender.createCanvas(canvas.width, canvas.height);
+        const m_canvas = CanvasRender.createCanvas(GameCanvas.width, GameCanvas.height);
 
         //grid
         for(let i = 0; i <= this.gridSize; i++){
@@ -178,11 +178,11 @@ export class Board {
             let y = this.squareSize.y * i;
 
             //Down
-            const down = new Line(ID_CONST.Grid, new Point(x, 0), new Point(x, canvas.height));
+            const down = new Line(ID_CONST.Grid, new Point(x, 0), new Point(x, GameCanvas.height));
             down.setContext(m_canvas);
 
             //Accross
-            const accross = new Line(ID_CONST.Grid, new Point(0, y), new Point(canvas.width, y));
+            const accross = new Line(ID_CONST.Grid, new Point(0, y), new Point(GameCanvas.width, y));
             accross.setContext(m_canvas);
         }
 

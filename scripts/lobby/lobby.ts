@@ -1,6 +1,6 @@
 import { Game } from '../shared/game';
 import { World } from '../shared/world';
-import { canvas, ctx } from '../shared/canvas';
+import { GameCanvas } from '../shared/canvas';
 import { Physics } from '../shared/physics';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Rectangle, RenderText } from '../shared/objects';
@@ -28,8 +28,8 @@ export class Lobby extends Game {
     }
 
     Resize() {
-        canvas.height = canvas.width;
-        this.world.setScreen(canvas.width, canvas.height);
+        GameCanvas.height = GameCanvas.width;
+        this.world.setScreen(GameCanvas.width, GameCanvas.height);
     }
 
     SetMenu(menuOptions: MenuOption[]) {
@@ -65,10 +65,10 @@ export class Lobby extends Game {
         });
 
         if (isMouseOverButon) {
-            canvas.style.cursor = 'pointer';
+            GameCanvas.canvas.style.cursor = 'pointer';
         }
         else {
-            canvas.style.cursor = 'default';
+            GameCanvas.canvas.style.cursor = 'default';
         }
 
         if (this.mouse.isDown) {
@@ -89,7 +89,7 @@ export class Lobby extends Game {
             this.wasDownLastFrame = false;
         }
 
-        this.renderer.draw(ctx, this.world);
+        this.renderer.draw(GameCanvas.ctx, this.world);
         this.renderer.update(dt, this.world);
     }
 
@@ -102,7 +102,7 @@ export class Lobby extends Game {
         this.wasDownLastFrame = false;
 
         if (!this._initialized) {
-            this.mouse = new Mouse(0, canvas, true);
+            this.mouse = new Mouse(0, GameCanvas.canvas, true);
         }
     }
 
@@ -115,13 +115,13 @@ export class Lobby extends Game {
     }
 
     _buildLobbyButtons() {
-        const left = canvas.width * 0.25;
+        const left = GameCanvas.width * 0.25;
         const buttonH = 50;
-        const buttonW = canvas.width / 2;
+        const buttonW = GameCanvas.width / 2;
 
-        const height = (canvas.height / this.menuOptions.length) - (buttonH + 10);
+        const height = (GameCanvas.height / this.menuOptions.length) - (buttonH + 10);
 
-        const t_canvas = CanvasRender.createCanvas(canvas.width, canvas.height);
+        const t_canvas = CanvasRender.createCanvas(GameCanvas.width, GameCanvas.height);
 
         const preRender = new CanvasRender(100, t_canvas);
 
@@ -140,7 +140,7 @@ export class Lobby extends Game {
 
         this.renderer.add(preRender);
 
-        this.renderer.add(new Rectangle(ID_CONST.Ground, Colors.Black, 0, 0, canvas.width, canvas.height));
+        this.renderer.add(new Rectangle(ID_CONST.Ground, Colors.Black, 0, 0, GameCanvas.width, GameCanvas.height));
 
         const cubeSizes = 60;
         const colorCubes = [Colors.Player, Colors.Flag, Colors.PowerUp, Colors.Enemy, Colors.Wall];
@@ -148,8 +148,8 @@ export class Lobby extends Game {
         const genCords: {x: number, y: number}[] = []
 
         const cubeSub = cubeSizes/3;
-        const cubeW = canvas.width - cubeSub;
-        const cubeH = canvas.height - cubeSub;
+        const cubeW = GameCanvas.width - cubeSub;
+        const cubeH = GameCanvas.height - cubeSub;
 
         colorCubes.forEach(color => {
             let ranX = Math.range(-cubeSub, cubeW);

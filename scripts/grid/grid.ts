@@ -1,5 +1,5 @@
 import { Game } from '../shared/game';
-import { canvas, ctx } from '../shared/canvas';
+import { GameCanvas } from '../shared/canvas';
 import { GridWorld, world } from './world';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Point } from '../shared/renderer';
@@ -22,8 +22,8 @@ class Grid extends Game {
     }
 
     Resize() {
-        canvas.height = canvas.width;
-        this.world.setScreen(canvas.width, canvas.height);
+        GameCanvas.height = GameCanvas.width;
+        this.world.setScreen(GameCanvas.width, GameCanvas.height);
     }
 
     _frame(dt) {
@@ -42,7 +42,7 @@ class Grid extends Game {
         }
 
 
-        this.renderer.draw(ctx, this.world);
+        this.renderer.draw(GameCanvas.ctx, this.world);
         this.renderer.update(dt, this.world);
 
         this.currentDelay += dt;
@@ -117,9 +117,9 @@ class Grid extends Game {
         this.renderer.add(...this.world.getRoundStart(1));
 
         if (!this._initialized) {
-            this.mouse = new Mouse(0, canvas, true);
+            this.mouse = new Mouse(0, GameCanvas.canvas, true);
         }
-        canvas.style.cursor = 'pointer'; //change mouse pointer
+        GameCanvas.canvas.style.cursor = 'pointer'; //change mouse pointer
     }
 
     StartRound() {

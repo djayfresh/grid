@@ -1,5 +1,5 @@
 import { Mouse } from './utility';
-import canvas = require('./canvas');
+import { GameCanvas } from './canvas';
 
 export class Weapon {
     mouse: Mouse;
@@ -12,7 +12,7 @@ export class Weapon {
     onFire: (weapon: Weapon, mouse: Mouse) => void = () => {};
 
     constructor(onFire: (weapon: Weapon, mouse: Mouse) => void, options: Partial<Weapon>) {
-        this.mouse = new Mouse(0, canvas.canvas);
+        this.mouse = new Mouse(0, GameCanvas.canvas);
 
         this.onFire = onFire || this.onFire;
 

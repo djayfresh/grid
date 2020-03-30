@@ -4,7 +4,7 @@ import { ID_CONST } from '../shared/utility';
 import { GridPlayer } from './objects';
 import { Board } from './board';
 import { RenderObject, Point } from '../shared/renderer';
-import { canvas } from '../shared/canvas';
+import { GameCanvas } from '../shared/canvas';
 import { Colors } from '../shared/colors';
 
 export class GridWorld extends World {
@@ -75,11 +75,11 @@ export class GridWorld extends World {
     getRoundStart(roundNumber: number, score?: number): RenderObject[] {
         const renderObjects = [];
 
-        renderObjects.push(new Rectangle(0, Colors.White, 0, 0, canvas.width, canvas.height));
-        renderObjects.push(new RenderText(1, { text: `Round Starting - ${roundNumber}`, color: Colors.Black, centered: true, pos: new Point(canvas.width/2, canvas.height/3) }));
+        renderObjects.push(new Rectangle(0, Colors.White, 0, 0, GameCanvas.width, GameCanvas.height));
+        renderObjects.push(new RenderText(1, { text: `Round Starting - ${roundNumber}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
         
         if (score !== undefined){
-            renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(canvas.width/2, canvas.height/2) }));
+            renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
         }
         
         return renderObjects;
@@ -88,9 +88,9 @@ export class GridWorld extends World {
     getGameOver(score: number){
         const renderObjects = [];
         
-        renderObjects.push(new Rectangle(0, Colors.White, 0, 0, canvas.width, canvas.height));
-        renderObjects.push(new RenderText(1, { text: `Game Over`, color: Colors.Black, centered: true, pos: new Point(canvas.width/2, canvas.height/3) }));
-        renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(canvas.width/2, canvas.height/2) }));
+        renderObjects.push(new Rectangle(0, Colors.White, 0, 0, GameCanvas.width, GameCanvas.height));
+        renderObjects.push(new RenderText(1, { text: `Game Over`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
+        renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
         
         return renderObjects;
     }

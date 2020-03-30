@@ -1,6 +1,6 @@
 import { world, MemoryWorld } from './world';
 import { Game } from '../shared/game';
-import { canvas, ctx } from '../shared/canvas';
+import { GameCanvas } from '../shared/canvas';
 import { Debug, ID_CONST, Mouse } from '../shared/utility';
 import { Physics } from '../shared/physics';
 import { Card } from './objects';
@@ -18,8 +18,8 @@ class Memory extends Game {
     }
 
     Resize() {
-        canvas.height = canvas.width;
-        this.world.setScreen(canvas.width, canvas.height);
+        GameCanvas.height = GameCanvas.width;
+        this.world.setScreen(GameCanvas.width, GameCanvas.height);
     }
 
     _frame(dt) {
@@ -38,10 +38,10 @@ class Memory extends Game {
         });
 
         if (isMouseOverButon) {
-            canvas.style.cursor = 'pointer';
+            GameCanvas.canvas.style.cursor = 'pointer';
         }
         else {
-            canvas.style.cursor = 'default';
+            GameCanvas.canvas.style.cursor = 'default';
         }
 
         if (this.mouse.isDown) {
@@ -75,7 +75,7 @@ class Memory extends Game {
 
         if (this.cards.some(c => c.currentState !== 0 && c.currentState !== 1) || this.firstFrame) {
             this.firstFrame = false;
-            this.renderer.draw(ctx, this.world);
+            this.renderer.draw(GameCanvas.ctx, this.world);
         }
         this.renderer.update(dt, this.world);
     }
@@ -90,7 +90,7 @@ class Memory extends Game {
 
         this.cards = this.renderer.renderObjects.filter(ro => ro.id === ID_CONST.Player) as Card[];
 
-        this.mouse = new Mouse(0, canvas, true);
+        this.mouse = new Mouse(0, GameCanvas.canvas, true);
         this.firstFrame = true;
     }
 

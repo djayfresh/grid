@@ -2,12 +2,12 @@ import { Game } from '../shared/game';
 import { ZombieWorld, world } from './world';
 import { Weapon } from '../shared/weapons';
 import { Mouse, Debug, KeyboardManager, KEY_CONST, ID_CONST } from '../shared/utility';
-import { canvas, ctx } from '../shared/canvas';
+import { GameCanvas } from '../shared/canvas';
 import { Physics } from '../shared/physics';
 import { Point } from '../shared/renderer';
 import { Bullet } from './objects';
 import { Rectangle } from '../shared/objects';
-import { pistol, sniper, machineGun } from './weapons';
+import { GenerateGuns } from './weapons';
 
 class ZombieGame extends Game {
     world: ZombieWorld;
@@ -17,11 +17,10 @@ class ZombieGame extends Game {
     weapons: Weapon[];
     weaponSwitched = false;
 
-    constructor(world: ZombieWorld, weapons: Weapon[]) {
+    constructor(world: ZombieWorld) {
         super();
 
         this.world = world;
-        this.weapons = weapons;
 
         this.Resize();
     }
@@ -39,8 +38,8 @@ class ZombieGame extends Game {
     }
 
     Resize() {
-        canvas.height = canvas.width;
-        this.world.setScreen(canvas.width, canvas.height);
+        GameCanvas.height = GameCanvas.width;
+        this.world.setScreen(GameCanvas.width, GameCanvas.height);
     }
 
     _frame(dt) {
@@ -83,7 +82,7 @@ class ZombieGame extends Game {
             this.activeWeapon.update(dt);
         }
 
-        this.renderer.draw(ctx, this.world);
+        this.renderer.draw(GameCanvas.ctx, this.world);
         this.renderer.update(dt, this.world);
     }
 
@@ -108,11 +107,14 @@ class ZombieGame extends Game {
     _init() {
         super._init();
 
+        const guns = GenerateGuns();
+        this.weapons = Object.keys(guns).map(k => guns[k]);
+
         this.renderer.reset();
         this.renderer.add(...this.world.generateMap());
         this.SetWeapon(this.weapons[Object.keys(this.weapons)[this.weaponIndex]]);
 
-        canvas.style.cursor = 'default';
+        GameCanvas.canvas.style.cursor = 'default';
 
         if (!this._initialized){
             KeyboardManager.track(KEY_CONST.down);
@@ -133,4 +135,4 @@ class ZombieGame extends Game {
     }
 }
 
-export var zombie = new ZombieGame(world, [pistol, machineGun, sniper]);
+export var zombie = new ZombieGame(world);

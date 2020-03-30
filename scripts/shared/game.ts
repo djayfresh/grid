@@ -1,6 +1,6 @@
 import { Renderer } from './renderer';
 import { Timer, KEY_CONST, Key, debounce, Mouse } from './utility';
-import { canvas } from './canvas';
+import { GameCanvas } from './canvas';
 
 export class Game {
     renderer = new Renderer();
@@ -74,7 +74,7 @@ export class Game {
         //Don't rebind key events
         if (!this._initialized) {
 
-            this.mouse = new Mouse(0, canvas);
+            this.mouse = new Mouse(0, GameCanvas.canvas);
 
             new Key(KEY_CONST.pause).onClick(() => {    
                 if (this._state !== this._play) {
