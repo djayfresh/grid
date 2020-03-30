@@ -59,8 +59,8 @@ export class Mouse {
     button: number;
     isDown: boolean = false;
     isUp: boolean = true;
-    press: (e: MouseEvent) => void;
-    release: (e: MouseEvent) => void;
+    press: (e: MouseEvent | TouchEvent) => void;
+    release: (e: MouseEvent | TouchEvent) => void;
     move: (ps: Point) => void;
     lastPos: Point = new Point(0, 0);
     pos: Point = new Point(0, 0);
@@ -83,20 +83,26 @@ export class Mouse {
         canvas.addEventListener(
             "mousemove", this.moveHandler.bind(this)
         );
+        
+        canvas.addEventListener("touchstart", this.downHandler.bind(this));
+        canvas.addEventListener("touchend", this.upHandler.bind(this), false);
     }
 
-    getMousePos(mouseEvent: MouseEvent) {
+    getMousePos(mouseEvent: MouseEvent | TouchEvent) {
+        const mouseX = (mouseEvent as MouseEvent).clientX || ((mouseEvent as TouchEvent).touches.length && (mouseEvent as TouchEvent).touches[0].clientX);
+        const mouseY = (mouseEvent as MouseEvent).clientY || ((mouseEvent as TouchEvent).touches.length && (mouseEvent as TouchEvent).touches[0].clientY);
+
         if (this.relative){
             const rect = this._canvas.getBoundingClientRect(); // abs. size of element
             const scaleX = this._canvas.width / rect.width;   // relationship bitmap vs. element for X
             const scaleY = this._canvas.height / rect.height;  // relationship bitmap vs. element for Y
 
-            return new Point((mouseEvent.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
-                            (mouseEvent.clientY - rect.top) * scaleY);     // been adjusted to be relative to element
+            return new Point((mouseX - rect.left) * scaleX,   // scale mouse coordinates after they have
+                            (mouseY - rect.top) * scaleY);     // been adjusted to be relative to element
         }
         
         const rect = this._canvas.getBoundingClientRect();
-        return new Point(mouseEvent.clientX - rect.left, mouseEvent.clientY - rect.top);
+        return new Point(mouseX - rect.left, mouseY - rect.top);
     }
 
     setPos(pos: Point) {
@@ -105,13 +111,13 @@ export class Mouse {
     }
 
     //The `downHandler`
-    downHandler(event: MouseEvent) {
+    downHandler(event: MouseEvent | TouchEvent) {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
         Debug.mouse("Down", event, pos);
 
-        if (this.button === undefined || this.button === event.button) {
+        if (this.button === undefined || this.button === (event as MouseEvent).button || (event as TouchEvent).touches) {
             if (this.isUp && this.press) {
                 this.press(event);
             }
@@ -123,13 +129,13 @@ export class Mouse {
     };
 
     //The `upHandler`
-    upHandler(event: MouseEvent) {
+    upHandler(event: MouseEvent | TouchEvent) {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
         Debug.mouse("Up", event, pos);
 
-        if (this.button === undefined || this.button == event.button) {
+        if (this.button === undefined || this.button === (event as MouseEvent).button || (event as TouchEvent).touches) {
             if (this.isDown && this.release) {
                 this.release(event);
             }
@@ -141,7 +147,7 @@ export class Mouse {
     };
 
     //The `moveHandler`
-    moveHandler(event: MouseEvent) {
+    moveHandler(event: MouseEvent | TouchEvent) {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
