@@ -53,4 +53,9 @@ var menuOptions = [
 ]
 
 lobby.SetMenu(menuOptions);
-lobby.Play();
+// lobby.Play();
+
+
+export function Start() {
+    lobby.Play();
+}

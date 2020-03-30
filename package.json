@@ -12,7 +12,9 @@
     "build": "npm run compile && npm run pack",
     "compile": "tsc",
     "watch": "tsc -w",
-    "pack": "webpack --mode=development"
+    "pack": "webpack --mode=development --config-name=dev",
+    "pack-deploy": "webpack --mode=production --config-name=deploy",
+    "publish": "npm run compile && npm run pack-deploy"
   },
   "repository": {
     "type": "git",

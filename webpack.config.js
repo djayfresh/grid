@@ -1,17 +1,13 @@
-module.exports = {
-    entry: "./build/main.js",
+module.exports = [{
+    name: 'dev',
+    entry: "./build/runner.js",
     output: {
-        filename: "./launcher.js",
+        filename: "./runner.js",
     },
-
-    // Enable sourcemaps for debugging webpack's output.
     devtool: "source-map",
-
     resolve: {
-        // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
     },
-
     module: {
         rules: [
             {
@@ -26,7 +22,24 @@ module.exports = {
                 exclude: /(node_modules)/
             }
         ]
+    }
+}, {
+    name: 'deploy',
+    entry: "./build/main.js",
+    output: {
+        filename: "./launcher.js",
+        library: 'Grid'
     },
-
-    // Other options...
-};
+    resolve: {
+        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+    },
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/,
+                loaders: ['awesome-typescript-loader'],
+                exclude: /(node_modules)/
+            }
+        ]
+    }
+}];
