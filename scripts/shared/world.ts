@@ -1,5 +1,5 @@
 import { Point, RenderObject } from './renderer';
-import { ImageSource } from './images';
+import { ImageSource, ImageManager } from './images';
 
 export class World {
     pos = new Point(0, 0);
@@ -21,6 +21,13 @@ export class World {
         this.pos = new Point(0, 0);
         this.lastPos = new Point(0, 0);
         this.origin = new Point(0, 0);
+    }
+
+    addImage(img: ImageSource){
+        const $img = ImageManager.addImage(img);
+        if ($img){
+            this.images.push(img);
+        }
     }
 
     setMap(map: RenderObject[]){

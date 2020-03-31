@@ -5,6 +5,7 @@ import { Color } from '../shared/colors';
 import { Board } from '../grid/board';
 import { ImageManager, SceneImage, ImageSource } from '../shared/images';
 import { RenderImage } from '../shared/objects';
+import { ImageWorld } from '../test-worlds/image-world';
 
 export class MemoryWorld extends GridWorld {
 
@@ -44,6 +45,10 @@ export class MemoryWorld extends GridWorld {
         }
         
         renderObjects.push(this.board.createGrid());
+
+        // const imageTest = new ImageWorld(0);
+
+        // renderObjects.push(...imageTest.generateMap());
     
         this.setMap(renderObjects);
 

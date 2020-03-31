@@ -27,7 +27,7 @@ export class ImageManager {
     static addImage(img: ImageSource) {
         const searchImage = ImageManager.getImage(img.catalog, img.name);
         if(searchImage){
-            return searchImage;
+            return false; //already added
         }
         Debug.image('Add Image', img);
 
@@ -43,7 +43,7 @@ export class ImageManager {
 
         this.images.push(img);
 
-        return img;
+        return true;
     }
 
     static getImage(catalog: string, name: string){
