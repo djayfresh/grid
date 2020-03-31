@@ -170,7 +170,7 @@ export class Board {
     createGrid() {
         //Since lines and text are expensive to re-draw
         //create a hidden canvas to render the lines onto
-        const m_canvas = CanvasRender.createCanvas(GameCanvas.width, GameCanvas.height);
+        const m_canvas = GameCanvas.createCanvas(GameCanvas.width, GameCanvas.height);
 
         //grid
         for(let i = 0; i <= this.gridSize; i++){

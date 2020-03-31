@@ -125,7 +125,7 @@ export class Lobby extends Game {
 
         const height = (GameCanvas.height / this.menuOptions.length) - (buttonH + 10);
 
-        const t_canvas = CanvasRender.createCanvas(GameCanvas.width, GameCanvas.height);
+        const t_canvas = GameCanvas.createCanvas(GameCanvas.width, GameCanvas.height);
 
         const preRender = new CanvasRender(100, t_canvas);
 

@@ -3,6 +3,8 @@ import { Physics } from './physics';
 import { Debug } from './utility';
 import { World } from './world';
 import { Colors } from './colors';
+import { ImageSource, SceneImage, ImageManager } from './images';
+import { GameCanvas } from './canvas';
 
 export class Rectangle extends RenderObject {
     color = '';
@@ -102,6 +104,48 @@ export class Line extends RenderObject {
     draw(ctx: CanvasRenderingContext2D) {
         if (this.canvas) {
             ctx.drawImage(this.canvas, 0, 0);
+        }
+        else {
+            this.preDraw(ctx);
+        }
+    }
+}
+
+export class RenderImage extends RenderObject {
+    sceneImage: SceneImage;
+
+    constructor(image: SceneImage, id: number, pos: {x: number, y: number}) {
+        super(id, pos.x, pos.y);
+
+        this.sceneImage = image;
+        this.bounds = {x: this.sceneImage.width, y: this.sceneImage.height };
+    }
+
+    preDraw(ctx: CanvasRenderingContext2D) {
+        const image = ImageManager.getImage(this.sceneImage.catalog, this.sceneImage.name);
+
+        if (image.isLoaded && !this.canvas){
+            this.canvas = GameCanvas.createCanvas(this.sceneImage.width, this.sceneImage.height);
+
+            const context = this.canvas.getContext('2d');
+            if (this.sceneImage.subX){
+                context.drawImage(image.image, this.sceneImage.subX, this.sceneImage.subY, this.sceneImage.subWidth, this.sceneImage.subHeight, 0, 0, this.sceneImage.width, this.sceneImage.height);
+            }
+            else {
+                context.drawImage(image.image, 0, 0, this.sceneImage.width, this.sceneImage.height);
+            }
+
+            ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
+        }
+        else {
+            ctx.fillStyle = Colors.White;
+            ctx.fillRect(this.pos.x, this.pos.y, this.sceneImage.width, this.sceneImage.height);
+        }
+    }
+
+    draw(ctx: CanvasRenderingContext2D) {
+        if (this.canvas) {
+            ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
         }
         else {
             this.preDraw(ctx);

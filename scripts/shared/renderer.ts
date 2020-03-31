@@ -74,13 +74,6 @@ export class CanvasRender extends RenderObject {
         this.canvas = canvas;
     }
 
-    static createCanvas(width: number, height: number) {
-        var m_canvas = document.createElement('canvas');
-        m_canvas.width = width;
-        m_canvas.height = height;
-        return m_canvas;
-    }
-
     draw(ctx: CanvasRenderingContext2D) {
         ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
     }

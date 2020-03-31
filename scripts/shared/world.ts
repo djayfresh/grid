@@ -1,4 +1,5 @@
 import { Point, RenderObject } from './renderer';
+import { ImageSource } from './images';
 
 export class World {
     pos = new Point(0, 0);
@@ -10,6 +11,9 @@ export class World {
     player: RenderObject = null;
     moved = false;
     id: number;
+
+    images: ImageSource[] = [];
+    loadedImages: ImageSource[] = [];
 
     constructor(id: number){
         this.id = id;

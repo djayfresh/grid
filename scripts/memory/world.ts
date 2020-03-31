@@ -3,6 +3,8 @@ import { RenderObject } from '../shared/renderer';
 import { Card } from './objects';
 import { Color } from '../shared/colors';
 import { Board } from '../grid/board';
+import { ImageManager, SceneImage, ImageSource } from '../shared/images';
+import { RenderImage } from '../shared/objects';
 
 export class MemoryWorld extends GridWorld {
 
@@ -40,7 +42,7 @@ export class MemoryWorld extends GridWorld {
                 addCard(getColor(), j, i);
             }
         }
-
+        
         renderObjects.push(this.board.createGrid());
     
         this.setMap(renderObjects);

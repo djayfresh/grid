@@ -1,6 +1,7 @@
 import { Renderer } from './renderer';
 import { Timer, KEY_CONST, Key, debounce, Mouse, Debug } from './utility';
 import { GameCanvas } from './canvas';
+import { World } from './world';
 
 export class Game {
     renderer = new Renderer();
@@ -11,10 +12,14 @@ export class Game {
     $score: HTMLElement;
     focusPaused: boolean = false;
     mouse: Mouse;
+    world: World;
 
     roundDelay: number = 2000;
     currentDelay: number = 0;
     hasRoundStarted: boolean = false;
+
+    firstFrame: boolean = false;
+    imageLoadedThisFrame: boolean = false;
 
     constructor() {
         this.Run();
@@ -65,6 +70,27 @@ export class Game {
 
         this.currentDelay += dt;
 
+        const loadedImages = this.world.images.filter(i => i.isLoaded);
+        this.imageLoadedThisFrame = loadedImages.some(i => this.world.loadedImages.indexOf(i) === -1);
+
+        if (this._shouldDrawFrame()) {
+            this.firstFrame = false;
+            this.renderer.draw(GameCanvas.ctx, this.world);
+        }
+        if (this._shouldUpdateFrame()) {
+            this.renderer.update(dt, this.world);
+        }
+
+        this.world.loadedImages = loadedImages;
+
+    }
+
+    _shouldDrawFrame() {
+        return true;
+    }
+
+    _shouldUpdateFrame() {
+        return true;
     }
 
     StartRound(_dt: number) {

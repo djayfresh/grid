@@ -24,4 +24,11 @@ export class GameCanvas {
     static get ctx() {
         return GameCanvas._canvas.getContext('2d');
     }
+
+    static createCanvas(width: number, height: number) {
+        var m_canvas = document.createElement('canvas');
+        m_canvas.width = width;
+        m_canvas.height = height;
+        return m_canvas;
+    }
 }

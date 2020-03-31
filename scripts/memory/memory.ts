@@ -10,7 +10,6 @@ class Memory extends Game {
     cards: Card[];
     mouse: Mouse;
     wasDownLastFrame: boolean;
-    firstFrame: boolean;
 
     constructor() {
         super();
@@ -24,16 +23,11 @@ class Memory extends Game {
         }
     }
 
-    _frame(dt) {
-        super._frame(dt);
-
-        Debug.time('DT:', dt);
-
-        if (this.cards.some(c => c.currentState !== 0 && c.currentState !== 1) || this.firstFrame || !this.hasRoundStarted) {
-            this.firstFrame = false;
-            this.renderer.draw(GameCanvas.ctx, this.world);
-        }
-        this.renderer.update(dt, this.world);
+    _shouldDrawFrame() {
+        return this.cards.some(c => c.currentState !== 0 && c.currentState !== 1) 
+            || this.firstFrame 
+            || !this.hasRoundStarted
+            || this.imageLoadedThisFrame;
     }
 
     StartRound() {
@@ -48,17 +42,17 @@ class Memory extends Game {
     }
 
     RunRound() {
-        let isMouseOverButon = false;
+        let isMouseOverButton = false;
 
         //hover mouse
         this.cards.filter(c => !c.locked).forEach(ro => {
             if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height) && !ro.flipped) {
                 Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
-                isMouseOverButon = true;
+                isMouseOverButton = true;
             }
         });
 
-        if (isMouseOverButon) {
+        if (isMouseOverButton) {
             GameCanvas.canvas.style.cursor = 'pointer';
         }
         else {
@@ -122,8 +116,6 @@ class Memory extends Game {
         }
 
         this.roundDelay = 0;
-
-        this.StartRound();
     }
 
     Restart() {

@@ -3,18 +3,18 @@ import { Point } from './renderer';
 export enum ID_CONST { Player = 100, Enemy = 2, PowerUp = -3, Tile = -1, Grid = 9001, Flag = 11, Wall = -101, Ground = -100, Bullet = 101, Street = -80, Spawner = 10 }
 export enum KEY_CONST { left = 65, right = 68, up = 87, down = 83, pause = 80, x = 88, r = 82, menu = 77 };
 
-export var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false };
+export var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false, image: true };
 
 export class Debug {
     static log(...logMessages: any[]) {
         if (_DEBUG) {
-            console.log('LOG: ', logMessages);
+            console.log('LOG: ', ...logMessages);
         }
     }
 
     static draw(...logMessages: any[]) {
         if (_DEBUG.draw) {
-            console.log('DRAW: ', logMessages);
+            console.log('DRAW: ', ...logMessages);
         }
     }
 
@@ -38,19 +38,25 @@ export class Debug {
 
     static generation(...logMessages: any[]) {
         if (_DEBUG.generation) {
-            console.log('GENERATION: ', logMessages);
+            console.log('GENERATION: ', ...logMessages);
         }
     }
 
     static mouse(...logMessages: any[]) {
         if (_DEBUG.mouse) {
-            console.log('MOUSE: ', logMessages);
+            console.log('MOUSE: ', ...logMessages);
         }
     }
 
     static game(...logMessages: any[]) {
         if (_DEBUG.game) {
-            console.log('GAME: ', logMessages);
+            console.log('GAME: ', ...logMessages);
+        }
+    }
+
+    static image(...logMessages: any[]) {
+        if (_DEBUG.image) {
+            console.log('IMAGE: ', ...logMessages);
         }
     }
 }
@@ -83,7 +89,7 @@ export class Mouse {
         canvas.addEventListener(
             "mousemove", this.moveHandler.bind(this)
         );
-        
+
         canvas.addEventListener("touchstart", this.downHandler.bind(this));
         canvas.addEventListener("touchend", this.upHandler.bind(this));
         canvas.addEventListener("touchmove", this.moveHandler.bind(this));
@@ -93,15 +99,15 @@ export class Mouse {
         const mouseX = (mouseEvent as MouseEvent).clientX || ((mouseEvent as TouchEvent).touches.length && (mouseEvent as TouchEvent).touches[0].clientX);
         const mouseY = (mouseEvent as MouseEvent).clientY || ((mouseEvent as TouchEvent).touches.length && (mouseEvent as TouchEvent).touches[0].clientY);
 
-        if (this.relative){
+        if (this.relative) {
             const rect = this._canvas.getBoundingClientRect(); // abs. size of element
             const scaleX = this._canvas.width / rect.width;   // relationship bitmap vs. element for X
             const scaleY = this._canvas.height / rect.height;  // relationship bitmap vs. element for Y
 
             return new Point((mouseX - rect.left) * scaleX,   // scale mouse coordinates after they have
-                            (mouseY - rect.top) * scaleY);     // been adjusted to be relative to element
+                (mouseY - rect.top) * scaleY);     // been adjusted to be relative to element
         }
-        
+
         const rect = this._canvas.getBoundingClientRect();
         return new Point(mouseX - rect.left, mouseY - rect.top);
     }
@@ -226,16 +232,6 @@ export class Key {
     };
 }
 
-declare global {
-    interface Math {
-        range: (min: number, max: number) => number;
-    }
-}
-
-Math.range = function (min: number, max: number) {
-    return Math.floor((Math.random() * max) + min);
-}
-
 export class KeyboardManager {
     static downKeys = {};
     static trackedKeys = {};
@@ -343,5 +339,28 @@ export class Timer {
         this.lastTime = now;
 
         return this.step;
+    }
+}
+
+declare global {
+    interface Array<T> {
+        first(filter?: (value: T, index: number, array: T[]) => boolean): T;
+    }
+    interface Math {
+        range: (min: number, max: number) => number;
+    }
+}
+
+Math.range = function (min: number, max: number) {
+    return Math.floor((Math.random() * max) + min);
+}
+
+if (!Array.prototype.first) {
+    Array.prototype.first = function <T>(this: T[], filter?: (value: T, index: number, array: T[]) => boolean): T {
+        let ary: T[] = this;
+        if (filter){
+            ary = this.filter(filter);
+        }
+        return ary.length > 0 ? ary[0] : null;
     }
 }
