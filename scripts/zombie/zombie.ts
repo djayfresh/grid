@@ -28,17 +28,23 @@ class ZombieGame extends Game {
         //move the world
         const worldX = this.world.pos.x;
         const worldY = this.world.pos.y;
+        
+        const playerX = this.world.player.pos.x;
+        const playerY = this.world.player.pos.y;
+        const playerW = (this.world.player as Rectangle).width;
+        const playerH = (this.world.player as Rectangle).height;
+        const playerRect = { x: playerX, y: playerY, w: playerW, h: playerH };
 
         if (this.world.playerAttachedToCenter){
             const move = { x: worldX + worldMove.x, y: worldY + worldMove.y };
-            if (this.noCollisions(move)) {
+            if (this.noCollisions(move, playerRect)) {
                 this.world.setPos(move.x, move.y);
             }
-            else if (this.noCollisions({ x: worldX - worldMove.x, y: move.y })) {
+            else if (this.noCollisions({ x: worldX - worldMove.x, y: move.y }, playerRect)) {
                 Debug.game("valid 1", worldMove);
                 this.world.setPos(worldX, move.y);
             }
-            else if (this.noCollisions({ x: move.x, y: worldY - worldMove.y })) {
+            else if (this.noCollisions({ x: move.x, y: worldY - worldMove.y }, playerRect)) {
                 Debug.game("valid 2", worldMove);
                 this.world.setPos(move.x, worldY);
             }
@@ -50,39 +56,6 @@ class ZombieGame extends Game {
         else {
             this.world.setPos(worldX, worldY);
         }
-    }
-
-    noCollisions(newPos: {x: number, y: number}) {
-        //TODO: Make sure collision detection works for all object types
-        const blockers = this.world.map.filter(ro => ro.attributes.indexOf(RenderObjectAttributes.Blocking) >= 0) as Rectangle[];
-
-
-        const playerX = this.world.player.pos.x;// + (this.world.player.width / 2);
-        const playerY = this.world.player.pos.y;// + (this.world.player.height / 2);
-
-        const playerBlocked = blockers.some(s => {
-            return Physics.collision(playerX, playerY, this.world.player.width, this.world.player.height, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
-        });
-
-        if (playerBlocked){
-            return false;
-        }
-
-        const holders = this.world.map.filter(ro => ro.attributes.indexOf(RenderObjectAttributes.Holding) >= 0) as Rectangle[];
-        
-        const worldX = this.world.pos.x;
-        const worldY = this.world.pos.y;
-
-        const playerHeadedOutside = holders.some(s => {
-            const wasInside = Physics.insideBounds(playerX, playerY, this.world.player.width, this.world.player.height, s.pos.x + worldX, s.pos.y + worldY, s.width, s.height);
-            return wasInside && !Physics.insideBounds(playerX, playerY, this.world.player.width, this.world.player.height, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
-        });
-
-        if (playerHeadedOutside){
-            return false;
-        }
-
-        return true;
     }
 
     _init() {

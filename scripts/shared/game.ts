@@ -1,7 +1,9 @@
-import { Renderer } from './renderer';
+import { Renderer, RenderObjectAttributes } from './renderer';
 import { Timer, KEY_CONST, Key, debounce, Mouse, Debug } from './utility';
 import { GameCanvas } from './canvas';
 import { World } from './world';
+import { Physics } from './physics';
+import { Rectangle } from './objects';
 
 export class Game {
     renderer = new Renderer();
@@ -169,6 +171,39 @@ export class Game {
                 this.Pause();
             });
         }
+    }
+    
+
+    noCollisions(newPos: {x: number, y: number}, rect: {x: number, y: number, w: number, h: number}) {
+        //TODO: Make sure collision detection works for all object types
+        const blockers = this.world.map.filter(ro => ro.attributes.indexOf(RenderObjectAttributes.Blocking) >= 0) as Rectangle[];
+
+        const playerBlocked = blockers.some(s => {
+            return Physics.collision(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
+        });
+
+        if (playerBlocked){
+            return false;
+        }
+
+        const holders = this.world.map.filter(ro => ro.attributes.indexOf(RenderObjectAttributes.Holding) >= 0) as Rectangle[];
+        
+        const worldX = this.world.pos.x;
+        const worldY = this.world.pos.y;
+
+        const playerHeadedOutside = holders.some(s => {
+            const wasInside = Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + worldX, s.pos.y + worldY, s.width, s.height);
+            return wasInside && !Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
+        });
+
+        if (playerHeadedOutside){
+            const exits = this.world.map.filter(ro => ro.attributes.indexOf(RenderObjectAttributes.Exiting) >= 0) as Rectangle[];
+            //moving into an exit
+            const playerOnExit = exits.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height))
+            return playerOnExit;
+        }
+
+        return true;
     }
 
     Restart() {       

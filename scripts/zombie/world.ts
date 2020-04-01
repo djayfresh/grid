@@ -28,6 +28,7 @@ export class ZombieWorld extends World {
         leftStreet.attributes.push(RenderObjectAttributes.Holding);
 
         const centerStreet = new Rectangle(ID_CONST.Street, Colors.Black, 5, this.center.y - (streetWidth / 2), 400, streetWidth);
+        centerStreet.attributes.push(RenderObjectAttributes.Exiting); //where the streets connect player can exit
 
         renderObjects.push(leftStreet);
         renderObjects.push(centerStreet); //center street

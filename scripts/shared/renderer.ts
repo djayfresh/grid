@@ -4,6 +4,7 @@ import { World } from './world';
 export enum RenderObjectAttributes {
     Blocking = 1, // collision with
     Holding = 2, // prevent leaving object
+    Exiting = 3, // way to leave a holding object
 }
 
 export class RenderObject {
