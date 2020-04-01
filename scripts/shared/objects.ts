@@ -152,3 +152,16 @@ export class RenderImage extends RenderObject {
         }
     }
 }
+
+export class CanvasBounds extends Rectangle {
+    constructor(id: number, x: number, y: number, w: number, h: number){
+        super(id, '', x, y, w, h);
+    }
+
+    draw() {}
+    preDraw() {}
+    update(_dt: number, world: World) {
+        this.pos.x = -world.pos.x;
+        this.pos.y = -world.pos.y;
+    }
+}

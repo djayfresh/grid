@@ -1,9 +1,10 @@
 import { World } from '../shared/world';
 import { Player, Spawner } from './objects';
-import { Rectangle } from '../shared/objects';
+import { Rectangle, CanvasBounds } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
-import { Point, RenderObjectAttributes } from '../shared/renderer';
+import { Point, RenderObjectAttributes, RenderObject } from '../shared/renderer';
+import { GameCanvas } from '../shared/canvas';
 
 export class ZombieWorld extends World {
     player: Player;
@@ -35,6 +36,11 @@ export class ZombieWorld extends World {
 
         renderObjects.push(new Rectangle(ID_CONST.Ground, Colors.Ground, -1000, -1000, 2000, 2000)); //global ground
         // renderObjects.push(new Spawner(Colors.Environment, 100, 100));
+
+        //screen bounds
+        const bounds = new CanvasBounds(-1000, 0, 0, GameCanvas.width, GameCanvas.height);
+        bounds.attributes.push(RenderObjectAttributes.Holding);
+        renderObjects.push(bounds);
 
         this.setMap(renderObjects);
         this.setPlayer(player);
