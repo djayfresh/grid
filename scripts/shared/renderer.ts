@@ -165,7 +165,7 @@ export class Point implements IPoint {
         return new Point(this.x/dis, this.y/dis);
     }
     
-    multiply(value){
+    multiply(value: number){
         return new Point(this.x * value, this.y * value);
     }
 
@@ -173,31 +173,35 @@ export class Point implements IPoint {
         return Math.hypot(this.x, this.y);
     }
 
+    static simple(x: number, y: number): IPoint {
+        return { x, y };
+    }
+
     static create(point: IPoint){
         return new Point(point.x, point.y);
     }
 
-    static subtract(a: Point, b: Point) {
+    static subtract(a: IPoint, b: IPoint) {
         const dx = a.x - b.x;
         const dy = a.y - b.y;
 
         return new Point(dx, dy);
     }
 
-    static distance(a: Point, b: Point) {
+    static distance(a: IPoint, b: IPoint) {
         const delta = Point.subtract(a, b);
         return Math.hypot(delta.x, delta.y);
     }
 
-    static dot(a: Point, b: Point){
+    static dot(a: IPoint, b: IPoint){
         return a.x * b.x + a.y * b.y;
     }
 
-    static direction(a: Point, b: Point) {
+    static direction(a: IPoint, b: IPoint) {
         return Point.subtract(a, b).normalized();
     }
 
-    static lerp(t: number, a: Point, b: Point){ 
+    static lerp(t: number, a: IPoint, b: IPoint){ 
         const sub = Point.subtract(b, a);
         const percent = sub.multiply(t > 1? 1 : t < -1 ? -1 : t);
 

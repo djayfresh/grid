@@ -1,5 +1,5 @@
 import { Rectangle } from '../shared/objects';
-import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse } from '../shared/utility';
+import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse, Timer } from '../shared/utility';
 import { Point, Renderer, RenderObjectAttributes } from '../shared/renderer';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
@@ -15,8 +15,9 @@ export class Player extends Rectangle {
     weapons: Weapon[];
     weaponSwitched = false;
 
+    moveToCenterTime = 0;
     moveToCenter: number = 1;
-    moveToCenterRate: number = 0.006;
+    moveToCenterRate: number = 1000;
     attachPlayerToCenter: boolean = false;
     playerFreeMoveChanged: boolean = false;
     freeMovePos: Point;
@@ -41,7 +42,7 @@ export class Player extends Rectangle {
 
     draw(ctx: CanvasRenderingContext2D, world: ZombieWorld) {
         if (!this.attachPlayerToCenter){
-            const move = KeyboardManager.moves(true);
+            const move = KeyboardManager.moves(false);
 
             world.validateMove(move, {
                 x: this.pos.x,
@@ -49,12 +50,12 @@ export class Player extends Rectangle {
                 w: this.width,
                 h: this.height
             }, {
-                x: 0,
-                y: 0
+                x: world.pos.x,
+                y: world.pos.y
             }
             , (x, y) => {
-                this.pos.x += x;
-                this.pos.y += y;
+                this.pos.x -= x - world.pos.x;
+                this.pos.y -= y - world.pos.y;
             });
         }
         this.drawSticky(ctx, world, () => this._drawPlayer(ctx));
@@ -73,6 +74,7 @@ export class Player extends Rectangle {
                 this.playerFreeMoveChanged = true;
                 this.attachPlayerToCenter = !this.attachPlayerToCenter;
                 this.moveToCenter = 0;
+                this.moveToCenterTime = 0;
 
                 this.freeMovePos = new Point(this.pos.x, this.pos.y);
                 if (!this.attachPlayerToCenter){
@@ -85,16 +87,22 @@ export class Player extends Rectangle {
         }
 
         if (this.attachPlayerToCenter && this.moveToCenter < 1){
-            const pos = new Point(world.screen.x / 2, world.screen.y / 2);
+            this.moveToCenterTime += dt;
+
+            const pos = Point.simple(world.screen.x / 2, world.screen.y / 2);
             pos.x -= this.width / 2;
             pos.y -= this.height / 2;
-            console.log("Lerp", this.pos, this.moveToCenter, this.freeMovePos, pos);
+            // const dist = Point.subtract(pos, this.freeMovePos).magnitude();
 
             this.pos = Point.lerp(this.moveToCenter, this.freeMovePos, pos);
 
-            this.moveToCenter += this.moveToCenterRate;
+            this.moveToCenter = this.moveToCenterTime / this.moveToCenterRate;
         }
         else if (this.attachPlayerToCenter){
+            const pos = new Point(world.screen.x / 2, world.screen.y / 2);
+            pos.x -= this.width / 2;
+            pos.y -= this.height / 2;
+            this.pos = pos;
             world.playerAttachedToCenter = true;
         }
         else if (!this.attachPlayerToCenter){

@@ -36,7 +36,7 @@ class ZombieGame extends Game {
         const playerRect = { x: playerX, y: playerY, w: playerW, h: playerH };
 
         if (this.world.playerAttachedToCenter){
-            this.world.validateMove(move, playerRect, { x: worldX, y: worldY }, (x, y) => this.world.setPos(x, y));
+            this.world.validateMove(move, playerRect, { x: worldX, y: worldY }, (x, y) => this.world.setPos(x, y), () => this.world.setPos(worldX, worldY));
         }
         else {
             this.world.setPos(worldX, worldY);

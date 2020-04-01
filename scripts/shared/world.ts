@@ -86,7 +86,7 @@ export class World {
         return [];
     }
 
-    validateMove(move: IPoint, rect: {x: number, y: number, w: number, h: number}, origin: IPoint, validMove: (x: number, y: number) => void) {
+    validateMove(move: IPoint, rect: {x: number, y: number, w: number, h: number}, origin: IPoint, validMove: (x: number, y: number) => void, invalidMove?: () => void) {
         //move the world
         const worldMove = { x: origin.x + move.x, y: origin.y + move.y };
 
@@ -101,9 +101,8 @@ export class World {
             Debug.game("valid 2", move);
             validMove(worldMove.x, origin.y);
         }
-        else {
-            Debug.game("No valid moves", move);
-            validMove(origin.x, origin.y);
+        else if (!!invalidMove) {
+            invalidMove();
         }
     }
 
