@@ -1,5 +1,5 @@
 import { ID_CONST, Debug } from '../shared/utility';
-import { Point, RenderObject, CanvasRender } from '../shared/renderer';
+import { Point, RenderObject, CanvasRender, IPoint } from '../shared/renderer';
 import { GameCanvas } from '../shared/canvas';
 import { Line } from '../shared/objects';
 import { Colors } from '../shared/colors';
@@ -49,7 +49,7 @@ export class Board {
         return Colors.White;
     }
 
-    posToBoard(pos: { x: number, y: number }) {
+    posToBoard(pos: IPoint) {
         const cellX = Math.floor(pos.x / this.squareSize.x);
         const cellY = Math.floor(pos.y / this.squareSize.y);
         return { x: cellX, y: cellY };

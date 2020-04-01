@@ -250,21 +250,21 @@ export class KeyboardManager {
         return this.trackedKeys[keyCode];
     }
 
-    static moves() {
+    static moves(reversed: boolean = false) {
         let x = 0;
         let y = 0;
 
         if (KeyboardManager.isKeyDown(KEY_CONST.right)) {
-            x += -1;
+            x += reversed? 1 : -1;
         }
         if (KeyboardManager.isKeyDown(KEY_CONST.down)) {
-            y += -1;
+            y += reversed? 1 : -1;
         }
         if (KeyboardManager.isKeyDown(KEY_CONST.left)) {
-            x += 1;
+            x += reversed? -1 : 1;
         }
         if (KeyboardManager.isKeyDown(KEY_CONST.up)) {
-            y += 1;
+            y += reversed? -1 : 1;
         }
 
         return { x, y };

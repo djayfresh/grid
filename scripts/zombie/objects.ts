@@ -41,11 +41,22 @@ export class Player extends Rectangle {
 
     draw(ctx: CanvasRenderingContext2D, world: ZombieWorld) {
         if (!this.attachPlayerToCenter){
-            const move = KeyboardManager.moves();
-            this.pos.x += -move.x;
-            this.pos.y += -move.y;
-        }
+            const move = KeyboardManager.moves(true);
 
+            world.validateMove(move, {
+                x: this.pos.x,
+                y: this.pos.y,
+                w: this.width,
+                h: this.height
+            }, {
+                x: 0,
+                y: 0
+            }
+            , (x, y) => {
+                this.pos.x += x;
+                this.pos.y += y;
+            });
+        }
         this.drawSticky(ctx, world, () => this._drawPlayer(ctx));
     }
 

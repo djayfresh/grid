@@ -23,7 +23,7 @@ class ZombieGame extends Game {
     }
 
     RunRound() {
-        const worldMove = KeyboardManager.moves();
+        const move = KeyboardManager.moves();
 
         //move the world
         const worldX = this.world.pos.x;
@@ -36,22 +36,7 @@ class ZombieGame extends Game {
         const playerRect = { x: playerX, y: playerY, w: playerW, h: playerH };
 
         if (this.world.playerAttachedToCenter){
-            const move = { x: worldX + worldMove.x, y: worldY + worldMove.y };
-            if (this.noCollisions(move, playerRect)) {
-                this.world.setPos(move.x, move.y);
-            }
-            else if (this.noCollisions({ x: worldX - worldMove.x, y: move.y }, playerRect)) {
-                Debug.game("valid 1", worldMove);
-                this.world.setPos(worldX, move.y);
-            }
-            else if (this.noCollisions({ x: move.x, y: worldY - worldMove.y }, playerRect)) {
-                Debug.game("valid 2", worldMove);
-                this.world.setPos(move.x, worldY);
-            }
-            else {
-                Debug.game("No valid moves", worldMove);
-                this.world.setPos(worldX, worldY);
-            }
+            this.world.validateMove(move, playerRect, { x: worldX, y: worldY }, (x, y) => this.world.setPos(x, y));
         }
         else {
             this.world.setPos(worldX, worldY);

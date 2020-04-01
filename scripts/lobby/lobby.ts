@@ -4,7 +4,7 @@ import { GameCanvas } from '../shared/canvas';
 import { Physics } from '../shared/physics';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Rectangle, RenderText } from '../shared/objects';
-import { Point, CanvasRender } from '../shared/renderer';
+import { Point, CanvasRender, IPoint } from '../shared/renderer';
 import { Colors } from '../shared/colors';
 
 export var LevelConst = { Grid: 0, Zombie: 1, HighScore: 2, Memory: 3 };
@@ -142,7 +142,7 @@ export class Lobby extends Game {
         const cubeSizes = 60;
         const colorCubes = [Colors.Player, Colors.Flag, Colors.PowerUp, Colors.Enemy, Colors.Wall];
 
-        const genCords: {x: number, y: number}[] = []
+        const genCords: IPoint[] = []
 
         const cubeSub = cubeSizes/3;
         const cubeW = GameCanvas.width - cubeSub;

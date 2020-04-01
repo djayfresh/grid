@@ -1,9 +1,9 @@
-import { RenderObject, Point } from './renderer';
+import { RenderObject, Point, IPoint } from './renderer';
 import { Physics } from './physics';
 import { Debug } from './utility';
 import { World } from './world';
 import { Colors } from './colors';
-import { ImageSource, SceneImage, ImageManager } from './images';
+import { SceneImage, ImageManager } from './images';
 import { GameCanvas } from './canvas';
 
 export class Rectangle extends RenderObject {
@@ -114,7 +114,7 @@ export class Line extends RenderObject {
 export class RenderImage extends RenderObject {
     sceneImage: SceneImage;
 
-    constructor(image: SceneImage, id: number, pos: {x: number, y: number}) {
+    constructor(image: SceneImage, id: number, pos: IPoint) {
         super(id, pos.x, pos.y);
 
         this.sceneImage = image;

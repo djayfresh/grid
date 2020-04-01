@@ -146,7 +146,12 @@ export class Renderer {
     }
 }
 
-export class Point {
+export interface IPoint {
+    x: number;
+    y: number;
+}
+
+export class Point implements IPoint {
     x: number;
     y: number;
 
@@ -166,6 +171,10 @@ export class Point {
 
     magnitude() {
         return Math.hypot(this.x, this.y);
+    }
+
+    static create(point: IPoint){
+        return new Point(point.x, point.y);
     }
 
     static subtract(a: Point, b: Point) {
