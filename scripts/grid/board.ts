@@ -166,6 +166,107 @@ export class Board {
         return map;
     }
 
+    valid(id: ID_CONST, toId: ID_CONST, validSpaces: ID_CONST[]){
+        const validBoard = {};
+        const visitedSpaces = {};
+        let start: IPoint;
+
+        for(let x = 0; x < this.gridSize; x++){
+            for(let y = 0; y < this.gridSize; y++) {
+                const tile = this.grid[x][y];
+
+                if(tile === id){
+                    start = {x, y};
+                }
+
+                if (validSpaces.indexOf(tile) >= 0) {
+                    if(!validBoard[x]){
+                        validBoard[x] = {};
+                    }
+                    validBoard[x][y] = tile;
+                }
+            }
+        }
+
+        return this._getNextDirection(start, validBoard, visitedSpaces, toId);
+    }
+
+    _getNextDirection(current: IPoint, validSpaces: {}, visitedSpaces: {}, destinationId: ID_CONST): boolean {
+        if (validSpaces[current.x][current.y] === destinationId){
+            return true;
+        }
+
+        if (!visitedSpaces[current.x]){
+            visitedSpaces[current.x] = {};
+        }
+
+        if (visitedSpaces[current.x][current.y]){
+            return false;
+        }
+
+        visitedSpaces[current.x][current.y] = true;
+        
+        const center = validSpaces[current.x];
+        if(center){
+            if (center[current.y + 1]) {
+                const valid = this._getNextDirection({ x: current.x, y: current.y + 1 }, validSpaces, visitedSpaces, destinationId);
+                if (valid){
+                    return true;
+                }
+            }
+            if (center[current.y - 1]) {
+                const valid = this._getNextDirection({ x: current.x, y: current.y - 1 }, validSpaces, visitedSpaces, destinationId);
+                if (valid){
+                    return true;
+                }
+            }
+        }
+
+        const right = validSpaces[current.x + 1];
+        if(right){
+            if (right[current.y]) {
+                const valid = this._getNextDirection({ x: current.x + 1, y: current.y }, validSpaces, visitedSpaces, destinationId);
+                if (valid){
+                    return true;
+                }
+            }
+            if (right[current.y + 1]) {
+                const valid = this._getNextDirection({ x: current.x + 1, y: current.y + 1 }, validSpaces, visitedSpaces, destinationId);
+                if (valid){
+                    return true;
+                }
+            }
+            if (right[current.y - 1]) {
+                const valid = this._getNextDirection({ x: current.x + 1, y: current.y - 1 }, validSpaces, visitedSpaces, destinationId);
+                if (valid){
+                    return true;
+                }
+            }
+        }
+
+        const left = validSpaces[current.x - 1];
+        if(left){
+            if (left[current.y]) {
+                const valid = this._getNextDirection({ x: current.x - 1, y: current.y }, validSpaces, visitedSpaces, destinationId);
+                if (valid){
+                    return true;
+                }
+            }
+            if (left[current.y + 1]) {
+                const valid = this._getNextDirection({ x: current.x - 1, y: current.y + 1 }, validSpaces, visitedSpaces, destinationId);
+                if (valid){
+                    return true;
+                }
+            }
+            if (left[current.y - 1]) {
+                const valid = this._getNextDirection({ x: current.x - 1, y: current.y - 1 }, validSpaces, visitedSpaces, destinationId);
+                if (valid){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     createGrid() {
         //Since lines and text are expensive to re-draw

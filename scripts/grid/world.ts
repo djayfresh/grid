@@ -25,47 +25,55 @@ export class GridWorld extends World {
         this.board = new Board(this.gridSize);
 
         renderObjects.push(this.board.createGrid());
-        
-        const map = this.board.generateMap((map) => {
-            
-            this.board.insert(map, { id: ID_CONST.Player }); // player randomly on the map
-            this.board.insert(map, { id: ID_CONST.Flag }); // flag randomly on the map
+        let map: ID_CONST[][];
+        let i = 1;
+        const failThreshold = 5;
+        do {
+            map = this.board.generateMap((map) => {
+                
+                this.board.insert(map, { id: ID_CONST.Player }); // player randomly on the map
+                this.board.insert(map, { id: ID_CONST.Flag }); // flag randomly on the map
 
-            if (this.difficulty > 10 && Math.random() > 0.75) {
-                this.board.insert(map, { id: ID_CONST.PowerUp });
-            }
+                if (this.difficulty > 10 && Math.random() > 0.75) {
+                    this.board.insert(map, { id: ID_CONST.PowerUp });
+                }
 
-            for (let i = 0; i < this.difficulty; i++) {
-                this.board.insert(map, { id: ID_CONST.Enemy }); // enemy randomly on the map
-            }
-        });
+                for (let i = 0; i < this.difficulty; i++) {
+                    this.board.insert(map, { id: ID_CONST.Enemy }); // enemy randomly on the map
+                }
+            });
+        }while(!this.board.valid(ID_CONST.Player, ID_CONST.Flag, [ID_CONST.Player, ID_CONST.Flag, ID_CONST.Tile, ID_CONST.PowerUp]) && i++ < failThreshold);
+
+        if (i > failThreshold){
+            console.log("Unable to generated");
+        }
 
         const squareX = this.board.squareSize.x;
         const squareY = this.board.squareSize.y;
         
-        for (let i = 0; i < map.length; i++) {
-            for (let j = 0; j < map.length; j++) {
-                const id = map[i][j];
+        for (let x = 0; x < map.length; x++) {
+            for (let y = 0; y < map.length; y++) {
+                const id = map[x][y];
                 if (id === ID_CONST.Player){
-                    const playerPos = this.board.boardToPos(i, j);
+                    const playerPos = this.board.boardToPos(x, y);
                     const player = new GridPlayer(playerPos.x, playerPos.y, squareX, squareY);
                     renderObjects.push(player);
                     this.setPlayer(player);
                 }
                 else if (id === ID_CONST.Enemy) {
-                    const pos = this.board.boardToPos(i, j);
+                    const pos = this.board.boardToPos(x, y);
                     renderObjects.push(new Rectangle(ID_CONST.Enemy, this.board.getColorForId(ID_CONST.Enemy), pos.x, pos.y, squareX, squareY));
                 }
                 else if (id === ID_CONST.Flag) {
-                    const pos = this.board.boardToPos(i, j);
+                    const pos = this.board.boardToPos(x, y);
                     renderObjects.push(new Rectangle(ID_CONST.Flag, this.board.getColorForId(ID_CONST.Flag), pos.x, pos.y, squareX, squareY));
                 }
                 else if (id === ID_CONST.PowerUp) {
-                    const pos = this.board.boardToPos(i, j);
+                    const pos = this.board.boardToPos(x, y);
                     renderObjects.push(new Rectangle(ID_CONST.PowerUp, this.board.getColorForId(ID_CONST.PowerUp), pos.x, pos.y, squareX, squareY));
                 }
                 else if (id === ID_CONST.Wall) {
-                    const pos = this.board.boardToPos(i, j);
+                    const pos = this.board.boardToPos(x, y);
                     renderObjects.push(new Rectangle(ID_CONST.Wall, this.board.getColorForId(ID_CONST.Wall), pos.x, pos.y, squareX, squareY));
                 }
             }
