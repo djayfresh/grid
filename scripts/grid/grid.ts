@@ -70,7 +70,7 @@ class Grid extends Game {
                 case ID_CONST.PowerUp:
                     //Enable PowerUP
                     Debug.log("Power Up");
-                    this.renderer.remove(ID_CONST.PowerUp); //player picked up
+                    this.world.remove(ID_CONST.PowerUp); //player picked up
 
                     this.score -= 10;
                     move();
@@ -95,15 +95,15 @@ class Grid extends Game {
         this.currentDelay = 0;
         this.hasRoundStarted = false;
 
-        this.renderer.reset();
-        this.renderer.add(...this.world.getRoundStart(1));
+        this.world.reset();
+        this.world.setRoundStart(1);
 
         GameCanvas.canvas.style.cursor = 'pointer'; //change mouse pointer
     }
 
     StartRound() {
-        this.renderer.reset();
-        this.renderer.add(...this.world.generateMap());
+        this.world.reset();
+        this.world.generateMap();
     }
 
     NextRound() {
@@ -117,8 +117,8 @@ class Grid extends Game {
 
         this.currentDelay = 0;
 
-        this.renderer.reset();
-        this.renderer.add(...this.world.getRoundStart(this.difficulty, this.score));
+        this.world.reset();
+        this.world.setRoundStart(this.difficulty, this.score);
     }
 
     GameOver() {
@@ -127,8 +127,8 @@ class Grid extends Game {
 
         this.world.difficulty = this.difficulty;
 
-        this.renderer.reset();
-        this.renderer.add(...this.world.getGameOver(this.score));
+        this.world.reset();
+        this.world.setGameOver(this.score);
 
         this.score = 0;
     }

@@ -37,6 +37,16 @@ export class World {
         this.map = map;
     }
 
+    reset() {
+        this._removeCanvasObjects();
+        this.map = [];
+
+        this.pos = new Point(0, 0);
+        this.lastPos = this.pos;
+        this.origin = this.pos;
+        this.moved = false;
+    }
+
     setPlayer(player: RenderObject){
         this.player = player;
     }
@@ -81,9 +91,8 @@ export class World {
         return new Point(a.x - this.pos.x, a.y - this.pos.y);
     }
 
-    generateMap(): RenderObject[] {
+    generateMap() {
         //placeholder
-        return [];
     }
 
     validateMove(move: IPoint, rect: {x: number, y: number, w: number, h: number}, origin: IPoint, validMove: (x: number, y: number) => void, invalidMove?: () => void) {
@@ -133,5 +142,19 @@ export class World {
         }
 
         return true;
+    }
+
+    add(...renderObjects: RenderObject[]) {
+        this.map.push(...renderObjects);
+    };
+
+    remove(id: number) {
+        this.map = this.map.filter(ro => ro.id !== id);
+    }
+    
+    _removeCanvasObjects() {
+        this.map.filter(ro => !!ro.canvas).forEach(ro => {
+            delete ro.canvas;
+        });
     }
 }

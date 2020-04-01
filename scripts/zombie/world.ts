@@ -16,13 +16,12 @@ export class ZombieWorld extends World {
 
     //TODO: Move to board
     generateMap() {
-        const renderObjects = [];
         const streetWidth = 40;
 
         const player = new Player();
         player.attachPlayerToCenter = this.playerAttachedToCenter;
         player.pos = new Point(((this.screen.x / 2) - (player.width / 2)), ((this.screen.y / 2) - (player.height / 2)));
-        renderObjects.push(player);
+        this.add(player);
 
         //Streets
         const leftStreet = new Rectangle(ID_CONST.Street, Colors.Black, 5, 5, streetWidth, 500); //left street
@@ -31,20 +30,17 @@ export class ZombieWorld extends World {
         const centerStreet = new Rectangle(ID_CONST.Street, Colors.Black, 5, this.center.y - (streetWidth / 2), 400, streetWidth);
         centerStreet.attributes.push(RenderObjectAttributes.Exiting); //where the streets connect player can exit
 
-        renderObjects.push(leftStreet);
-        renderObjects.push(centerStreet); //center street
+        this.add(leftStreet);
+        this.add(centerStreet); //center street
 
-        renderObjects.push(new Rectangle(ID_CONST.Ground, Colors.Ground, -1000, -1000, 2000, 2000)); //global ground
+        this.add(new Rectangle(ID_CONST.Ground, Colors.Ground, -1000, -1000, 2000, 2000)); //global ground
         // renderObjects.push(new Spawner(Colors.Environment, 100, 100));
 
         //screen bounds
         const bounds = new CanvasBounds(-1000, 0, 0, GameCanvas.width, GameCanvas.height);
         bounds.attributes.push(RenderObjectAttributes.Holding);
-        renderObjects.push(bounds);
+        this.add(bounds);
 
-        this.setMap(renderObjects);
         this.setPlayer(player);
-
-        return renderObjects;
     }
 }

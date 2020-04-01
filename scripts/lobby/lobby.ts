@@ -43,22 +43,22 @@ export class Lobby extends Game {
         
         Debug.time('DT:', dt);
 
-        let isMouseOverButon = false;
+        let isMouseOverButton = false;
         //hover mouse
-        this.renderer.renderObjects.filter(ro => Levels.indexOf(ro.id) >= 0).forEach((ro: Rectangle) => {
+        this.world.map.filter(ro => Levels.indexOf(ro.id) >= 0).forEach((ro: Rectangle) => {
             if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
                 Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
 
                 //button highlight
                 ro.color = Colors.HoverDark;
-                isMouseOverButon = true;
+                isMouseOverButton = true;
             }
             else {
                 ro.color = Colors.White;
             }
         });
 
-        if (isMouseOverButon) {
+        if (isMouseOverButton) {
             GameCanvas.canvas.style.cursor = 'pointer';
         }
         else {
@@ -70,7 +70,7 @@ export class Lobby extends Game {
         }
         else {
             if (this.wasDownLastFrame) {
-                this.renderer.renderObjects.filter(ro => Levels.indexOf(ro.id) >= 0).forEach((ro: Rectangle) => {
+                this.world.map.filter(ro => Levels.indexOf(ro.id) >= 0).forEach((ro: Rectangle) => {
                     ro.color = Colors.White;
 
                     if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
@@ -82,9 +82,6 @@ export class Lobby extends Game {
             }
             this.wasDownLastFrame = false;
         }
-
-        this.renderer.draw(GameCanvas.ctx, this.world);
-        this.renderer.update(dt, this.world);
     }
 
     _init() {
@@ -98,8 +95,9 @@ export class Lobby extends Game {
             this.Resize();
         }
 
-        this.renderer.reset();
+        this.world.reset();
         this._buildLobbyButtons();
+
         this.wasDownLastFrame = false;
     }
 
@@ -128,16 +126,16 @@ export class Lobby extends Game {
             const y = (height * i) + (buttonH * i) + height;
             const x = left - textOffset;
             const btn = new Rectangle(mo.id, Colors.White, x, y, buttonW + (textOffset * 2), buttonH);
-            this.renderer.add(btn);
+            this.world.add(btn);
 
             const btnTextPos = new Point(btn.pos.x + buttonW / 2, btn.pos.y + buttonH * 0.75);
             const btnText = new RenderText(100, {text: mo.text, color: Colors.Black, pos: btnTextPos, centered: true});
             btnText.setContext(t_canvas);
         });
 
-        this.renderer.add(preRender);
+        this.world.add(preRender);
 
-        this.renderer.add(new Rectangle(ID_CONST.Ground, Colors.Black, 0, 0, GameCanvas.width, GameCanvas.height));
+        this.world.add(new Rectangle(ID_CONST.Ground, Colors.Black, 0, 0, GameCanvas.width, GameCanvas.height));
 
         const cubeSizes = 60;
         const colorCubes = [Colors.Player, Colors.Flag, Colors.PowerUp, Colors.Enemy, Colors.Wall];
@@ -159,7 +157,7 @@ export class Lobby extends Game {
 
             genCords.push({x: ranX, y: ranY});
 
-            this.renderer.add(new Rectangle(-10, color, ranX, ranY, cubeSizes, cubeSizes));
+            this.world.add(new Rectangle(-10, color, ranX, ranY, cubeSizes, cubeSizes));
         });
     }
 }

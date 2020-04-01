@@ -25,10 +25,10 @@ class Memory extends Game {
     StartRound() {
         this.score = 100;
 
-        this.renderer.reset();
-        this.renderer.add(...this.world.generateMap());
+        this.world.reset();
+        this.world.generateMap();
 
-        this.cards = this.renderer.renderObjects.filter(ro => ro.id === ID_CONST.Player) as Card[];
+        this.cards = this.world.map.filter(ro => ro.id === ID_CONST.Player) as Card[];
 
         this.firstFrame = true;
     }
@@ -93,8 +93,8 @@ class Memory extends Game {
         this.currentDelay = 0;
         this.cards = [];
 
-        this.renderer.reset();
-        this.renderer.add(...this.world.getGameOver(this.score));
+        this.world.reset();
+        this.world.setGameOver(this.score);
     }
 
     _init() {

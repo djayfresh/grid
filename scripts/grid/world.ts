@@ -83,7 +83,7 @@ export class GridWorld extends World {
         return renderObjects;
     }
 
-    getRoundStart(roundNumber: number, score?: number): RenderObject[] {
+    setRoundStart(roundNumber: number, score?: number) {
         const renderObjects = [];
 
         renderObjects.push(new Rectangle(0, Colors.White, 0, 0, GameCanvas.width, GameCanvas.height));
@@ -93,17 +93,17 @@ export class GridWorld extends World {
             renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
         }
         
-        return renderObjects;
+        this.setMap(renderObjects);
     }
 
-    getGameOver(score: number){
+    setGameOver(score: number){
         const renderObjects = [];
         
         renderObjects.push(new Rectangle(0, Colors.White, 0, 0, GameCanvas.width, GameCanvas.height));
         renderObjects.push(new RenderText(1, { text: `Game Over`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
         renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
         
-        return renderObjects;
+        this.setMap(renderObjects);
     }
 };
 

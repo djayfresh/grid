@@ -134,7 +134,6 @@ export class Player extends Rectangle {
     SetWeapon(weapon: Weapon) {
         this.activeWeapon = weapon;
         this.activeWeapon.getFiringInfo = (mouse: Mouse, world: ZombieWorld) => this._onWeaponFired(mouse, world);
-        this.activeWeapon.fired = bullet => this.renderer.add(bullet);
     }
 
     _onWeaponFired(mouse: Mouse, world: ZombieWorld): FiringInfo {

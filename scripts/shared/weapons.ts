@@ -20,7 +20,6 @@ export class Weapon {
     bulletSpeed = 0.06;
 
     getFiringInfo: (mouse: Mouse, world: World) => FiringInfo = () => null;
-    fired: (bullet: Bullet) => void = () => {};
 
     constructor(getFiringInfo: (mouse: Mouse, world: World) => FiringInfo, options: Partial<Weapon>) {
         this.mouse = new Mouse(0, GameCanvas.canvas, true);
@@ -36,7 +35,7 @@ export class Weapon {
         if (this.mouse.isDown){
             if (this._lastShot === 0 || this._lastShot >= this.rate){
                 if (this.maxAmmo === 0 || this.ammo > 0) {
-                    this.onFire(this.getFiringInfo(this.mouse, world));
+                    this.onFire(this.getFiringInfo(this.mouse, world), world);
                     this._lastShot = 1;
                 }
             }
@@ -47,9 +46,9 @@ export class Weapon {
         }
     }
 
-    onFire(firingInfo: FiringInfo) {
+    onFire(firingInfo: FiringInfo, world: World) {
         const bullet = new Bullet(firingInfo.pos, { force: firingInfo.direction.multiply(this.bulletSpeed), lifeSpan: this.range, damage: this.damage });
-        this.fired(bullet);
+        world.add(bullet);
     }
 
     Reload() {

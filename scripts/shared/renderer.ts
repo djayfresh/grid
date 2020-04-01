@@ -15,7 +15,6 @@ export class RenderObject {
     _isVisible = true;
     _deleted = false;
     canvas: HTMLCanvasElement;
-    renderer?: Renderer;
     attributes: RenderObjectAttributes[] = [];
 
     constructor(id: number, x?: number, y?: number) {
@@ -68,10 +67,6 @@ export class RenderObject {
     isDeleted() {
         return this._deleted;
     }
-
-    setRenderer(renderer: Renderer){
-        this.renderer = renderer;
-    }
 }
 
 export class CanvasRender extends RenderObject {
@@ -87,16 +82,14 @@ export class CanvasRender extends RenderObject {
 }
 
 export class Renderer {
-    renderObjects: RenderObject[] = [];
-
     draw(ctx: CanvasRenderingContext2D, world: World, layer?: number) {
         this.clearScreen(ctx, world);
 
         const worldDelta = world.getPosDelta();
-        Debug.draw('Render Draw:', world.pos, this.renderObjects, worldDelta);
+        Debug.draw('Render Draw:', world.pos, world.map, worldDelta);
         ctx.translate(worldDelta.x, worldDelta.y);
 
-        this.renderObjects
+        world.map
             .sort((a, b) => a.layer - b.layer)
             .filter(ro => !layer || ro.layer === layer)
             .filter(ro => ro.isVisible())
@@ -107,33 +100,33 @@ export class Renderer {
     };
 
     update(dt: number, world: World) {
-        this.renderObjects
+        world.map
             .filter(ro => !ro.isDeleted())
             .forEach(ro => ro.update(dt, world));
     };
 
-    add(...renderObjects: RenderObject[]) {
-        renderObjects.forEach(ro => {
-            if (ro.setRenderer){ 
-                ro.setRenderer(this);
-            }
-        });
-        this.renderObjects.push(...renderObjects);
-    };
+    // add(...renderObjects: RenderObject[]) {
+    //     renderObjects.forEach(ro => {
+    //         if (ro.setRenderer){ 
+    //             ro.setRenderer(this);
+    //         }
+    //     });
+    //     this.renderObjects.push(...renderObjects);
+    // };
 
-    remove(id: number) {
-        this.renderObjects = this.renderObjects.filter(ro => ro.id !== id);
-    }
+    // remove(id: number) {
+    //     this.renderObjects = this.renderObjects.filter(ro => ro.id !== id);
+    // }
 
-    _removeCanvasObjects() {
-        this.renderObjects.filter(ro => !!ro.canvas).forEach(ro => {
-            document.removeChild(ro.canvas);
-        });
-    }
+    // _removeCanvasObjects() {
+    //     this.renderObjects.filter(ro => !!ro.canvas).forEach(ro => {
+    //         document.removeChild(ro.canvas);
+    //     });
+    // }
 
-    reset() {
-        this.renderObjects = [];
-    }
+    // reset() {
+    //     this.renderObjects = [];
+    // }
 
     clearScreen(ctx: CanvasRenderingContext2D, world: World) {
         ctx.translate(-world.pos.x, -world.pos.y); //reset world translate, move back to 0,0

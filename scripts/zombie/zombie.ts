@@ -59,18 +59,17 @@ class ZombieGame extends Game {
             KeyboardManager.track(KEY_CONST.r);
             KeyboardManager.track(KEY_CONST.j);
         }
+        this.world.setPos(0, 0);
 
         this.roundDelay = 0;
 
-        this.renderer.reset();
-        this.renderer.add(...this.world.generateMap());
+        this.world.reset();
+        this.world.generateMap();
 
         GameCanvas.canvas.style.cursor = 'default';
     }
 
     Restart() {
-        this.world.setPos(0, 0);
-
         super.Restart();
 
         this.Resize();

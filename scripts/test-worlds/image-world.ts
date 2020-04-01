@@ -7,7 +7,7 @@ export class ImageWorld extends World {
     images: ImageSource[] = [];
     imagesLoaded: ImageSource[] = [];
 
-    generateMap(): RenderObject[] {
+    generateMap() {
 
         this.addImage({
             catalog: 'game',
@@ -75,7 +75,5 @@ export class ImageWorld extends World {
         }
     
         this.setMap(renderObjects);
-
-        return renderObjects;
     }
 }
