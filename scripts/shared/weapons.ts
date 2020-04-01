@@ -23,7 +23,7 @@ export class Weapon {
     fired: (bullet: Bullet) => void = () => {};
 
     constructor(getFiringInfo: (mouse: Mouse, world: World) => FiringInfo, options: Partial<Weapon>) {
-        this.mouse = new Mouse(0, GameCanvas.canvas);
+        this.mouse = new Mouse(0, GameCanvas.canvas, true);
 
         this.getFiringInfo = getFiringInfo || this.getFiringInfo;
 

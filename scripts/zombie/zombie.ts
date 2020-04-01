@@ -15,14 +15,6 @@ class ZombieGame extends Game {
         super();
     }
 
-    Resize() {
-        GameCanvas.height = GameCanvas.width;
-        if (this.world){
-            this.world.setScreen(GameCanvas.width, GameCanvas.height);
-            this.world.setCanvas(GameCanvas.canvas.clientWidth, GameCanvas.canvas.clientHeight);
-        }
-    }
-
     _frame(dt) {
         super._frame(dt);
 
@@ -75,6 +67,7 @@ class ZombieGame extends Game {
 
         if (!this._initialized){
             this.world = new ZombieWorld(LevelConst.Zombie);
+            this.mouse.relative = true;
             this.Resize();
         
             KeyboardManager.track(KEY_CONST.down);

@@ -26,13 +26,6 @@ export class Lobby extends Game {
         super();
     }
 
-    Resize() {
-        GameCanvas.height = GameCanvas.width;
-        if (this.world){
-            this.world.setScreen(GameCanvas.width, GameCanvas.height);
-        }
-    }
-
     SetMenu(menuOptions: MenuOption[]) {
         this.menuOptions = menuOptions;
     }

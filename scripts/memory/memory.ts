@@ -15,14 +15,6 @@ class Memory extends Game {
         super();
     }
 
-    Resize() {
-        GameCanvas.height = GameCanvas.width;
-        
-        if (this.world) {
-            this.world.setScreen(GameCanvas.width, GameCanvas.height);
-        }
-    }
-
     _shouldDrawFrame() {
         return this.cards.some(c => c.currentState !== 0 && c.currentState !== 1) 
             || this.firstFrame 

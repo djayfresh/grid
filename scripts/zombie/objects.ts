@@ -8,9 +8,8 @@ import { Weapon, FiringInfo } from '../shared/weapons';
 import { GenerateGuns } from './weapons';
 import { GameCanvas } from '../shared/canvas';
 
-export class Player extends Rectangle {
-    screen: {x: number, y: number};
-    
+export class Player extends Rectangle {    
+    pos: Point; //Player POS is always relative to the screen pos, not the world movement;
     weaponIndex = 0;
     activeWeapon: Weapon;
     weapons: Weapon[];
@@ -33,22 +32,20 @@ export class Player extends Rectangle {
     //player position adjusted for world transform if not centered
     actualCenterPos(world: ZombieWorld) {
         const pos = new Point(this.pos.x + (this.width / 2), this.pos.y + (this.height / 2));
-        if (this.attachPlayerToCenter){
-            pos.x -= world.pos.x;
-            pos.y -= world.pos.y;
-        }
+
+        pos.x -= world.pos.x;
+        pos.y -= world.pos.y;
+
         return pos;
     }
 
     draw(ctx: CanvasRenderingContext2D, world: ZombieWorld) {
-        this.screen = world.screen;
-
         if (!this.attachPlayerToCenter){
             const move = KeyboardManager.moves();
             this.pos.x += -move.x;
             this.pos.y += -move.y;
         }
-        
+
         this.drawSticky(ctx, world, () => this._drawPlayer(ctx));
     }
 
@@ -77,7 +74,7 @@ export class Player extends Rectangle {
         }
 
         if (this.attachPlayerToCenter && this.moveToCenter <= 1){
-            const pos = new Point(this.screen.x / 2, this.screen.y / 2);
+            const pos = new Point(world.screen.x / 2, world.screen.y / 2);
             pos.x -= this.width / 2;
             pos.y -= this.height / 2;
             console.log("Lerp", this.pos, this.moveToCenter, this.freeMovePos, pos);
@@ -122,8 +119,9 @@ export class Player extends Rectangle {
     }
 
     _onWeaponFired(mouse: Mouse, world: ZombieWorld): FiringInfo {
+        const direction = Point.subtract(mouse.pos, this.pos).normalized();
+
         const playerCenter = this.actualCenterPos(world);
-        const direction = Point.subtract(mouse.pos, playerCenter).normalized();
         Debug.mouse('direction', direction, 'mouse', mouse.pos, 'player', playerCenter, "player pos", this.pos);
 
         return { pos: playerCenter, direction: direction };

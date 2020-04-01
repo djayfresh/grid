@@ -15,13 +15,6 @@ class Grid extends Game {
         super();
     }
 
-    Resize() {
-        GameCanvas.height = GameCanvas.width;
-        if (this.world) {
-            this.world.setScreen(GameCanvas.width, GameCanvas.height);
-        }
-    }
-
     _frame(dt: number) {
         super._frame(dt);
 
@@ -43,7 +36,7 @@ class Grid extends Game {
                 const moveX = pos.x - player.x;
                 const moveY = pos.y - player.y;
 
-                Debug.mouse("Move player", player, pos, moveX, moveY);
+                Debug.mouse("Move player", player, pos, moveX, moveY, this.mouse.pos, this.world.player.pos);
 
                 if (1 >= moveX && moveX >= -1 && 1 >= moveY && moveY >= -1) {
                     this.movePlayer(player.x, player.y, moveX, moveY);

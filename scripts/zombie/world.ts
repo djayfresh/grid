@@ -11,7 +11,6 @@ export class ZombieWorld extends World {
     
     setPlayer(player: Player){
         this.player = player;
-        this.player.screen = this.screen;
     }
 
     //TODO: Move to board
@@ -21,7 +20,7 @@ export class ZombieWorld extends World {
 
         const player = new Player();
         player.attachPlayerToCenter = this.playerAttachedToCenter;
-        player.pos = new Point(((this.screen.x / 2) - (player.width)), ((this.screen.y / 2) - (player.height)));
+        player.pos = new Point(((this.screen.x / 2) - (player.width / 2)), ((this.screen.y / 2) - (player.height / 2)));
         renderObjects.push(player);
 
         //Streets
