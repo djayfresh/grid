@@ -1,6 +1,6 @@
 import { Rectangle } from '../shared/objects';
 import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse } from '../shared/utility';
-import { Point, Renderer } from '../shared/renderer';
+import { Point, Renderer, RenderObjectAttributes } from '../shared/renderer';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
 import { Colors } from '../shared/colors';
@@ -15,7 +15,7 @@ export class Player extends Rectangle {
     weapons: Weapon[];
     weaponSwitched = false;
 
-    moveToCenter: number = 0;
+    moveToCenter: number = 1;
     moveToCenterRate: number = 0.006;
     attachPlayerToCenter: boolean = false;
     playerFreeMoveChanged: boolean = false;
@@ -73,7 +73,7 @@ export class Player extends Rectangle {
             this.playerFreeMoveChanged = false;
         }
 
-        if (this.attachPlayerToCenter && this.moveToCenter <= 1){
+        if (this.attachPlayerToCenter && this.moveToCenter < 1){
             const pos = new Point(world.screen.x / 2, world.screen.y / 2);
             pos.x -= this.width / 2;
             pos.y -= this.height / 2;
@@ -224,6 +224,7 @@ export class Spawner extends Rectangle {
         super(ID_CONST.Spawner, color, x, y, 20, 20);
 
         Object.assign(this, options || {});
+        this.attributes.push(RenderObjectAttributes.Blocking);
         this.spawnPoint = new Point(x + (this.width/2), y + (this.height/2));
     }
 

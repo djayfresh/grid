@@ -3,11 +3,11 @@ import { Player, Spawner } from './objects';
 import { Rectangle } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
-import { Point } from '../shared/renderer';
+import { Point, RenderObjectAttributes } from '../shared/renderer';
 
 export class ZombieWorld extends World {
     player: Player;
-    playerAttachedToCenter: boolean = false;
+    playerAttachedToCenter: boolean = true;
     
     setPlayer(player: Player){
         this.player = player;
@@ -24,11 +24,16 @@ export class ZombieWorld extends World {
         renderObjects.push(player);
 
         //Streets
-        renderObjects.push(new Rectangle(ID_CONST.Street, Colors.Black, 5, 5, streetWidth, 500)); //left street
-        renderObjects.push(new Rectangle(ID_CONST.Street, Colors.Black, 5, this.center.y - (streetWidth / 2), 400, streetWidth)); //left street
+        const leftStreet = new Rectangle(ID_CONST.Street, Colors.Black, 5, 5, streetWidth, 500); //left street
+        leftStreet.attributes.push(RenderObjectAttributes.Holding);
+
+        const centerStreet = new Rectangle(ID_CONST.Street, Colors.Black, 5, this.center.y - (streetWidth / 2), 400, streetWidth);
+
+        renderObjects.push(leftStreet);
+        renderObjects.push(centerStreet); //center street
 
         renderObjects.push(new Rectangle(ID_CONST.Ground, Colors.Ground, -1000, -1000, 2000, 2000)); //global ground
-        renderObjects.push(new Spawner(Colors.Environment, 100, 100));
+        // renderObjects.push(new Spawner(Colors.Environment, 100, 100));
 
         this.setMap(renderObjects);
         this.setPlayer(player);

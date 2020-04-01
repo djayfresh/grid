@@ -1,6 +1,11 @@
 import { Debug } from './utility';
 import { World } from './world';
 
+export enum RenderObjectAttributes {
+    Blocking = 1, // collision with
+    Holding = 2, // prevent leaving object
+}
+
 export class RenderObject {
     id: number;
     pos: Point;
@@ -10,6 +15,7 @@ export class RenderObject {
     _deleted = false;
     canvas: HTMLCanvasElement;
     renderer?: Renderer;
+    attributes: RenderObjectAttributes[] = [];
 
     constructor(id: number, x?: number, y?: number) {
         this.id = id;
