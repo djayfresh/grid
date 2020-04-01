@@ -1,35 +1,132 @@
 import { Rectangle } from '../shared/objects';
-import { ID_CONST, Debug } from '../shared/utility';
+import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse } from '../shared/utility';
 import { Point, Renderer } from '../shared/renderer';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
 import { Colors } from '../shared/colors';
+import { Weapon, FiringInfo } from '../shared/weapons';
+import { GenerateGuns } from './weapons';
+import { GameCanvas } from '../shared/canvas';
 
 export class Player extends Rectangle {
     screen: {x: number, y: number};
+    
+    weaponIndex = 0;
+    activeWeapon: Weapon;
+    weapons: Weapon[];
+    weaponSwitched = false;
+
+    moveToCenter: number = 0;
+    moveToCenterRate: number = 0.006;
+    attachPlayerToCenter: boolean = false;
+    playerFreeMoveChanged: boolean = false;
+    freeMovePos: Point;
 
     constructor() {
         super(ID_CONST.Player, Colors.Player, 0, 0, 10, 10);
+
+        const guns = GenerateGuns();
+        this.weapons = Object.keys(guns).map(k => guns[k]);
+        this.SetWeapon(this.weapons[Object.keys(this.weapons)[this.weaponIndex]]);
     }
 
-    get actualPos() {
-        return new Point(((this.screen.x / 2) - (this.width / 2)), ((this.screen.y / 2) - (this.height / 2)))
+    //player position adjusted for world transform if not centered
+    actualCenterPos(world: ZombieWorld) {
+        const pos = new Point(this.pos.x + (this.width / 2), this.pos.y + (this.height / 2));
+        if (this.attachPlayerToCenter){
+            pos.x -= world.pos.x;
+            pos.y -= world.pos.y;
+        }
+        return pos;
     }
 
-    draw(ctx: CanvasRenderingContext2D, world: World) {
+    draw(ctx: CanvasRenderingContext2D, world: ZombieWorld) {
         this.screen = world.screen;
 
-        this.drawSticky(ctx, world, () => {
-            ctx.fillStyle = this.color;
-            const posX = this.actualPos.x;
-            const posY = this.actualPos.y;
-            Debug.draw('Player', 'x', posX, 'y', posY, 'w', this.width, 'h', this.height);
-            ctx.fillRect(posX, posY, this.width, this.height);
-        })
+        if (!this.attachPlayerToCenter){
+            const move = KeyboardManager.moves();
+            this.pos.x += -move.x;
+            this.pos.y += -move.y;
+        }
+        
+        this.drawSticky(ctx, world, () => this._drawPlayer(ctx));
     }
 
-    update(_dt: number, _world: World) {
+    _drawPlayer(ctx: CanvasRenderingContext2D) {
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
+        
+        Debug.draw('Player', 'x', this.pos.x, 'y', this.pos.y, 'w', this.width, 'h', this.height);
+    }
 
+    update(dt: number, world: ZombieWorld) {
+        if(KeyboardManager.isKeyDown(KEY_CONST.j)){
+            if (!this.playerFreeMoveChanged){
+                this.playerFreeMoveChanged = true;
+                this.attachPlayerToCenter = !this.attachPlayerToCenter;
+                this.moveToCenter = 0;
+
+                this.freeMovePos = new Point(this.pos.x, this.pos.y);
+                if (!this.attachPlayerToCenter){
+                    this.pos = new Point(this.pos.x, this.pos.y);
+                }
+            }
+        }
+        else {
+            this.playerFreeMoveChanged = false;
+        }
+
+        if (this.attachPlayerToCenter && this.moveToCenter <= 1){
+            const pos = new Point(this.screen.x / 2, this.screen.y / 2);
+            pos.x -= this.width / 2;
+            pos.y -= this.height / 2;
+            console.log("Lerp", this.pos, this.moveToCenter, this.freeMovePos, pos);
+
+            this.pos = Point.lerp(this.moveToCenter, this.freeMovePos, pos);
+
+            this.moveToCenter += this.moveToCenterRate;
+        }
+        else if (this.attachPlayerToCenter){
+            world.playerAttachedToCenter = true;
+        }
+        else if (!this.attachPlayerToCenter){
+            world.playerAttachedToCenter = false;
+        }
+
+        if (KeyboardManager.isKeyDown(KEY_CONST.x)) {
+            if (!this.weaponSwitched) {
+                this.weaponSwitched = true;
+                this.SwitchWeapons();
+            }
+        }
+        else {
+            this.weaponSwitched = false;
+        }
+
+        if (this.activeWeapon) {
+            this.activeWeapon.update(dt, world);
+        }
+    }
+
+    SwitchWeapons() {
+        const weaponIds = Object.keys(this.weapons);
+        const weaponId = weaponIds[++this.weaponIndex % weaponIds.length];
+        Debug.game('Switched Weapons', this.activeWeapon, weaponIds, weaponId);
+        this.SetWeapon(this.weapons[weaponId]);
+    }
+
+    SetWeapon(weapon: Weapon) {
+        this.activeWeapon = weapon;
+        this.activeWeapon.getFiringInfo = (mouse: Mouse, world: ZombieWorld) => this._onWeaponFired(mouse, world);
+        this.activeWeapon.fired = bullet => this.renderer.add(bullet);
+    }
+
+    _onWeaponFired(mouse: Mouse, world: ZombieWorld): FiringInfo {
+        const playerCenter = this.actualCenterPos(world);
+        const direction = Point.subtract(mouse.pos, playerCenter).normalized();
+        Debug.mouse('direction', direction, 'mouse', mouse.pos, 'player', playerCenter, "player pos", this.pos);
+
+        return { pos: playerCenter, direction: direction };
     }
 }
 
@@ -97,7 +194,7 @@ export class Enemy extends Rectangle {
             return;
         }
 
-        const toPlayer = Point.subtract(world.player.actualPos, world.toWorldPositition(this.pos));
+        const toPlayer = Point.subtract(world.player.pos, world.toWorldPosition(this.pos));
         const norm = toPlayer.normalized();
         Debug.physics('To Player', toPlayer, 'norm', norm);
 

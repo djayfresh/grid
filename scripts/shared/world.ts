@@ -46,7 +46,7 @@ export class World {
         this.screen = { x, y };
     }
 
-    setPos(x, y) {
+    setPos(x: number, y: number) {
         this.moved = this.pos.x !== x || this.pos.y !== y;
         this.origin = new Point(this.pos.x - x, this.pos.y - y);
         this.lastPos = this.pos;
@@ -70,7 +70,7 @@ export class World {
         return this.toWorldOffset(this.center); // new Point(this.center.x - this.pos.x, this.center.y - this.pos.y);
     }
 
-    toWorldPositition(a: Point){
+    toWorldPosition(a: Point){
         return new Point(a.x + this.pos.x, a.y + this.pos.y);
     }
 

@@ -3,9 +3,11 @@ import { Player, Spawner } from './objects';
 import { Rectangle } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
+import { Point } from '../shared/renderer';
 
 export class ZombieWorld extends World {
     player: Player;
+    playerAttachedToCenter: boolean = false;
     
     setPlayer(player: Player){
         this.player = player;
@@ -18,6 +20,8 @@ export class ZombieWorld extends World {
         const streetWidth = 40;
 
         const player = new Player();
+        player.attachPlayerToCenter = this.playerAttachedToCenter;
+        player.pos = new Point(((this.screen.x / 2) - (player.width)), ((this.screen.y / 2) - (player.height)));
         renderObjects.push(player);
 
         //Streets

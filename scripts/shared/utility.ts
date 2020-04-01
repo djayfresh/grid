@@ -1,9 +1,9 @@
 import { Point } from './renderer';
 
 export enum ID_CONST { Player = 100, Enemy = 2, PowerUp = -3, Tile = -1, Grid = 9001, Flag = 11, Wall = -101, Ground = -100, Bullet = 101, Street = -80, Spawner = 10 }
-export enum KEY_CONST { left = 65, right = 68, up = 87, down = 83, pause = 80, x = 88, r = 82, menu = 77 };
+export enum KEY_CONST { left = 65, right = 68, up = 87, down = 83, pause = 80, x = 88, r = 82, menu = 77, j = 74 };
 
-export var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false, image: true };
+export var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: true, game: false, image: true };
 
 export class Debug {
     static log(...logMessages: any[]) {
@@ -122,7 +122,7 @@ export class Mouse {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
-        Debug.mouse("Down", event, pos);
+        // Debug.mouse("Down", event, pos);
 
         if (this.button === undefined || this.button === (event as MouseEvent).button || (event as TouchEvent).touches) {
             if (this.isUp && this.press) {
@@ -140,7 +140,7 @@ export class Mouse {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
-        Debug.mouse("Up", event, pos);
+        // Debug.mouse("Up", event, pos);
 
         if (this.button === undefined || this.button === (event as MouseEvent).button || (event as TouchEvent).touches) {
             if (this.isDown && this.release) {
@@ -236,11 +236,11 @@ export class KeyboardManager {
     static downKeys = {};
     static trackedKeys = {};
 
-    static isKeyDown(keyCode) {
+    static isKeyDown(keyCode: number) {
         return KeyboardManager.downKeys[keyCode];
     }
 
-    static track(keyCode) {
+    static track(keyCode: number) {
         if (!this.trackedKeys[keyCode]) {
             const key = new Key(keyCode);
             key.onClick(() => this.downKeys[keyCode] = true, () => this.downKeys[keyCode] = false);

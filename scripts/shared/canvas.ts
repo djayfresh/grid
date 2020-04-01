@@ -1,3 +1,5 @@
+import { Point } from './renderer';
+
 export class GameCanvas {
     static _canvas: HTMLCanvasElement;
 
@@ -23,6 +25,11 @@ export class GameCanvas {
 
     static get ctx() {
         return GameCanvas._canvas.getContext('2d');
+    }
+
+    static canvasToScreen(pos: Point){
+        const rect = GameCanvas.canvas.getBoundingClientRect();
+        return new Point(pos.x - rect.left, pos.y - rect.top);
     }
 
     static createCanvas(width: number, height: number) {

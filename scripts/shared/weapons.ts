@@ -1,5 +1,13 @@
-import { Mouse } from './utility';
+import { Mouse, Debug } from './utility';
 import { GameCanvas } from './canvas';
+import { World } from './world';
+import { Point } from './renderer';
+import { Bullet } from '../zombie/objects';
+
+export interface FiringInfo {
+    pos: Point;
+    direction: Point;
+}
 
 export class Weapon {
     mouse: Mouse;
@@ -9,23 +17,26 @@ export class Weapon {
     _lastShot = 0;
     ammo = 0;
     maxAmmo = 0;
-    onFire: (weapon: Weapon, mouse: Mouse) => void = () => {};
+    bulletSpeed = 0.06;
 
-    constructor(onFire: (weapon: Weapon, mouse: Mouse) => void, options: Partial<Weapon>) {
+    getFiringInfo: (mouse: Mouse, world: World) => FiringInfo = () => null;
+    fired: (bullet: Bullet) => void = () => {};
+
+    constructor(getFiringInfo: (mouse: Mouse, world: World) => FiringInfo, options: Partial<Weapon>) {
         this.mouse = new Mouse(0, GameCanvas.canvas);
 
-        this.onFire = onFire || this.onFire;
+        this.getFiringInfo = getFiringInfo || this.getFiringInfo;
 
         Object.assign(this, options);
 
         this.Reload();
     }
 
-    update(dt) {
+    update(dt: number, world: World) {
         if (this.mouse.isDown){
             if (this._lastShot === 0 || this._lastShot >= this.rate){
                 if (this.maxAmmo === 0 || this.ammo > 0) {
-                    this.onFire(this, this.mouse);
+                    this.onFire(this.getFiringInfo(this.mouse, world));
                     this._lastShot = 1;
                 }
             }
@@ -34,6 +45,11 @@ export class Weapon {
         else {
             this._lastShot = 0;
         }
+    }
+
+    onFire(firingInfo: FiringInfo) {
+        const bullet = new Bullet(firingInfo.pos, { force: firingInfo.direction.multiply(this.bulletSpeed), lifeSpan: this.range, damage: this.damage });
+        this.fired(bullet);
     }
 
     Reload() {
