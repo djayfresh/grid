@@ -3,7 +3,7 @@ import { Physics } from './physics';
 import { Debug } from './utility';
 import { World } from './world';
 import { Colors } from './colors';
-import { SceneImage, ImageManager } from './images';
+import { SceneImage, ImageManager, ImageSource } from './images';
 import { GameCanvas } from './canvas';
 
 export class Rectangle extends RenderObject {
@@ -125,31 +125,72 @@ export class RenderImage extends RenderObject {
         const image = ImageManager.getImage(this.sceneImage.catalog, this.sceneImage.name);
 
         if (image.isLoaded && !this.canvas){
-            this.canvas = GameCanvas.createCanvas(this.sceneImage.width, this.sceneImage.height);
+            this._setImageToCanvas(image);
 
-            const context = this.canvas.getContext('2d');
-            if (this.sceneImage.subX){
-                context.drawImage(image.image, this.sceneImage.subX, this.sceneImage.subY, this.sceneImage.subWidth, this.sceneImage.subHeight, 0, 0, this.sceneImage.width, this.sceneImage.height);
-            }
-            else {
-                context.drawImage(image.image, 0, 0, this.sceneImage.width, this.sceneImage.height);
-            }
-
-            ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
+            this._drawCanvas(ctx);
         }
-        else {
+        else if(this.sceneImage.showPreviewRender) {
             ctx.fillStyle = Colors.White;
             ctx.fillRect(this.pos.x, this.pos.y, this.sceneImage.width, this.sceneImage.height);
         }
     }
 
-    draw(ctx: CanvasRenderingContext2D) {
+    protected _drawCanvas(ctx: CanvasRenderingContext2D){
+        ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
+    }
+
+    protected _setImageToCanvas(image: ImageSource) {
+        this.canvas = GameCanvas.createCanvas(this.sceneImage.width, this.sceneImage.height);
+        const context = this.canvas.getContext('2d');
+        if (this.sceneImage.subX) {
+            context.drawImage(image.image, this.sceneImage.subX, this.sceneImage.subY, this.sceneImage.subWidth, this.sceneImage.subHeight, 0, 0, this.sceneImage.width, this.sceneImage.height);
+        }
+        else {
+            context.drawImage(image.image, 0, 0, this.sceneImage.width, this.sceneImage.height);
+        }
+    }
+
+    draw(ctx: CanvasRenderingContext2D, _world: World) {
         if (this.canvas) {
-            ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
+            this._drawCanvas(ctx);
         }
         else {
             this.preDraw(ctx);
         }
+    }
+}
+
+export class TiledImage extends RenderImage {
+    bounds: IPoint;
+
+    constructor(img: SceneImage, id: number, pos: IPoint, bounds: IPoint){
+        super(img, id, pos);
+
+        this.bounds = bounds;
+    }
+
+    protected _setImageToCanvas(image: ImageSource) {
+        //create the actual image canvas
+        const $imageCanvas = GameCanvas.createCanvas(this.sceneImage.width, this.sceneImage.height);
+        const $imageCtx = $imageCanvas.getContext('2d');
+        if (this.sceneImage.subX) {
+            $imageCtx.drawImage(image.image, this.sceneImage.subX, this.sceneImage.subY, this.sceneImage.subWidth, this.sceneImage.subHeight, 0, 0, this.sceneImage.width, this.sceneImage.height);
+        }
+        else {
+            $imageCtx.drawImage(image.image, 0, 0, this.sceneImage.width, this.sceneImage.height);
+        }
+
+        this.canvas = GameCanvas.createCanvas(this.bounds.x, this.bounds.y);
+        const tiledCtx = this.canvas.getContext('2d');
+        const tilesX = Math.ceil(this.bounds.x / this.sceneImage.width);
+        const tilesY = Math.ceil(this.bounds.y / this.sceneImage.height);
+
+        //generate a canvas, tiled with the image
+        for(let x = 0; x < tilesX; x++) {
+            for(let y = 0; y < tilesY; y++){
+                tiledCtx.drawImage($imageCanvas, this.sceneImage.width * x, this.sceneImage.height * y);
+            }
+        } 
     }
 }
 

@@ -5,6 +5,7 @@ import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
 import { Point, RenderObjectAttributes, RenderObject } from '../shared/renderer';
 import { GameCanvas } from '../shared/canvas';
+import { ImageWorld } from '../test-worlds/image-world';
 
 export class ZombieWorld extends World {
     player: Player;
@@ -40,6 +41,10 @@ export class ZombieWorld extends World {
         const bounds = new CanvasBounds(-1000, 0, 0, GameCanvas.width, GameCanvas.height);
         bounds.attributes.push(RenderObjectAttributes.Holding);
         this.add(bounds);
+
+        const imageTesting = new ImageWorld(0);
+        imageTesting.generateMap();
+        this.add(...imageTesting.map);
 
         this.setPlayer(player);
     }

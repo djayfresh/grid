@@ -1,6 +1,6 @@
 import { RenderObject } from '../shared/renderer';
 import { SceneImage, ImageSource } from '../shared/images';
-import { RenderImage } from '../shared/objects';
+import { RenderImage, TiledImage } from '../shared/objects';
 import { World } from '../shared/world';
 
 export class ImageWorld extends World {
@@ -42,7 +42,8 @@ export class ImageWorld extends World {
             catalog: 'game',
             name: 'logo',
             height: 20,
-            width: 20
+            width: 20,
+            showPreviewRender: true //render a white box till the image loads
         };
         renderObjects.push(new RenderImage(img2, 2000, {x: 0, y: 0 }));
 
@@ -59,6 +60,9 @@ export class ImageWorld extends World {
         };
         renderObjects.push(new RenderImage(subImg, 2000, {x: 20, y: 0 }));
 
+        //created a tiled version from the sprit
+        renderObjects.push(new TiledImage(subImg, 2000, {x: 100, y: 20}, {x: 60, y: 60}));
+
         
         const imgG: SceneImage = {
             catalog: 'zombie',
@@ -70,9 +74,14 @@ export class ImageWorld extends World {
         //use the same image for multiple locations
         for(let i = 0; i < 4; i++){
             for(let j = 0; j < 4; j++){
-                renderObjects.push(new RenderImage(imgG, 1000, {x: imgG.width * i, y: imgG.height * j }));
+                //renderObjects.push(new RenderImage(imgG, 1000, {x: imgG.width * i, y: imgG.height * j }));
             }
         }
+
+        imgG.width = 50;
+        imgG.height = 50;
+
+        renderObjects.push(new TiledImage(imgG, 1000, {x: -300, y: -300}, {x: 900, y: 900}));
     
         this.setMap(renderObjects);
     }

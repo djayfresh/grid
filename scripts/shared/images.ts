@@ -13,6 +13,7 @@ export interface ImageSource {
 export interface SceneImage {
     catalog: string;
     name: string;
+    showPreviewRender?: boolean;
     subX?: number;
     subY?: number;
     subWidth?: number;
