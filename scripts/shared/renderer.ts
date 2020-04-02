@@ -1,5 +1,6 @@
-import { Debug } from './utility';
+import { Debug, debounce } from './utility';
 import { World } from './world';
+import { GameCanvas } from './canvas';
 
 export enum RenderObjectAttributes {
     Blocking = 1, // collision with
@@ -14,7 +15,7 @@ export class RenderObject {
     bounds: any = { w: 0, h: 0 };
     _isVisible = true;
     _deleted = false;
-    canvas: HTMLCanvasElement;
+    canvas?: HTMLCanvasElement;
     attributes: RenderObjectAttributes[] = [];
 
     constructor(id: number, x?: number, y?: number) {
@@ -82,12 +83,14 @@ export class CanvasRender extends RenderObject {
 }
 
 export class Renderer {
-    draw(ctx: CanvasRenderingContext2D, world: World, layer?: number) {
-        this.clearScreen(ctx, world);
+    draw(world: World, layer?: number) {
+        const screen = { x: GameCanvas.canvas.clientWidth, y: GameCanvas.canvas.clientHeight };
+        Renderer.clearRect(GameCanvas.ctx, screen);
+        Renderer.clearScreen(world.$ctx, world);
 
         const worldDelta = world.getPosDelta();
         Debug.draw('Render Draw:', world.pos, world.map, worldDelta);
-        ctx.translate(worldDelta.x, worldDelta.y);
+        world.$ctx.translate(worldDelta.x, worldDelta.y);
 
         world.map
             .sort((a, b) => a.layer - b.layer)
@@ -95,8 +98,10 @@ export class Renderer {
             .filter(ro => ro.isVisible())
             .forEach(ro => {
                 Debug.draw('Draw RO', ro.id, ro);
-                ro.draw(ctx, world);
+                ro.draw(world.$ctx, world);
             });
+
+        GameCanvas.ctx.drawImage(world.$canvas, 0, 0, screen.x, screen.y);
     };
 
     update(dt: number, world: World) {
@@ -128,14 +133,18 @@ export class Renderer {
     //     this.renderObjects = [];
     // }
 
-    clearScreen(ctx: CanvasRenderingContext2D, world: World) {
+    static clearScreen(ctx: CanvasRenderingContext2D, world: World) {
         ctx.translate(-world.pos.x, -world.pos.y); //reset world translate, move back to 0,0
 
-        ctx.clearRect(-10, -10, world.screen.x + 10, world.screen.y + 10); //clear off boarder too
-        ctx.fillStyle = 'rgba(0, 0, 0, 1)';
-        ctx.strokeStyle = 'rgba(0, 153, 255, 1)';
+        Renderer.clearRect(ctx, world.screen);
 
         ctx.translate(world.pos.x, world.pos.y); //reset the translate to w/e the world has been translated to
+    }
+
+    private static clearRect(ctx: CanvasRenderingContext2D, screen: IPoint) {
+        ctx.clearRect(-10, -10, screen.x + 10, screen.y + 10); //clear off boarder too
+        ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+        ctx.strokeStyle = 'rgba(0, 153, 255, 1)';
     }
 }
 

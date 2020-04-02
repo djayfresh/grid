@@ -22,7 +22,7 @@ export class Weapon {
     getFiringInfo: (mouse: Mouse, world: World) => FiringInfo = () => null;
 
     constructor(getFiringInfo: (mouse: Mouse, world: World) => FiringInfo, options: Partial<Weapon>) {
-        this.mouse = new Mouse(0, GameCanvas.canvas, true);
+        this.mouse = new Mouse(0, GameCanvas.canvas, true); //TODO: Remove mouse
 
         this.getFiringInfo = getFiringInfo || this.getFiringInfo;
 
@@ -32,7 +32,7 @@ export class Weapon {
     }
 
     update(dt: number, world: World) {
-        if (this.mouse.isDown){
+        if (this.mouse.isDown){ //TODO: Track in a static mouse manager
             if (this._lastShot === 0 || this._lastShot >= this.rate){
                 if (this.maxAmmo === 0 || this.ammo > 0) {
                     this.onFire(this.getFiringInfo(this.mouse, world), world);

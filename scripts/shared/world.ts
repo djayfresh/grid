@@ -1,8 +1,9 @@
-import { Point, RenderObject, RenderObjectAttributes, IPoint } from './renderer';
+import { Point, RenderObject, RenderObjectAttributes, IPoint, Renderer } from './renderer';
 import { ImageSource, ImageManager } from './images';
 import { Rectangle } from './objects';
 import { Physics } from './physics';
 import { Debug } from './utility';
+import { GameCanvas } from './canvas';
 
 export class World {
     pos = new Point(0, 0);
@@ -14,6 +15,8 @@ export class World {
     player: RenderObject = null;
     moved = false;
     id: number;
+    $canvas: HTMLCanvasElement;
+    $ctx: CanvasRenderingContext2D;
 
     images: ImageSource[] = [];
     loadedImages: ImageSource[] = [];
@@ -24,6 +27,8 @@ export class World {
         this.pos = new Point(0, 0);
         this.lastPos = new Point(0, 0);
         this.origin = new Point(0, 0);
+        this.$canvas = GameCanvas.createCanvas(GameCanvas.canvas.width, GameCanvas.canvas.height);
+        this.$ctx = this.$canvas.getContext('2d');
     }
 
     addImage(img: ImageSource){
@@ -39,6 +44,7 @@ export class World {
 
     reset() {
         this._removeCanvasObjects();
+        Renderer.clearScreen(this.$ctx, this);
         this.map = [];
 
         this.pos = new Point(0, 0);
@@ -53,6 +59,8 @@ export class World {
 
     setCanvas(x: number, y: number){
         this.canvas = {x, y};
+        this.$canvas.width = x;
+        this.$canvas.height = y;
     }
 
     setScreen(x: number, y: number) {

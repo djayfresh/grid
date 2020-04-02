@@ -23,6 +23,8 @@ export class Game {
     firstFrame: boolean = false;
     imageLoadedThisFrame: boolean = false;
 
+    _debugDelay: number = 0; // 0;
+
     constructor() {
         this.Run();
     }
@@ -33,7 +35,6 @@ export class Game {
 
     _pause() {
         //Add any pause logic
-
         //Keeping the timer updated
         this._timer.Step();
     }
@@ -51,7 +52,9 @@ export class Game {
     Run() {
         this._state();
 
-        window.requestAnimationFrame(() => this.Run());
+        setTimeout(() => {
+            window.requestAnimationFrame(() => this.Run());
+        }, this._debugDelay);
     }
 
     _frame(dt) {
@@ -77,7 +80,7 @@ export class Game {
 
         if (this._shouldDrawFrame()) {
             this.firstFrame = false;
-            this.renderer.draw(GameCanvas.ctx, this.world);
+            this.renderer.draw(this.world);
         }
         if (this._shouldUpdateFrame()) {
             this.renderer.update(dt, this.world);
@@ -174,6 +177,7 @@ export class Game {
     }
 
     Restart() {       
+        this.Resize();
         this._init();  
     }
 }

@@ -18,9 +18,6 @@ class Grid extends Game {
     _frame(dt: number) {
         super._frame(dt);
 
-        this.renderer.draw(GameCanvas.ctx, this.world);
-        this.renderer.update(dt, this.world);
-
         this.currentDelay += dt;
     }
 
