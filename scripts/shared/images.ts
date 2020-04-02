@@ -14,12 +14,14 @@ export interface SceneImage {
     catalog: string;
     name: string;
     showPreviewRender?: boolean;
+    previewColor?: string;
     subX?: number;
     subY?: number;
     subWidth?: number;
     subHeight?: number;
     width: number;
     height: number;
+    rotation?: number;
 }
 
 export class ImageManager {

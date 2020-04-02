@@ -114,6 +114,7 @@ export class Line extends RenderObject {
 export class RenderImage extends RenderObject {
     sceneImage: SceneImage;
     previewColor: string = Colors.White;
+    bounds: IPoint;
 
     constructor(image: SceneImage, id: number, pos: IPoint) {
         super(id, pos.x, pos.y);
@@ -131,8 +132,8 @@ export class RenderImage extends RenderObject {
             this._drawCanvas(ctx);
         }
         else if(this.sceneImage.showPreviewRender) {
-            ctx.fillStyle = this.previewColor;
-            ctx.fillRect(this.pos.x, this.pos.y, this.sceneImage.width, this.sceneImage.height);
+            ctx.fillStyle = this.sceneImage.previewColor || this.previewColor;
+            ctx.fillRect(this.pos.x, this.pos.y, this.bounds.x, this.bounds.y);
         }
     }
 
@@ -141,13 +142,40 @@ export class RenderImage extends RenderObject {
     }
 
     protected _setImageToCanvas(image: ImageSource) {
-        this.canvas = GameCanvas.createCanvas(this.sceneImage.width, this.sceneImage.height);
-        const context = this.canvas.getContext('2d');
-        if (this.sceneImage.subX) {
-            context.drawImage(image.image, this.sceneImage.subX, this.sceneImage.subY, this.sceneImage.subWidth, this.sceneImage.subHeight, 0, 0, this.sceneImage.width, this.sceneImage.height);
+        this.canvas = this.getSceneImage(image);
+    }    
+
+    protected getSceneImage(image: ImageSource) {
+        const $imageCanvas = GameCanvas.createCanvas(this.sceneImage.width, this.sceneImage.height);
+        const $imageCtx = $imageCanvas.getContext('2d');
+
+        this._rotateImage((translateX, translateY) => {
+            if (this.sceneImage.subX) {
+                $imageCtx.drawImage(image.image, this.sceneImage.subX, this.sceneImage.subY, this.sceneImage.subWidth, this.sceneImage.subHeight, translateX, translateY, this.sceneImage.width, this.sceneImage.height);
+            }
+            else {
+                $imageCtx.drawImage(image.image, translateX, translateY, this.sceneImage.width, this.sceneImage.height);
+            }
+        }, $imageCanvas, $imageCtx);
+
+        return $imageCanvas;
+    }
+
+    private _rotateImage(drawImage: (translateX: number, translateY: number) => void, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+        if (this.sceneImage.rotation){
+            let translateX = canvas.width/2;
+            let translateY = canvas.height/2;
+
+            ctx.translate(translateX, translateY);
+            ctx.rotate(this.sceneImage.rotation * Math.PI / 180);
+
+            drawImage(-translateX, -translateY); 
+
+            ctx.translate(-translateX, -translateY);
+            ctx.rotate(this.sceneImage.rotation * Math.PI / 180);
         }
         else {
-            context.drawImage(image.image, 0, 0, this.sceneImage.width, this.sceneImage.height);
+            drawImage(0, 0);
         }
     }
 
@@ -162,8 +190,6 @@ export class RenderImage extends RenderObject {
 }
 
 export class TiledImage extends RenderImage {
-    bounds: IPoint;
-
     constructor(img: SceneImage, id: number, pos: IPoint, bounds: IPoint){
         super(img, id, pos);
 
@@ -172,14 +198,7 @@ export class TiledImage extends RenderImage {
 
     protected _setImageToCanvas(image: ImageSource) {
         //create the actual image canvas
-        const $imageCanvas = GameCanvas.createCanvas(this.sceneImage.width, this.sceneImage.height);
-        const $imageCtx = $imageCanvas.getContext('2d');
-        if (this.sceneImage.subX) {
-            $imageCtx.drawImage(image.image, this.sceneImage.subX, this.sceneImage.subY, this.sceneImage.subWidth, this.sceneImage.subHeight, 0, 0, this.sceneImage.width, this.sceneImage.height);
-        }
-        else {
-            $imageCtx.drawImage(image.image, 0, 0, this.sceneImage.width, this.sceneImage.height);
-        }
+        const $imageCanvas = this.getSceneImage(image);
 
         this.canvas = GameCanvas.createCanvas(this.bounds.x, this.bounds.y);
         const tiledCtx = this.canvas.getContext('2d');
