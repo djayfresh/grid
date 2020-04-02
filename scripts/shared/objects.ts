@@ -5,7 +5,16 @@ import { Colors } from './colors';
 import { SceneImage, ImageManager, ImageSource } from './images';
 import { GameCanvas } from './canvas';
 
-export interface IRectangle {
+export interface IGameObject {
+    id: number;
+    pos: Point;
+    attributes: GameObjectAttributes[];
+    update: (dt: number, world: World) => void;
+    isDeleted: () => boolean;
+    isVisible: () => boolean;
+}
+
+export interface IRectangle extends IGameObject {
     width: number;
     height: number;
 }
@@ -16,17 +25,18 @@ export enum GameObjectAttributes {
     Exiting = 3, // way to leave a holding object
 }
 
-export class GameObject {
+export class GameObject implements IGameObject {
     id: number;
     pos: Point;
-    bounds: any = { w: 0, h: 0 };
+    bounds: IPoint;
     _isVisible = true;
     _deleted = false;
     attributes: GameObjectAttributes[] = [];
 
-    constructor(id: number, pos?: IPoint) {
+    constructor(id: number, pos?: IPoint, bounds?: IPoint) {
         this.id = id;
         this.pos = new Point(pos && pos.x || 0, pos && pos.y || 0);
+        this.bounds = bounds;
     }
 
     setPos(x: number, y: number) {
@@ -48,6 +58,18 @@ export class GameObject {
 
     isDeleted() {
         return this._deleted;
+    }
+}
+
+export class Box extends GameObject implements IRectangle {
+    bounds: IPoint;
+
+    get width() {
+        return this.bounds.x;
+    }
+
+    get height() {
+        return this.bounds.y;
     }
 }
 
@@ -91,7 +113,7 @@ export class Rectangle extends RenderObject implements IRectangle {
         super(id, pos);
 
         this.color = color;
-        this.bounds = { w: bounds.x, h: bounds.y };
+        this.bounds = bounds;
     }
 
     get center() {
@@ -99,19 +121,19 @@ export class Rectangle extends RenderObject implements IRectangle {
     }
 
     set width(value: number) {
-        this.bounds.w = value;
+        this.bounds.x = value;
     }
 
     get width() {
-        return this.bounds.w;
+        return this.bounds.x;
     }
 
     set height(value: number) {
-        this.bounds.h = value;
+        this.bounds.y = value;
     }
 
     get height() {
-        return this.bounds.h;
+        return this.bounds.y;
     }
 
     draw(ctx: CanvasRenderingContext2D, _world: World) {
@@ -316,17 +338,17 @@ export class Prefab extends RenderObject implements IRectangle {
 
     constructor(id: number, pos: IPoint, bounds: IPoint){ 
         super(id, pos);
-        this.bounds = {w: bounds.x, h: bounds.y};
+        this.bounds = bounds;
         this.prefabCanvas = GameCanvas.createCanvas(bounds.x, bounds.y);
         this.prefabCtx = this.prefabCanvas.getContext('2d');
     }
 
     get width() {
-        return this.bounds.w;
+        return this.bounds.x;
     }
 
     get height() {
-        return this.bounds.h;
+        return this.bounds.y;
     }
 
     add(...children: RenderObject[]){

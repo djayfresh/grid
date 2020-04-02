@@ -345,6 +345,7 @@ export class Timer {
 declare global {
     interface Array<T> {
         first(filter?: (value: T, index: number, array: T[]) => boolean): T;
+        ofType<C>(typeFunc: (obj: any) => boolean): C[];
     }
     interface Math {
         range: (min: number, max: number) => number;
@@ -362,5 +363,11 @@ if (!Array.prototype.first) {
             ary = this.filter(filter);
         }
         return ary.length > 0 ? ary[0] : null;
+    }
+}
+
+if (!Array.prototype.ofType){
+    Array.prototype.ofType = function<C>(this: any[], typeFunc: (obj: any) => boolean){
+        return this.filter(x => typeFunc(x)) as C[];
     }
 }

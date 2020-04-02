@@ -1,6 +1,6 @@
 import { World } from '../shared/world';
 import { Player, Spawner } from './objects';
-import { CanvasBounds, TiledImage, GameObjectAttributes } from '../shared/objects';
+import { CanvasBounds, TiledImage, GameObjectAttributes, Box } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
 import { GameCanvas } from '../shared/canvas';
@@ -54,12 +54,15 @@ export class ZombieWorld extends World {
 
 
         //Streets
-        const centerStreet = new TiledImage(roadX, ID_CONST.Street, {x: 5, y: this.center.y - (streetWidth/2)}, {x: 400, y: streetWidth}); //new Rectangle(ID_CONST.Street, Colors.Black, 5, this.center.y - (streetWidth / 2), 400, streetWidth);
-        centerStreet.attributes.push(GameObjectAttributes.Exiting); //where the streets connect player can exit
+        const centerStreet = new TiledImage(roadX, ID_CONST.Street, {x: 5 + streetWidth, y: this.center.y - (streetWidth/2)}, {x: 400, y: streetWidth}); //new Rectangle(ID_CONST.Street, Colors.Black, 5, this.center.y - (streetWidth / 2), 400, streetWidth);
+        
+        const overlap = new Box(ID_CONST.Street, {x: 5, y: this.center.y - (streetWidth/2)}, {x: streetWidth * 2, y: streetWidth});
+        overlap.attributes.push(GameObjectAttributes.Exiting); //where the streets connect player can exit
 
         const leftStreet = new TiledImage(roadY, ID_CONST.Street, {x: 5, y: 5}, {x: streetWidth, y: 500}); //new Rectangle(ID_CONST.Street, Colors.Black, 5, 5, streetWidth, 500); //left street
         leftStreet.attributes.push(GameObjectAttributes.Holding);
 
+        this.add(overlap);
         this.add(leftStreet);
         this.add(centerStreet); //center street
 

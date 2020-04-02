@@ -1,5 +1,5 @@
 import { ImageSource, ImageManager } from './images';
-import { Rectangle, GameObject, RenderObject, GameObjectAttributes } from './objects';
+import { Rectangle, GameObject, RenderObject, GameObjectAttributes, IRectangle, IGameObject } from './objects';
 import { Physics, Point, IPoint } from './physics';
 import { Debug } from './utility';
 import { GameCanvas } from './canvas';
@@ -9,7 +9,7 @@ export class World {
     pos = new Point(0, 0);
     lastPos = new Point(0, 0);
     origin = new Point(0, 0);
-    map: GameObject[] = [];
+    map: IGameObject[] = [];
     screen = { x: 500, y: 500 };
     canvas = { x: 500, y: 500 };
     player: GameObject = null;
@@ -124,8 +124,9 @@ export class World {
     }
 
     noCollisions(origin: IPoint, newPos: IPoint, rect: {x: number, y: number, w: number, h: number}) {
-        //TODO: Make sure collision detection works for all object types
-        const blockers = this.map.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Blocking) >= 0) as Rectangle[];
+        const rectangles = this.map.ofType<IRectangle>((ro: any) => (ro as IRectangle).width !== undefined);
+
+        const blockers = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Blocking) >= 0);
 
         const rectBlocked = blockers.some(s => {
             return Physics.collision(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
@@ -135,7 +136,7 @@ export class World {
             return false;
         }
 
-        const holders = this.map.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Holding) >= 0) as Rectangle[];
+        const holders = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Holding) >= 0);
 
         const rectLeavingHolding = holders.some(s => {
             const wasInside = Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + origin.x, s.pos.y + origin.y, s.width, s.height);
@@ -143,7 +144,7 @@ export class World {
         });
 
         if (rectLeavingHolding){
-            const exits = this.map.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Exiting) >= 0) as Rectangle[];
+            const exits = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Exiting) >= 0);
             //moving into an exit
             const rectInExit = exits.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height))
             return rectInExit;
@@ -152,7 +153,7 @@ export class World {
         return true;
     }
 
-    add(...renderObjects: GameObject[]) {
+    add(...renderObjects: IGameObject[]) {
         this.map.push(...renderObjects);
     };
 
@@ -161,8 +162,9 @@ export class World {
     }
     
     _removeCanvasObjects() {
-        this.map.filter(ro => !!(ro as RenderObject).canvas).forEach(ro => {
-            delete (ro as RenderObject).canvas;
+        this.map.ofType<RenderObject>(ro => ro instanceof RenderObject)
+        .filter(ro => !!ro.canvas).forEach(ro => {
+            delete ro.canvas;
         });
     }
 }
