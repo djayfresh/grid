@@ -153,6 +153,34 @@ export class RenderImage extends RenderObject {
     }
 }
 
+export class Prefab extends RenderObject {
+    childObjects: RenderObject[];
+    prefabCanvas: HTMLCanvasElement;
+    prefabCtx: CanvasRenderingContext2D;
+
+    constructor(id: number, pos: IPoint, bounds: IPoint){ 
+        super(id, pos.x, pos.y);
+        this.bounds = bounds;
+        this.prefabCanvas = GameCanvas.createCanvas(bounds.x, bounds.y);
+        this.prefabCtx = this.prefabCanvas.getContext('2d');
+    }
+
+    add(...children: RenderObject[]){
+        this.childObjects.push(...children);
+    }
+
+    draw(ctx: CanvasRenderingContext2D, world: World){
+        this.childObjects.forEach(c => c.draw(this.prefabCtx, world));
+
+        ctx.drawImage(this.prefabCanvas, this.pos.x, this.pos.y);
+    }
+
+    update(dt: number, world: World){
+        this.childObjects.forEach(c => c.update(dt, world));
+    }
+
+}
+
 export class CanvasBounds extends Rectangle {
     constructor(id: number, x: number, y: number, w: number, h: number){
         super(id, '', x, y, w, h);
