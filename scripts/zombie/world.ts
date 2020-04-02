@@ -1,11 +1,12 @@
 import { World } from '../shared/world';
 import { Player, Spawner } from './objects';
-import { Rectangle, CanvasBounds } from '../shared/objects';
+import { Rectangle, CanvasBounds, TiledImage } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
 import { Point, RenderObjectAttributes, RenderObject } from '../shared/renderer';
 import { GameCanvas } from '../shared/canvas';
 import { ImageWorld } from '../test-worlds/image-world';
+import { SceneImage } from '../shared/images';
 
 export class ZombieWorld extends World {
     player: Player;
@@ -34,17 +35,30 @@ export class ZombieWorld extends World {
         this.add(leftStreet);
         this.add(centerStreet); //center street
 
-        this.add(new Rectangle(ID_CONST.Ground, Colors.Ground, -1000, -1000, 2000, 2000)); //global ground
-        // renderObjects.push(new Spawner(Colors.Environment, 100, 100));
+        this.addImage({
+            src: 'assets/images/zombie/Ground_Tile.png',
+            catalog: 'zombie',
+            name: 'ground',
+            height: 100,
+            width: 100
+        });
+
+        const groundImage: SceneImage = {
+            catalog: 'zombie',
+            name: 'ground',
+            height: 100,
+            width: 100
+        };
+
+        const ground = new TiledImage(groundImage, ID_CONST.Ground, {x:-1000, y:-1000}, {x: 2000, y: 2000});
+        ground.previewColor = Colors.Ground;
+
+        this.add(ground);
 
         //screen bounds
         const bounds = new CanvasBounds(-1000, 0, 0, GameCanvas.width, GameCanvas.height);
         bounds.attributes.push(RenderObjectAttributes.Holding);
         this.add(bounds);
-
-        const imageTesting = new ImageWorld(0);
-        imageTesting.generateMap();
-        this.add(...imageTesting.map);
 
         this.setPlayer(player);
     }

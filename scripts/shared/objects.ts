@@ -113,6 +113,7 @@ export class Line extends RenderObject {
 
 export class RenderImage extends RenderObject {
     sceneImage: SceneImage;
+    previewColor: string = Colors.White;
 
     constructor(image: SceneImage, id: number, pos: IPoint) {
         super(id, pos.x, pos.y);
@@ -130,7 +131,7 @@ export class RenderImage extends RenderObject {
             this._drawCanvas(ctx);
         }
         else if(this.sceneImage.showPreviewRender) {
-            ctx.fillStyle = Colors.White;
+            ctx.fillStyle = this.previewColor;
             ctx.fillRect(this.pos.x, this.pos.y, this.sceneImage.width, this.sceneImage.height);
         }
     }
