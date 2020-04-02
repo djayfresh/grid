@@ -1,12 +1,11 @@
 import { World } from '../shared/world';
 import { Player, Spawner } from './objects';
-import { Rectangle, CanvasBounds, TiledImage } from '../shared/objects';
+import { CanvasBounds, TiledImage, GameObjectAttributes } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
-import { Point, GameObjectAttributes, RenderObject } from '../shared/renderer';
 import { GameCanvas } from '../shared/canvas';
-import { ImageWorld } from '../test-worlds/image-world';
 import { SceneImage } from '../shared/images';
+import { Point } from '../shared/physics';
 
 export class ZombieWorld extends World {
     player: Player;

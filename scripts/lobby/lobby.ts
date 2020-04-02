@@ -1,10 +1,10 @@
 import { Game } from '../shared/game';
 import { World } from '../shared/world';
 import { GameCanvas } from '../shared/canvas';
-import { Physics } from '../shared/physics';
+import { Physics, Point, IPoint } from '../shared/physics';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Rectangle, RenderText } from '../shared/objects';
-import { Point, CanvasRender, IPoint } from '../shared/renderer';
+import { CanvasRender } from '../shared/objects';
 import { Colors } from '../shared/colors';
 
 export var LevelConst = { Grid: 0, Zombie: 1, HighScore: 2, Memory: 3 };

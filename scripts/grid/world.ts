@@ -3,10 +3,10 @@ import { Rectangle, RenderText } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { GridPlayer } from './objects';
 import { Board } from './board';
-import { RenderObject, Point } from '../shared/renderer';
 import { GameCanvas } from '../shared/canvas';
 import { Colors } from '../shared/colors';
 import { LevelConst } from '../lobby/lobby';
+import { Point } from '../shared/physics';
 
 export class GridWorld extends World {
     board: Board;

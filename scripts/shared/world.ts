@@ -1,9 +1,9 @@
-import { Point, RenderObject, GameObjectAttributes, IPoint, Renderer, GameObject } from './renderer';
 import { ImageSource, ImageManager } from './images';
-import { Rectangle } from './objects';
-import { Physics } from './physics';
+import { Rectangle, GameObject, RenderObject, GameObjectAttributes } from './objects';
+import { Physics, Point, IPoint } from './physics';
 import { Debug } from './utility';
 import { GameCanvas } from './canvas';
+import { Renderer } from './renderer';
 
 export class World {
     pos = new Point(0, 0);

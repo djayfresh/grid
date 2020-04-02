@@ -1,5 +1,4 @@
-import { RenderObject, Point, IPoint, GameObject } from './renderer';
-import { Physics } from './physics';
+import { Physics, Point, IPoint } from './physics';
 import { Debug } from './utility';
 import { World } from './world';
 import { Colors } from './colors';
@@ -9,6 +8,81 @@ import { GameCanvas } from './canvas';
 export interface IRectangle {
     width: number;
     height: number;
+}
+
+export enum GameObjectAttributes {
+    Blocking = 1, // collision with
+    Holding = 2, // prevent leaving object
+    Exiting = 3, // way to leave a holding object
+}
+
+export class GameObject {
+    id: number;
+    pos: Point;
+    bounds: any = { w: 0, h: 0 };
+    _isVisible = true;
+    _deleted = false;
+    attributes: GameObjectAttributes[] = [];
+
+    constructor(id: number, pos?: IPoint) {
+        this.id = id;
+        this.pos = new Point(pos && pos.x || 0, pos && pos.y || 0);
+    }
+
+    setPos(x: number, y: number) {
+        this.pos = new Point(x, y);
+    }
+
+    //should have individual types overwrite
+    get center() {
+        return new Point(this.pos.x, this.pos.y);
+    };
+
+    update(_dt: number, _world: World) {
+
+    };
+
+    isVisible() {
+        return this._isVisible && !this._deleted;
+    };
+
+    isDeleted() {
+        return this._deleted;
+    }
+}
+
+export class RenderObject extends GameObject {
+    layer = 0;
+    canvas?: HTMLCanvasElement;
+
+    constructor(id: number, pos?: IPoint) {
+        super(id, pos)
+        this.layer = id; //this should change probably
+    }
+
+    setContext(h_canvas: HTMLCanvasElement) {
+        this.canvas = h_canvas;
+        var h_context = this.canvas.getContext('2d');
+        this.preDraw(h_context);
+    }
+
+    preDraw(_ctx: CanvasRenderingContext2D) {
+
+    }
+
+    draw(_ctx: CanvasRenderingContext2D, _world: World) {
+
+    };
+
+    //Helper function to allow for world translate to to impact drawing an element
+    //Use for UI & Player
+    drawSticky(ctx: CanvasRenderingContext2D, world: World, drawFunc: () => void) {
+        ctx.translate(-world.pos.x, -world.pos.y); //reset world translate, move back to 0,0
+
+        drawFunc();
+
+        ctx.translate(world.pos.x, world.pos.y); //reset the translate to w/e the world has been translated to
+    }
 }
 
 export class Rectangle extends RenderObject implements IRectangle {
@@ -291,5 +365,17 @@ export class CanvasBounds extends GameObject implements IRectangle {
     update(_dt: number, world: World) {
         this.pos.x = -world.pos.x;
         this.pos.y = -world.pos.y;
+    }
+}
+
+export class CanvasRender extends RenderObject {
+    constructor(id: number, canvas: HTMLCanvasElement) {
+        super(id);
+        
+        this.canvas = canvas;
+    }
+
+    draw(ctx: CanvasRenderingContext2D) {
+        ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
     }
 }

@@ -1,12 +1,10 @@
 import { Game } from '../shared/game';
 import { ZombieWorld } from './world';
 import { Weapon } from '../shared/weapons';
-import { Mouse, Debug, KeyboardManager, KEY_CONST, ID_CONST } from '../shared/utility';
+import { Mouse, Debug, KeyboardManager, KEY_CONST } from '../shared/utility';
 import { GameCanvas } from '../shared/canvas';
-import { Physics } from '../shared/physics';
 import { Rectangle } from '../shared/objects';
 import { LevelConst } from '../lobby/lobby';
-import { GameObjectAttributes } from '../shared/renderer';
 
 class ZombieGame extends Game {
     world: ZombieWorld;

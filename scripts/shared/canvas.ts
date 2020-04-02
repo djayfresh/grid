@@ -1,4 +1,4 @@
-import { Point } from './renderer';
+import { Point } from './physics';
 
 export class GameCanvas {
     static _canvas: HTMLCanvasElement;

@@ -1,4 +1,3 @@
-import { RenderObject } from '../shared/renderer';
 import { SceneImage, ImageSource } from '../shared/images';
 import { RenderImage, TiledImage } from '../shared/objects';
 import { World } from '../shared/world';

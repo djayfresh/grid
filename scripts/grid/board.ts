@@ -1,8 +1,8 @@
 import { ID_CONST, Debug } from '../shared/utility';
-import { RenderObject, CanvasRender, IPoint, Point, GameObject } from '../shared/renderer';
 import { GameCanvas } from '../shared/canvas';
-import { Line } from '../shared/objects';
+import { Line, GameObject, CanvasRender } from '../shared/objects';
 import { Colors } from '../shared/colors';
+import { IPoint, Point } from '../shared/physics';
 
 export class Board {
     squareSize: IPoint;

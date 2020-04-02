@@ -1,12 +1,12 @@
-import { Rectangle } from '../shared/objects';
-import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse, Timer } from '../shared/utility';
-import { Point, Renderer, GameObjectAttributes, IPoint } from '../shared/renderer';
+import { Rectangle, GameObjectAttributes } from '../shared/objects';
+import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse } from '../shared/utility';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
 import { Colors } from '../shared/colors';
 import { Weapon, FiringInfo } from '../shared/weapons';
 import { GenerateGuns } from './weapons';
-import { GameCanvas } from '../shared/canvas';
+import { Point, IPoint } from '../shared/physics';
+import { Renderer } from '../shared/renderer';
 
 export class Player extends Rectangle {    
     pos: Point; //Player POS is always relative to the screen pos, not the world movement;

@@ -1,7 +1,7 @@
 import { Mouse, Debug } from './utility';
 import { GameCanvas } from './canvas';
 import { World } from './world';
-import { Point } from './renderer';
+import { Point } from './physics';
 import { Bullet } from '../zombie/objects';
 
 export interface FiringInfo {

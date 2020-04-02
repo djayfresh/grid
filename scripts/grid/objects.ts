@@ -2,7 +2,7 @@ import { Rectangle } from '../shared/objects';
 import { ID_CONST, Debug } from '../shared/utility';
 import { World } from '../shared/world';
 import { Colors } from '../shared/colors';
-import { IPoint } from '../shared/renderer';
+import { IPoint } from '../shared/physics';
 
 export class GridPlayer extends Rectangle {
     constructor(pos: IPoint, bounds: IPoint) {

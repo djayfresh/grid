@@ -1,11 +1,8 @@
 import { GridWorld } from '../grid/world';
-import { RenderObject } from '../shared/renderer';
+import { RenderObject } from '../shared/objects';
 import { Card } from './objects';
 import { Color } from '../shared/colors';
 import { Board } from '../grid/board';
-import { ImageManager, SceneImage, ImageSource } from '../shared/images';
-import { RenderImage } from '../shared/objects';
-import { ImageWorld } from '../test-worlds/image-world';
 
 export class MemoryWorld extends GridWorld {
 

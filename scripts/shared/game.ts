@@ -1,4 +1,4 @@
-import { Renderer, GameObjectAttributes } from './renderer';
+import { Renderer } from './renderer';
 import { Timer, KEY_CONST, Key, debounce, Mouse, Debug } from './utility';
 import { GameCanvas } from './canvas';
 import { World } from './world';

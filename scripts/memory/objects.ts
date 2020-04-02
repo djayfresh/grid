@@ -1,7 +1,6 @@
 import { Rectangle } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
-import { Point, IPoint } from '../shared/renderer';
-import { Physics } from '../shared/physics';
+import { Physics, Point, IPoint } from '../shared/physics';
 import { Colors } from '../shared/colors';
 
 export class Card extends Rectangle {
@@ -15,10 +14,10 @@ export class Card extends Rectangle {
     quarterFlipPos: Point;
     halfFlipPos: Point;
 
-    originalPos;
-    originalBounds;
-    originalColor;
-    cardColor;
+    originalPos: Point;
+    originalBounds: IPoint;
+    originalColor: string;
+    cardColor: string;
 
     get isFlipped () {
         return this.currentState === 1;
