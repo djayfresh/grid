@@ -124,6 +124,7 @@ export class World {
     }
 
     noCollisions(origin: IPoint, newPos: IPoint, rect: {x: number, y: number, w: number, h: number}) {
+        //TODO: Other types of collision besides Rectangles
         const rectangles = this.map.ofType<IRectangle>((ro: any) => (ro as IRectangle).width !== undefined);
 
         const blockers = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Blocking) >= 0);
