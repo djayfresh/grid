@@ -2,10 +2,11 @@ import { Rectangle } from '../shared/objects';
 import { ID_CONST, Debug } from '../shared/utility';
 import { World } from '../shared/world';
 import { Colors } from '../shared/colors';
+import { IPoint } from '../shared/renderer';
 
 export class GridPlayer extends Rectangle {
-    constructor(x: number, y: number, w: number, h: number) {
-        super(ID_CONST.Player, Colors.Player, x, y, w, h);
+    constructor(pos: IPoint, bounds: IPoint) {
+        super(ID_CONST.Player, Colors.Player, pos, bounds);
     }
 
     draw(ctx: CanvasRenderingContext2D, world: World) {

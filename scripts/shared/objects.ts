@@ -1,4 +1,4 @@
-import { RenderObject, Point, IPoint } from './renderer';
+import { RenderObject, Point, IPoint, GameObject } from './renderer';
 import { Physics } from './physics';
 import { Debug } from './utility';
 import { World } from './world';
@@ -6,13 +6,18 @@ import { Colors } from './colors';
 import { SceneImage, ImageManager, ImageSource } from './images';
 import { GameCanvas } from './canvas';
 
-export class Rectangle extends RenderObject {
+export interface IRectangle {
+    width: number;
+    height: number;
+}
+
+export class Rectangle extends RenderObject implements IRectangle {
     color = '';
-    constructor(id: number, color: string, x: number, y: number, width: number, height: number) {
-        super(id, x, y);
+    constructor(id: number, color: string, pos: IPoint, bounds: IPoint) {
+        super(id, pos);
 
         this.color = color;
-        this.bounds = { w: width, h: height };
+        this.bounds = { w: bounds.x, h: bounds.y };
     }
 
     get center() {
@@ -83,7 +88,7 @@ export class RenderText extends RenderObject {
     }
 }
 
-export class Line extends RenderObject {
+export class Line extends RenderObject implements IRectangle {
     color: string = Colors.Black;
     bounds = { x: 0, y: 0 }
     constructor(id: number, pos: Point, pos2: Point, color?: string) {
@@ -92,6 +97,14 @@ export class Line extends RenderObject {
         this.pos = pos;
         this.bounds = pos2;
         this.color = color || this.color;
+    }
+
+    get width() {
+        return this.bounds.x;
+    }
+
+    get height() {
+        return this.bounds.y;
     }
 
     preDraw(ctx: CanvasRenderingContext2D) {
@@ -111,16 +124,24 @@ export class Line extends RenderObject {
     }
 }
 
-export class RenderImage extends RenderObject {
+export class RenderImage extends RenderObject implements IRectangle {
     sceneImage: SceneImage;
     previewColor: string = Colors.White;
     bounds: IPoint;
 
     constructor(image: SceneImage, id: number, pos: IPoint) {
-        super(id, pos.x, pos.y);
+        super(id, pos);
 
         this.sceneImage = image;
         this.bounds = {x: this.sceneImage.width, y: this.sceneImage.height };
+    }
+
+    get width() {
+        return this.bounds.x;
+    }
+
+    get height() {
+        return this.bounds.y;
     }
 
     preDraw(ctx: CanvasRenderingContext2D) {
@@ -214,16 +235,24 @@ export class TiledImage extends RenderImage {
     }
 }
 
-export class Prefab extends RenderObject {
+export class Prefab extends RenderObject implements IRectangle {
     childObjects: RenderObject[];
     prefabCanvas: HTMLCanvasElement;
     prefabCtx: CanvasRenderingContext2D;
 
     constructor(id: number, pos: IPoint, bounds: IPoint){ 
-        super(id, pos.x, pos.y);
-        this.bounds = bounds;
+        super(id, pos);
+        this.bounds = {w: bounds.x, h: bounds.y};
         this.prefabCanvas = GameCanvas.createCanvas(bounds.x, bounds.y);
         this.prefabCtx = this.prefabCanvas.getContext('2d');
+    }
+
+    get width() {
+        return this.bounds.w;
+    }
+
+    get height() {
+        return this.bounds.h;
     }
 
     add(...children: RenderObject[]){
@@ -242,9 +271,19 @@ export class Prefab extends RenderObject {
 
 }
 
-export class CanvasBounds extends Rectangle {
-    constructor(id: number, x: number, y: number, w: number, h: number){
-        super(id, '', x, y, w, h);
+export class CanvasBounds extends GameObject implements IRectangle {
+    constructor(id: number, pos: IPoint, bounds: IPoint){
+        super(id, pos);
+
+        this.bounds = bounds;
+    }
+
+    get width() {
+        return this.bounds.x;
+    }
+
+    get height() {
+        return this.bounds.y;
     }
 
     draw() {}

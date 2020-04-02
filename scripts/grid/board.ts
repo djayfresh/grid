@@ -1,11 +1,11 @@
 import { ID_CONST, Debug } from '../shared/utility';
-import { Point, RenderObject, CanvasRender, IPoint } from '../shared/renderer';
+import { RenderObject, CanvasRender, IPoint, Point, GameObject } from '../shared/renderer';
 import { GameCanvas } from '../shared/canvas';
 import { Line } from '../shared/objects';
 import { Colors } from '../shared/colors';
 
 export class Board {
-    squareSize: Point;
+    squareSize: IPoint;
     gridSize: number;
 
     grid: ID_CONST[][] = [];
@@ -16,7 +16,7 @@ export class Board {
         const squareX = (GameCanvas.width / this.gridSize);
         const squareY = (GameCanvas.height / this.gridSize);
 
-        this.squareSize = new Point(squareX, squareY);
+        this.squareSize = Point.simple(squareX, squareY);
 
         this.init();
     }
@@ -55,16 +55,16 @@ export class Board {
         return { x: cellX, y: cellY };
     }
 
-    boardToPos(x: number, y: number) {
-        return new Point(x * this.squareSize.x, y * this.squareSize.y);
+    boardToPos(x: number, y: number): IPoint {
+        return Point.simple(x * this.squareSize.x, y * this.squareSize.y);
     }
 
-    move(obj: RenderObject, x: number, y: number, movement: { pos: Point }) {
+    move(obj: GameObject, x: number, y: number, movement: { pos: Point }) {
         Debug.physics("Move:", obj.id, "x:", x, "y:", y, "movement:", movement);
 
         this.grid[movement.pos.x][movement.pos.y] = ID_CONST.Tile;
         this.grid[movement.pos.x + x][movement.pos.y + y] = obj.id;
-        obj.pos = this.boardToPos(movement.pos.x + x, movement.pos.y + y)
+        obj.pos = Point.create(this.boardToPos(movement.pos.x + x, movement.pos.y + y));
     }
 
     getMove(pos: Point, x: number, y: number) {

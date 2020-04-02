@@ -56,25 +56,25 @@ export class GridWorld extends World {
                 const id = map[x][y];
                 if (id === ID_CONST.Player){
                     const playerPos = this.board.boardToPos(x, y);
-                    const player = new GridPlayer(playerPos.x, playerPos.y, squareX, squareY);
+                    const player = new GridPlayer(playerPos, this.board.squareSize);
                     renderObjects.push(player);
                     this.setPlayer(player);
                 }
                 else if (id === ID_CONST.Enemy) {
                     const pos = this.board.boardToPos(x, y);
-                    renderObjects.push(new Rectangle(ID_CONST.Enemy, this.board.getColorForId(ID_CONST.Enemy), pos.x, pos.y, squareX, squareY));
+                    renderObjects.push(new Rectangle(ID_CONST.Enemy, this.board.getColorForId(ID_CONST.Enemy), pos, this.board.squareSize));
                 }
                 else if (id === ID_CONST.Flag) {
                     const pos = this.board.boardToPos(x, y);
-                    renderObjects.push(new Rectangle(ID_CONST.Flag, this.board.getColorForId(ID_CONST.Flag), pos.x, pos.y, squareX, squareY));
+                    renderObjects.push(new Rectangle(ID_CONST.Flag, this.board.getColorForId(ID_CONST.Flag), pos, this.board.squareSize));
                 }
                 else if (id === ID_CONST.PowerUp) {
                     const pos = this.board.boardToPos(x, y);
-                    renderObjects.push(new Rectangle(ID_CONST.PowerUp, this.board.getColorForId(ID_CONST.PowerUp), pos.x, pos.y, squareX, squareY));
+                    renderObjects.push(new Rectangle(ID_CONST.PowerUp, this.board.getColorForId(ID_CONST.PowerUp), pos, this.board.squareSize));
                 }
                 else if (id === ID_CONST.Wall) {
                     const pos = this.board.boardToPos(x, y);
-                    renderObjects.push(new Rectangle(ID_CONST.Wall, this.board.getColorForId(ID_CONST.Wall), pos.x, pos.y, squareX, squareY));
+                    renderObjects.push(new Rectangle(ID_CONST.Wall, this.board.getColorForId(ID_CONST.Wall), pos, this.board.squareSize));
                 }
             }
         }
@@ -86,7 +86,7 @@ export class GridWorld extends World {
     setRoundStart(roundNumber: number, score?: number) {
         const renderObjects = [];
 
-        renderObjects.push(new Rectangle(0, Colors.White, 0, 0, GameCanvas.width, GameCanvas.height));
+        renderObjects.push(new Rectangle(0, Colors.White, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height}));
         renderObjects.push(new RenderText(1, { text: `Round Starting - ${roundNumber}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
         
         if (score !== undefined){
@@ -99,7 +99,7 @@ export class GridWorld extends World {
     setGameOver(score: number){
         const renderObjects = [];
         
-        renderObjects.push(new Rectangle(0, Colors.White, 0, 0, GameCanvas.width, GameCanvas.height));
+        renderObjects.push(new Rectangle(0, Colors.White, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height}));
         renderObjects.push(new RenderText(1, { text: `Game Over`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
         renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
         

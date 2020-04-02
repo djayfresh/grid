@@ -6,7 +6,7 @@ import { GameCanvas } from '../shared/canvas';
 import { Physics } from '../shared/physics';
 import { Rectangle } from '../shared/objects';
 import { LevelConst } from '../lobby/lobby';
-import { RenderObjectAttributes } from '../shared/renderer';
+import { GameObjectAttributes } from '../shared/renderer';
 
 class ZombieGame extends Game {
     world: ZombieWorld;

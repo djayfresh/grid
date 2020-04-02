@@ -1,6 +1,6 @@
 import { Rectangle } from '../shared/objects';
 import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse, Timer } from '../shared/utility';
-import { Point, Renderer, RenderObjectAttributes } from '../shared/renderer';
+import { Point, Renderer, GameObjectAttributes, IPoint } from '../shared/renderer';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
 import { Colors } from '../shared/colors';
@@ -23,7 +23,7 @@ export class Player extends Rectangle {
     freeMovePos: Point;
 
     constructor() {
-        super(ID_CONST.Player, Colors.Player, 0, 0, 10, 10);
+        super(ID_CONST.Player, Colors.Player, {x: 0, y: 0}, {x: 10, y: 10});
 
         const guns = GenerateGuns();
         this.weapons = Object.keys(guns).map(k => guns[k]);
@@ -153,7 +153,7 @@ export class Bullet extends Rectangle {
     force = { x: 0, y: 0 };
 
     constructor(startPos: Point, options: Partial<Bullet>) {
-        super(ID_CONST.Bullet, Colors.Bullet, startPos.x, startPos.y, 3, 3);
+        super(ID_CONST.Bullet, Colors.Bullet, startPos, {x: 3, y: 3});
 
         Object.assign(this, options);
     }
@@ -176,8 +176,8 @@ export class Enemy extends Rectangle {
     health = 1;
     _renderer;
 
-    constructor(color, x, y, speed, health){
-        super(ID_CONST.Enemy, color, x, y, 10, 10);
+    constructor(color: string, pos: IPoint, speed: number, health: number){
+        super(ID_CONST.Enemy, color, pos, {x: 10, y: 10});
         this.speed = speed;
         this.health = health;
     }
@@ -238,12 +238,12 @@ export class Spawner extends Rectangle {
     maxSpawns = 10; //should get reset each day
     _renderer;
 
-    constructor(color: string, x: number, y: number, options?: Partial<Spawner>){
-        super(ID_CONST.Spawner, color, x, y, 20, 20);
+    constructor(color: string, pos: IPoint, options?: Partial<Spawner>){
+        super(ID_CONST.Spawner, color, pos, {x: 20, y: 20});
 
         Object.assign(this, options || {});
-        this.attributes.push(RenderObjectAttributes.Blocking);
-        this.spawnPoint = new Point(x + (this.width/2), y + (this.height/2));
+        this.attributes.push(GameObjectAttributes.Blocking);
+        this.spawnPoint = new Point(pos.x + (this.width/2), pos.y + (this.height/2));
     }
 
     update(dt, world){
@@ -265,7 +265,7 @@ export class Spawner extends Rectangle {
         this.spawnCount++;
         const spawnPoint = this.spawnPoint;
         const enemyHealth = Math.range(1, 5);
-        const enemy = new Enemy(Colors.Enemy, spawnPoint.x, spawnPoint.y, (this.enemySpeed / enemyHealth) + 0.5, enemyHealth);
+        const enemy = new Enemy(Colors.Enemy, spawnPoint, (this.enemySpeed / enemyHealth) + 0.5, enemyHealth);
         Debug.game('Spawn ', spawnPoint, "Enemy ", enemy);
 
         this._renderer.add(enemy);

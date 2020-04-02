@@ -15,7 +15,7 @@ export class MemoryWorld extends GridWorld {
 
         const addCard = (color: string, x: number, y: number) => {
             const pos = this.board.boardToPos(x, y);
-            const card = new Card(color, pos.x, pos.y, this.board.squareSize.x, this.board.squareSize.y);
+            const card = new Card(color, pos, this.board.squareSize);
             renderObjects.push(card);
         }
 

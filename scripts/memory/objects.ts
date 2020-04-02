@@ -1,6 +1,6 @@
 import { Rectangle } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
-import { Point } from '../shared/renderer';
+import { Point, IPoint } from '../shared/renderer';
 import { Physics } from '../shared/physics';
 import { Colors } from '../shared/colors';
 
@@ -24,11 +24,11 @@ export class Card extends Rectangle {
         return this.currentState === 1;
     }
 
-    constructor(cardColor, x, y, w, h) {
-        super(ID_CONST.Player, Colors.Player, x, y, w, h);
+    constructor(cardColor: string, pos: IPoint, bounds: IPoint) {
+        super(ID_CONST.Player, Colors.Player, pos, bounds);
 
-        this.originalPos = new Point(x, y);
-        this.originalBounds = new Point(w, h);
+        this.originalPos = new Point(pos.x, pos.y);
+        this.originalBounds = new Point(bounds.x, bounds.y);
         this.originalColor = this.color;
         this.cardColor = cardColor;
         this.quarterFlipPos = new Point(this.originalPos.x + (this.originalBounds.x / 4), this.originalPos.y);

@@ -125,7 +125,7 @@ export class Lobby extends Game {
             const textOffset = mo.text.length > 8 ? 10 : 0; //Do real pixel centering
             const y = (height * i) + (buttonH * i) + height;
             const x = left - textOffset;
-            const btn = new Rectangle(mo.id, Colors.White, x, y, buttonW + (textOffset * 2), buttonH);
+            const btn = new Rectangle(mo.id, Colors.White, {x, y}, {x: buttonW + (textOffset * 2), y: buttonH});
             this.world.add(btn);
 
             const btnTextPos = new Point(btn.pos.x + buttonW / 2, btn.pos.y + buttonH * 0.75);
@@ -135,7 +135,7 @@ export class Lobby extends Game {
 
         this.world.add(preRender);
 
-        this.world.add(new Rectangle(ID_CONST.Ground, Colors.Black, 0, 0, GameCanvas.width, GameCanvas.height));
+        this.world.add(new Rectangle(ID_CONST.Ground, Colors.Black, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height}));
 
         const cubeSizes = 60;
         const colorCubes = [Colors.Player, Colors.Flag, Colors.PowerUp, Colors.Enemy, Colors.Wall];
@@ -157,7 +157,7 @@ export class Lobby extends Game {
 
             genCords.push({x: ranX, y: ranY});
 
-            this.world.add(new Rectangle(-10, color, ranX, ranY, cubeSizes, cubeSizes));
+            this.world.add(new Rectangle(-10, color, {x: ranX, y: ranY}, {x: cubeSizes, y: cubeSizes}));
         });
     }
 }

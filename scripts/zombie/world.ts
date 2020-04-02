@@ -3,7 +3,7 @@ import { Player, Spawner } from './objects';
 import { Rectangle, CanvasBounds, TiledImage } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
-import { Point, RenderObjectAttributes, RenderObject } from '../shared/renderer';
+import { Point, GameObjectAttributes, RenderObject } from '../shared/renderer';
 import { GameCanvas } from '../shared/canvas';
 import { ImageWorld } from '../test-worlds/image-world';
 import { SceneImage } from '../shared/images';
@@ -56,10 +56,10 @@ export class ZombieWorld extends World {
 
         //Streets
         const centerStreet = new TiledImage(roadX, ID_CONST.Street, {x: 5, y: this.center.y - (streetWidth/2)}, {x: 400, y: streetWidth}); //new Rectangle(ID_CONST.Street, Colors.Black, 5, this.center.y - (streetWidth / 2), 400, streetWidth);
-        centerStreet.attributes.push(RenderObjectAttributes.Exiting); //where the streets connect player can exit
+        centerStreet.attributes.push(GameObjectAttributes.Exiting); //where the streets connect player can exit
 
         const leftStreet = new TiledImage(roadY, ID_CONST.Street, {x: 5, y: 5}, {x: streetWidth, y: 500}); //new Rectangle(ID_CONST.Street, Colors.Black, 5, 5, streetWidth, 500); //left street
-        leftStreet.attributes.push(RenderObjectAttributes.Holding);
+        leftStreet.attributes.push(GameObjectAttributes.Holding);
 
         this.add(leftStreet);
         this.add(centerStreet); //center street
@@ -86,8 +86,8 @@ export class ZombieWorld extends World {
         this.add(ground);
 
         //screen bounds
-        const bounds = new CanvasBounds(-1000, 0, 0, GameCanvas.width, GameCanvas.height);
-        bounds.attributes.push(RenderObjectAttributes.Holding);
+        const bounds = new CanvasBounds(-1000, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height});
+        bounds.attributes.push(GameObjectAttributes.Holding);
         this.add(bounds);
 
         this.setPlayer(player);
