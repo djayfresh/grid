@@ -1,4 +1,6 @@
 import { Debug } from './utility';
+import { GameEventQueue } from './event-queue';
+import { ImageLoadedEvent, ImagesLoadedEvent } from './events';
 
 export interface ImageSource {
     catalog: string;
@@ -42,6 +44,12 @@ export class ImageManager {
                 img.isLoaded = true;
                 img.image = $img;
                 Debug.image('Loaded', $img, img);
+
+                GameEventQueue.notify(new ImageLoadedEvent(img));
+                
+                if (this.images.every(i => i.isLoaded)){
+                    GameEventQueue.notify(new ImagesLoadedEvent(this.images));
+                }
             }, 2000);
         };
         $img.src = ImageManager.baseUrl + img.src;

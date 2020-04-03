@@ -23,6 +23,24 @@ export class ZombieWorld extends World {
         this.player = player;
     }
 
+    loadImages() {
+        this.addImage({
+            src: 'zombie/RoadLine.png',
+            catalog: 'zombie',
+            name: 'road',
+            height: 100,
+            width: 100
+        });
+
+        this.addImage({
+            src: 'zombie/Ground_Tile_Dark.png',
+            catalog: 'zombie',
+            name: 'ground',
+            height: 100,
+            width: 100
+        });
+    }
+
     //TODO: Move to board
     generateMap() {
         const streetWidth = 40;
@@ -31,15 +49,6 @@ export class ZombieWorld extends World {
         player.attachPlayerToCenter = this.playerAttachedToCenter;
         player.pos = new Point(((this.canvas.x / 2) - (player.width / 2)), ((this.canvas.y / 2) - (player.height / 2)));
         this.add(player);
-        
-
-        this.addImage({
-            src: 'zombie/RoadLine.png',
-            catalog: 'zombie',
-            name: 'road',
-            height: 100,
-            width: 100
-        });
 
         const roadX: SceneImage = {
             catalog: 'zombie',
@@ -78,14 +87,6 @@ export class ZombieWorld extends World {
         spawner.attributes.push(GameObjectAttributes.Blocking);
 
         this.add(spawner)
-
-        this.addImage({
-            src: 'zombie/Ground_Tile_Dark.png',
-            catalog: 'zombie',
-            name: 'ground',
-            height: 100,
-            width: 100
-        });
 
         const groundImage: SceneImage = {
             catalog: 'zombie',

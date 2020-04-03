@@ -7,6 +7,7 @@ import { Rectangle } from '../shared/objects';
 import { LevelConst } from '../lobby/lobby';
 import { GameEventQueue } from '../shared/event-queue';
 import { EnemyKilledEvent } from './events';
+import { ImagesLoadedEvent } from '../shared/events';
 
 class ZombieGame extends Game {
     world: ZombieWorld;
@@ -16,30 +17,26 @@ class ZombieGame extends Game {
         super();
     }
 
-    _frame(dt) {
-        super._frame(dt);
-
-        Debug.time('DT:', dt);
-    }
-
     RunRound() {
-        const move = KeyboardManager.moves();
+        if (this.world.player){
+            const move = KeyboardManager.moves();
 
-        //move the world
-        const worldX = this.world.pos.x;
-        const worldY = this.world.pos.y;
-        
-        const playerX = this.world.player.pos.x;
-        const playerY = this.world.player.pos.y;
-        const playerW = (this.world.player as Rectangle).width;
-        const playerH = (this.world.player as Rectangle).height;
-        const playerRect = { x: playerX, y: playerY, w: playerW, h: playerH };
+            //move the world
+            const worldX = this.world.pos.x;
+            const worldY = this.world.pos.y;
+            
+            const playerX = this.world.player.pos.x;
+            const playerY = this.world.player.pos.y;
+            const playerW = (this.world.player as Rectangle).width;
+            const playerH = (this.world.player as Rectangle).height;
+            const playerRect = { x: playerX, y: playerY, w: playerW, h: playerH };
 
-        if (this.world.playerAttachedToCenter){
-            this.world.validateMove(move, playerRect, { x: worldX, y: worldY }, (x, y) => this.world.setPos(x, y), () => this.world.setPos(worldX, worldY));
-        }
-        else {
-            this.world.setPos(worldX, worldY);
+            if (this.world.playerAttachedToCenter){
+                this.world.validateMove(move, playerRect, { x: worldX, y: worldY }, (x, y) => this.world.setPos(x, y), () => this.world.setPos(worldX, worldY));
+            }
+            else {
+                this.world.setPos(worldX, worldY);
+            }
         }
     }
 
@@ -48,6 +45,7 @@ class ZombieGame extends Game {
 
         if (!this._initialized){
             this.world = new ZombieWorld(LevelConst.Zombie);
+            this.world.loadImages();
             this.mouse.relative = true;
             this.Resize();
         
@@ -62,6 +60,11 @@ class ZombieGame extends Game {
             GameEventQueue.subscribe(EnemyKilledEvent, 'zombie-game', enemyKilledEvent => {
                 this.score += enemyKilledEvent.data.totalHealth; //score based on enemy health before death?
             });
+
+            GameEventQueue.subscribe(ImagesLoadedEvent, 'zombie-game', () => {
+                this.world.reset();
+                this.world.generateMap();
+            });
         }
         this.world.setPos(0, 0);
 
@@ -69,7 +72,7 @@ class ZombieGame extends Game {
 
         console.log("Generate map");
         this.world.reset();
-        this.world.generateMap();
+        this.world.setRoundStart(1);
 
         GameCanvas.canvas.style.cursor = 'default';
     }

@@ -3,10 +3,6 @@ import { Rectangle, RenderText } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { GridPlayer } from './objects';
 import { Board } from './board';
-import { GameCanvas } from '../shared/canvas';
-import { Colors } from '../shared/colors';
-import { LevelConst } from '../lobby/lobby';
-import { Point } from '../shared/physics';
 
 export class GridWorld extends World {
     board: Board;
@@ -78,28 +74,5 @@ export class GridWorld extends World {
         this.setMap(renderObjects);
 
         return renderObjects;
-    }
-
-    setRoundStart(roundNumber: number, score?: number) {
-        const renderObjects = [];
-
-        renderObjects.push(new Rectangle(0, Colors.White, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height}));
-        renderObjects.push(new RenderText(1, { text: `Round Starting - ${roundNumber}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
-        
-        if (score !== undefined){
-            renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
-        }
-        
-        this.setMap(renderObjects);
-    }
-
-    setGameOver(score: number){
-        const renderObjects = [];
-        
-        renderObjects.push(new Rectangle(0, Colors.White, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height}));
-        renderObjects.push(new RenderText(1, { text: `Game Over`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
-        renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
-        
-        this.setMap(renderObjects);
     }
 };

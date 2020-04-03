@@ -1,11 +1,12 @@
 import { ImageSource, ImageManager } from './images';
-import { Rectangle, GameObject, RenderObject, GameObjectAttributes, IRectangle, IGameObject } from './objects';
+import { Rectangle, GameObject, RenderObject, GameObjectAttributes, IRectangle, IGameObject, RenderText } from './objects';
 import { Physics, Point, IPoint } from './physics';
 import { Debug } from './utility';
 import { GameCanvas } from './canvas';
 import { Renderer } from './renderer';
 import { GameEventQueue } from './event-queue';
 import { GameResizeEvent } from './events';
+import { Colors } from './colors';
 
 export class World {
     pos = new Point(0, 0);
@@ -183,5 +184,29 @@ export class World {
         .filter(ro => !!ro.canvas).forEach(ro => {
             delete ro.canvas;
         });
+    }
+    
+
+    setRoundStart(roundNumber: number, score?: number) {
+        const renderObjects = [];
+
+        renderObjects.push(new Rectangle(0, Colors.White, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height}));
+        renderObjects.push(new RenderText(1, { text: `Round Starting - ${roundNumber}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
+        
+        if (score !== undefined){
+            renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
+        }
+        
+        this.setMap(renderObjects);
+    }
+
+    setGameOver(score: number){
+        const renderObjects = [];
+        
+        renderObjects.push(new Rectangle(0, Colors.White, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height}));
+        renderObjects.push(new RenderText(1, { text: `Game Over`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
+        renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
+        
+        this.setMap(renderObjects);
     }
 }
