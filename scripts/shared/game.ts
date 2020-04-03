@@ -134,15 +134,6 @@ export class Game {
             this.$score = document.getElementById('game-score');
 
             this.mouse = new Mouse(0, GameCanvas.canvas);
-
-            new Key(KEY_CONST.pause).onClick(() => {    
-                if (this._state !== this._play) {
-                    this._state = this._play;
-                }
-                else {
-                    this._state = this._pause;
-                }
-            });
     
             const onReset = debounce(() => {
                 this.Restart();
@@ -169,6 +160,15 @@ export class Game {
                 this.focusPaused = this._state !== this._pause; //we paused for another reason
                 this.Pause();
             });
+        }
+    }
+
+    TogglePlayPause() {
+        if (this._state !== this._play) {
+            this._state = this._play;
+        }
+        else {
+            this._state = this._pause;
         }
     }
 
