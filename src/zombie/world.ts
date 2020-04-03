@@ -6,10 +6,18 @@ import { Colors } from '../shared/colors';
 import { GameCanvas } from '../shared/canvas';
 import { SceneImage } from '../shared/images';
 import { Point } from '../shared/physics';
+import { GameEventQueue } from '../shared/event-queue';
+import { EnemyKilledEvent } from './events';
 
 export class ZombieWorld extends World {
     player: Player;
     playerAttachedToCenter: boolean = true;
+
+    subscribe() {
+        super.subscribe();
+
+        //add map logic here
+    }
     
     setPlayer(player: Player){
         this.player = player;
@@ -66,6 +74,11 @@ export class ZombieWorld extends World {
         this.add(leftStreet);
         this.add(centerStreet); //center street
 
+        const spawner = new Spawner(Colors.Environment, {x: 200, y: 200}, { maxSpawns: 20, rate: 4000 });
+        spawner.attributes.push(GameObjectAttributes.Blocking);
+
+        this.add(spawner)
+
         this.addImage({
             src: 'zombie/Ground_Tile_Dark.png',
             catalog: 'zombie',
@@ -90,6 +103,7 @@ export class ZombieWorld extends World {
         //screen bounds
         const bounds = new CanvasBounds(-1000, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height});
         bounds.attributes.push(GameObjectAttributes.Holding);
+        bounds.attributes.push(GameObjectAttributes.NoExit);
         this.add(bounds);
 
         this.setPlayer(player);

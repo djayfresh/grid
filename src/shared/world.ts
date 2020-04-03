@@ -31,8 +31,13 @@ export class World {
         this.origin = new Point(0, 0);
         this.$canvas = GameCanvas.createCanvas(GameCanvas.canvas.width, GameCanvas.canvas.height);
         this.$ctx = this.$canvas.getContext('2d');
-        
-        GameEventQueue.subscribe(GameResizeEvent, id, resizeEvent => {
+
+        this.subscribe();
+    }
+
+    subscribe() {
+        GameEventQueue.subscribe(GameResizeEvent, this.id, resizeEvent => {
+            console.log("On resize event");
             this.setScreen(resizeEvent.data.screen.x, resizeEvent.data.screen.y);
             this.setCanvas(resizeEvent.data.canvas.x, resizeEvent.data.canvas.y);
         });
@@ -146,12 +151,16 @@ export class World {
 
         const holders = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Holding) >= 0);
 
-        const rectLeavingHolding = holders.some(s => {
+        const rectLeavingHolding = holders.filter(s => {
             const wasInside = Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + origin.x, s.pos.y + origin.y, s.width, s.height);
             return wasInside && !Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height)
         });
 
-        if (rectLeavingHolding){
+        if (rectLeavingHolding && rectLeavingHolding.length > 0){
+            if (rectLeavingHolding.some(ro => ro.attributes.indexOf(GameObjectAttributes.NoExit) >= 0)) {
+                return false;
+            }
+            
             const exits = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Exiting) >= 0);
             //moving into an exit
             const rectInExit = exits.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height))

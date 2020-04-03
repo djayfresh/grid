@@ -5,6 +5,8 @@ import { Mouse, Debug, KeyboardManager, KEY_CONST } from '../shared/utility';
 import { GameCanvas } from '../shared/canvas';
 import { Rectangle } from '../shared/objects';
 import { LevelConst } from '../lobby/lobby';
+import { GameEventQueue } from '../shared/event-queue';
+import { EnemyKilledEvent } from './events';
 
 class ZombieGame extends Game {
     world: ZombieWorld;
@@ -56,11 +58,16 @@ class ZombieGame extends Game {
             KeyboardManager.track(KEY_CONST.x);
             KeyboardManager.track(KEY_CONST.r);
             KeyboardManager.track(KEY_CONST.j);
+
+            GameEventQueue.subscribe(EnemyKilledEvent, 'zombie-game', enemyKilledEvent => {
+                this.score += enemyKilledEvent.data.totalHealth; //score based on enemy health before death?
+            });
         }
         this.world.setPos(0, 0);
 
         this.roundDelay = 0;
 
+        console.log("Generate map");
         this.world.reset();
         this.world.generateMap();
 

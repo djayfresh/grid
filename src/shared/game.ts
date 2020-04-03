@@ -109,14 +109,11 @@ export class Game {
             GameCanvas.height = GameCanvas.width;
         }
 
+        console.log("Resize");
         GameEventQueue.notify(new GameResizeEvent({
             screen: {x: GameCanvas.canvas.clientWidth, y: GameCanvas.canvas.clientHeight},
             canvas: {x: GameCanvas.canvas.width, y: GameCanvas.canvas.height}
-        }))
-        // if (this.world){
-        //     this.world.setScreen(GameCanvas.canvas.clientWidth, GameCanvas.canvas.clientHeight);
-        //     this.world.setCanvas(GameCanvas.canvas.width, GameCanvas.canvas.height);
-        // }
+        }));
     }
 
     Setup() {

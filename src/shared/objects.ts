@@ -23,6 +23,7 @@ export enum GameObjectAttributes {
     Blocking = 1, // collision with
     Holding = 2, // prevent leaving object
     Exiting = 3, // way to leave a holding object
+    NoExit = 4
 }
 
 export class GameObject implements IGameObject {

@@ -3,24 +3,24 @@ import { Point } from './physics';
 export enum ID_CONST { Player = 100, Enemy = 2, PowerUp = -3, Tile = -1, Grid = 9001, Flag = 11, Wall = -101, Ground = -100, Bullet = 101, Street = -80, Spawner = 10 }
 export enum KEY_CONST { left = 65, right = 68, up = 87, down = 83, pause = 80, x = 88, r = 82, menu = 77, j = 74 };
 
-export var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false, image: false, event: true };
+export var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false, image: false, event: true, includeStack: false };
 
 export class Debug {
     static log(...logMessages: any[]) {
         if (_DEBUG) {
-            console.log('LOG: ', ...logMessages);
+            console.log('LOG: ', ...logMessages, Debug.stack());
         }
     }
 
     static draw(...logMessages: any[]) {
         if (_DEBUG.draw) {
-            console.log('DRAW: ', ...logMessages);
+            console.log('DRAW: ', ...logMessages, Debug.stack());
         }
     }
 
     static time(...logMessages: any[]) {
         if (_DEBUG.time) {
-            console.log('TIME: ', logMessages);
+            console.log('TIME: ', logMessages, Debug.stack());
         }
     }
 
@@ -67,7 +67,7 @@ export class Debug {
     }
 
     static stack() {
-        return {stack: new Error().stack};
+        return _DEBUG.includeStack ? {stack: new Error().stack} : '';
     }
 }
 

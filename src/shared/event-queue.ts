@@ -31,7 +31,8 @@ export interface BaseEventCallback<T extends BaseEvent<any>> {
     (event: T);
 }
 
-export class EventQueue {
+//not exporting so we only have 1 queue for now
+class EventQueue {
     protected events: { [key: string]: Observable<BaseEvent<any>> } = {};
     protected activators: { [key: string]: Subject<BaseEvent<any>> } = {};
     protected subscribers: { [key: string]: { [key: string]: Subscription[] } } = {};
@@ -106,14 +107,19 @@ export class EventQueue {
         delete this.subscribers[eventName][subscriberId];
     }
 
-    notify(event: BaseEvent<any>) {
+    notify(event: BaseEvent<any>, immediate: boolean = true) {
         var eventName = event.eventName;
-        Debug.event('notify', event);
+        Debug.event('notify', event, immediate);
 
         if (this.activators[eventName]) {
-            setTimeout(() => {
+            if (immediate) {
                 this.activators[eventName].next(event);
-            });
+            }
+            else {
+                setTimeout(() => {
+                    this.activators[eventName].next(event);
+                });
+            }
         }
     }
     
