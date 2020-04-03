@@ -69,8 +69,7 @@ class ZombieGame extends Game {
         this.world.setPos(0, 0);
 
         this.roundDelay = 0;
-
-        console.log("Generate map");
+        
         this.world.reset();
         this.world.setRoundStart(1);
 

@@ -38,7 +38,6 @@ export class World {
 
     subscribe() {
         GameEventQueue.subscribe(GameResizeEvent, this.id, resizeEvent => {
-            console.log("On resize event");
             this.setScreen(resizeEvent.data.screen.x, resizeEvent.data.screen.y);
             this.setCanvas(resizeEvent.data.canvas.x, resizeEvent.data.canvas.y);
         });
