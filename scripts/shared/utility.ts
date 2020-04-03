@@ -89,6 +89,9 @@ export class Mouse {
         canvas.addEventListener(
             "mousemove", this.moveHandler.bind(this)
         );
+        canvas.addEventListener(
+            "wheel", (e: WheelEvent) => e.preventDefault()
+        );
 
         canvas.addEventListener("touchstart", this.downHandler.bind(this));
         canvas.addEventListener("touchend", this.upHandler.bind(this));
@@ -131,7 +134,7 @@ export class Mouse {
             this.isDown = true;
             this.isUp = false;
 
-            // event.preventDefault();
+            //event.preventDefault();
         }
     };
 
@@ -149,7 +152,7 @@ export class Mouse {
             this.isDown = false;
             this.isUp = true;
 
-            // event.preventDefault();
+            //event.preventDefault();
         }
     };
 
@@ -161,6 +164,8 @@ export class Mouse {
         if (this.move) {
             this.move(pos);
         }
+
+        //event.preventDefault();
     };
 }
 
