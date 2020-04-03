@@ -107,9 +107,12 @@ class EventQueue {
         delete this.subscribers[eventName][subscriberId];
     }
 
-    notify(event: BaseEvent<any>, immediate: boolean = true) {
+    notify(event: BaseEvent<any>, immediate: boolean = true, suppressDebug: boolean = false) {
         var eventName = event.eventName;
-        Debug.event('notify', event, immediate);
+
+        if (!suppressDebug){
+            Debug.event('notify', event, immediate);
+        }
 
         if (this.activators[eventName]) {
             if (immediate) {

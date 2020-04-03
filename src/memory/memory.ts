@@ -109,6 +109,7 @@ class Memory extends Game {
         }
 
         this.roundDelay = 0;
+        this.hasRoundStarted = false;
     }
 
     Restart() {

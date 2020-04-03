@@ -135,7 +135,7 @@ export class Mouse {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
-        // Debug.mouse("Down", event, pos);
+        Debug.mouse("Down", event, pos);
 
         if (this.button === undefined || this.button === (event as MouseEvent).button || (event as TouchEvent).touches) {
             if (this.isUp && this.press) {
@@ -153,7 +153,7 @@ export class Mouse {
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
-        // Debug.mouse("Up", event, pos);
+        Debug.mouse("Up", event, pos);
 
         if (this.button === undefined || this.button === (event as MouseEvent).button || (event as TouchEvent).touches) {
             if (this.isDown && this.release) {

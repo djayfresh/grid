@@ -112,7 +112,7 @@ export class Game {
         GameEventQueue.notify(new GameResizeEvent({
             screen: {x: GameCanvas.canvas.clientWidth, y: GameCanvas.canvas.clientHeight},
             canvas: {x: GameCanvas.canvas.width, y: GameCanvas.canvas.height}
-        }));
+        }), true, true);
     }
 
     Setup() {

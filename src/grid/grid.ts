@@ -92,6 +92,10 @@ class Grid extends Game {
 
         this.currentDelay = 0;
         this.hasRoundStarted = false;
+        this.difficulty = 1;
+        this.score = 0;
+
+        this.world.difficulty = this.difficulty;
 
         this.world.reset();
         this.world.setRoundStart(1);
