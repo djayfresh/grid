@@ -4,10 +4,11 @@ import { CanvasBounds, TiledImage, GameObjectAttributes, Box } from '../shared/o
 import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
 import { GameCanvas } from '../shared/canvas';
-import { SceneImage } from '../shared/images';
+import { SceneImage, ImageManager } from '../shared/images';
 import { Point } from '../shared/physics';
 import { GameEventQueue } from '../shared/event-queue';
 import { EnemyKilledEvent } from './events';
+import { ImagesLoadedEvent } from '../shared/events';
 
 export class ZombieWorld extends World {
     player: Player;

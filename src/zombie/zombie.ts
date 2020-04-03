@@ -8,6 +8,7 @@ import { LevelConst } from '../lobby/lobby';
 import { GameEventQueue } from '../shared/event-queue';
 import { EnemyKilledEvent } from './events';
 import { ImagesLoadedEvent } from '../shared/events';
+import { ImageManager } from '../shared/images';
 
 class ZombieGame extends Game {
     world: ZombieWorld;
@@ -69,9 +70,13 @@ class ZombieGame extends Game {
         this.world.setPos(0, 0);
 
         this.roundDelay = 0;
-        
+
         this.world.reset();
         this.world.setRoundStart(1);
+
+        if (ImageManager.getImages('zombie').every(i => i.isLoaded)){
+            GameEventQueue.notify(new ImagesLoadedEvent([]));
+        }
 
         GameCanvas.canvas.style.cursor = 'default';
     }
