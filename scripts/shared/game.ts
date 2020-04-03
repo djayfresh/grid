@@ -23,8 +23,6 @@ export class Game {
     firstFrame: boolean = false;
     imageLoadedThisFrame: boolean = false;
 
-    _debugDelay: number = 0; // 0;
-
     constructor() {
         this.Run();
     }
@@ -52,9 +50,7 @@ export class Game {
     Run() {
         this._state();
 
-        setTimeout(() => {
-            window.requestAnimationFrame(() => this.Run());
-        }, this._debugDelay);
+        window.requestAnimationFrame(() => this.Run());
     }
 
     _frame(dt) {

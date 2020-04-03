@@ -2,6 +2,7 @@ import { Rectangle } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Physics, Point, IPoint } from '../shared/physics';
 import { Colors } from '../shared/colors';
+import { World } from '../shared/world';
 
 export class Card extends Rectangle {
     flipSpeed = 0.03;
@@ -48,7 +49,7 @@ export class Card extends Rectangle {
         this.locked = true;
     }
 
-    update(_dt, _world) {
+    update(_dt: number, _world: World) {
         if (this.flipped && this.currentState < 1){
             this.flipLocked = true;
             this.currentState += this.flipSpeed;

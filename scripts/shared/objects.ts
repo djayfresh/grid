@@ -35,8 +35,8 @@ export class GameObject implements IGameObject {
 
     constructor(id: number, pos?: IPoint, bounds?: IPoint) {
         this.id = id;
-        this.pos = new Point(pos && pos.x || 0, pos && pos.y || 0);
-        this.bounds = bounds;
+        this.pos = new Point((pos && pos.x) || 0, (pos && pos.y) || 0);
+        this.bounds = {...bounds};
     }
 
     setPos(x: number, y: number) {
@@ -77,8 +77,8 @@ export class RenderObject extends GameObject {
     layer = 0;
     canvas?: HTMLCanvasElement;
 
-    constructor(id: number, pos?: IPoint) {
-        super(id, pos)
+    constructor(id: number, pos?: IPoint, bounds?: IPoint) {
+        super(id, pos, bounds)
         this.layer = id; //this should change probably
     }
 
@@ -110,10 +110,9 @@ export class RenderObject extends GameObject {
 export class Rectangle extends RenderObject implements IRectangle {
     color = '';
     constructor(id: number, color: string, pos: IPoint, bounds: IPoint) {
-        super(id, pos);
+        super(id, pos, bounds);
 
         this.color = color;
-        this.bounds = bounds;
     }
 
     get center() {
@@ -226,10 +225,9 @@ export class RenderImage extends RenderObject implements IRectangle {
     bounds: IPoint;
 
     constructor(image: SceneImage, id: number, pos: IPoint) {
-        super(id, pos);
+        super(id, pos, {x: image.width, y: image.height});
 
         this.sceneImage = image;
-        this.bounds = {x: this.sceneImage.width, y: this.sceneImage.height };
     }
 
     get width() {
@@ -310,7 +308,7 @@ export class TiledImage extends RenderImage {
     constructor(img: SceneImage, id: number, pos: IPoint, bounds: IPoint){
         super(img, id, pos);
 
-        this.bounds = bounds;
+        this.bounds = {...bounds};
     }
 
     protected _setImageToCanvas(image: ImageSource) {
@@ -337,8 +335,7 @@ export class Prefab extends RenderObject implements IRectangle {
     prefabCtx: CanvasRenderingContext2D;
 
     constructor(id: number, pos: IPoint, bounds: IPoint){ 
-        super(id, pos);
-        this.bounds = bounds;
+        super(id, pos, bounds);
         this.prefabCanvas = GameCanvas.createCanvas(bounds.x, bounds.y);
         this.prefabCtx = this.prefabCanvas.getContext('2d');
     }

@@ -48,9 +48,6 @@ export class GridWorld extends World {
             console.log("Unable to generated");
         }
 
-        const squareX = this.board.squareSize.x;
-        const squareY = this.board.squareSize.y;
-        
         for (let x = 0; x < map.length; x++) {
             for (let y = 0; y < map.length; y++) {
                 const id = map[x][y];
