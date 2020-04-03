@@ -1,6 +1,6 @@
 import { Game } from '../shared/game';
 import { GameCanvas } from '../shared/canvas';
-import { GridWorld, world } from './world';
+import { GridWorld } from './world';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Point } from '../shared/physics';
 

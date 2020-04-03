@@ -27,6 +27,8 @@ export interface SceneImage {
 export class ImageManager {
     static images: ImageSource[] = [];
 
+    static baseUrl: string = 'assets/images/';
+
     static addImage(img: ImageSource) {
         const searchImage = ImageManager.getImage(img.catalog, img.name);
         if(searchImage){
@@ -42,7 +44,7 @@ export class ImageManager {
                 Debug.image('Loaded', $img, img);
             }, 2000);
         };
-        $img.src = img.src;
+        $img.src = ImageManager.baseUrl + img.src;
 
         this.images.push(img);
 

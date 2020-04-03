@@ -6,8 +6,8 @@ import { IPoint } from './physics';
 
 export class Renderer {
     draw(world: World, layer?: number) {
-        const screen = { x: GameCanvas.canvas.clientWidth, y: GameCanvas.canvas.clientHeight };
-        Renderer.clearRect(GameCanvas.ctx, screen);
+        const canvasRect = { x: GameCanvas.canvas.width, y: GameCanvas.canvas.height };
+        Renderer.clearRect(GameCanvas.ctx, canvasRect);
         Renderer.clearScreen(world.$ctx, world);
 
         const worldDelta = world.getPosDelta();
@@ -24,7 +24,7 @@ export class Renderer {
                 ro.draw(world.$ctx, world);
             });
 
-        GameCanvas.ctx.drawImage(world.$canvas, 0, 0, screen.x, screen.y);
+        GameCanvas.ctx.drawImage(world.$canvas, 0, 0, canvasRect.x, canvasRect.y);
     };
 
     update(dt: number, world: World) {
@@ -36,7 +36,7 @@ export class Renderer {
     static clearScreen(ctx: CanvasRenderingContext2D, world: World) {
         ctx.translate(-world.pos.x, -world.pos.y); //reset world translate, move back to 0,0
 
-        Renderer.clearRect(ctx, world.screen);
+        Renderer.clearRect(ctx, world.canvas);
 
         ctx.translate(world.pos.x, world.pos.y); //reset the translate to w/e the world has been translated to
     }

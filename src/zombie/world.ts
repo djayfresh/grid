@@ -21,12 +21,12 @@ export class ZombieWorld extends World {
 
         const player = new Player();
         player.attachPlayerToCenter = this.playerAttachedToCenter;
-        player.pos = new Point(((this.screen.x / 2) - (player.width / 2)), ((this.screen.y / 2) - (player.height / 2)));
+        player.pos = new Point(((this.canvas.x / 2) - (player.width / 2)), ((this.canvas.y / 2) - (player.height / 2)));
         this.add(player);
         
 
         this.addImage({
-            src: 'assets/images/zombie/RoadLine.png',
+            src: 'zombie/RoadLine.png',
             catalog: 'zombie',
             name: 'road',
             height: 100,
@@ -54,9 +54,9 @@ export class ZombieWorld extends World {
 
 
         //Streets
-        const centerStreet = new TiledImage(roadX, ID_CONST.Street, {x: 5 + streetWidth, y: this.center.y - (streetWidth/2)}, {x: 400, y: streetWidth}); //new Rectangle(ID_CONST.Street, Colors.Black, 5, this.center.y - (streetWidth / 2), 400, streetWidth);
+        const centerStreet = new TiledImage(roadX, ID_CONST.Street, {x: 5 + streetWidth, y: this.canvasCenter.y - (streetWidth/2)}, {x: 400, y: streetWidth}); //new Rectangle(ID_CONST.Street, Colors.Black, 5, this.center.y - (streetWidth / 2), 400, streetWidth);
         
-        const overlap = new Box(ID_CONST.Street, {x: 5, y: this.center.y - (streetWidth/2)}, {x: streetWidth * 2, y: streetWidth});
+        const overlap = new Box(ID_CONST.Street, {x: 5, y: this.canvasCenter.y - (streetWidth/2)}, {x: streetWidth * 2, y: streetWidth});
         overlap.attributes.push(GameObjectAttributes.Exiting); //where the streets connect player can exit
 
         const leftStreet = new TiledImage(roadY, ID_CONST.Street, {x: 5, y: 5}, {x: streetWidth, y: 500}); //new Rectangle(ID_CONST.Street, Colors.Black, 5, 5, streetWidth, 500); //left street
@@ -67,7 +67,7 @@ export class ZombieWorld extends World {
         this.add(centerStreet); //center street
 
         this.addImage({
-            src: 'assets/images/zombie/Ground_Tile_Dark.png',
+            src: 'zombie/Ground_Tile_Dark.png',
             catalog: 'zombie',
             name: 'ground',
             height: 100,

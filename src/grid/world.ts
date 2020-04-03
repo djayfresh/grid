@@ -103,5 +103,3 @@ export class GridWorld extends World {
         this.setMap(renderObjects);
     }
 };
-
-export var world = new GridWorld(6, 1);
