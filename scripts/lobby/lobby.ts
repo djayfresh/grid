@@ -109,16 +109,6 @@ export class Lobby extends Game {
         this.Resize();
     }
 
-    Resize(){
-        super.Resize();
-
-        if (this.world){
-            this.world.reset();
-
-            this._buildLobbyButtons();
-        }
-    }
-
     _buildLobbyButtons() {
         const left = GameCanvas.width * 0.25;
         const buttonH = 50;
