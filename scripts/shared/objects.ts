@@ -394,7 +394,8 @@ export class CanvasRender extends RenderObject {
         this.canvas = canvas;
     }
 
-    draw(ctx: CanvasRenderingContext2D) {
+    draw(ctx: CanvasRenderingContext2D, world: World) {
+        
         ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
     }
 }

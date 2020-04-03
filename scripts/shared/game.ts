@@ -107,8 +107,8 @@ export class Game {
             GameCanvas.height = GameCanvas.width;
         }
         if (this.world){
-            this.world.setScreen(GameCanvas.width, GameCanvas.height);
-            this.world.setCanvas(GameCanvas.canvas.clientWidth, GameCanvas.canvas.clientHeight);
+            this.world.setScreen(GameCanvas.canvas.clientWidth, GameCanvas.canvas.clientHeight);
+            this.world.setCanvas(GameCanvas.canvas.width, GameCanvas.canvas.height);
         }
     }
 

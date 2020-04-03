@@ -89,7 +89,7 @@ export class Player extends Rectangle {
         if (this.attachPlayerToCenter && this.moveToCenter < 1){
             this.moveToCenterTime += dt;
 
-            const pos = Point.simple(world.screen.x / 2, world.screen.y / 2);
+            const pos = Point.simple(world.canvas.x / 2, world.canvas.y / 2);
             pos.x -= this.width / 2;
             pos.y -= this.height / 2;
             // const dist = Point.subtract(pos, this.freeMovePos).magnitude();
@@ -99,7 +99,7 @@ export class Player extends Rectangle {
             this.moveToCenter = this.moveToCenterTime / this.moveToCenterRate;
         }
         else if (this.attachPlayerToCenter){
-            const pos = new Point(world.screen.x / 2, world.screen.y / 2);
+            const pos = new Point(world.canvas.x / 2, world.canvas.y / 2);
             pos.x -= this.width / 2;
             pos.y -= this.height / 2;
             this.pos = pos;
