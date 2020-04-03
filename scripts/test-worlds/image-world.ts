@@ -13,11 +13,11 @@ export class ImageWorld extends World {
             name: 'logo',
             height: 100,
             width: 100,
-            src: 'assets/images/logo.png',
+            src: 'logo.png',
         });
 
         this.addImage({
-            src: 'assets/images/zombie/Ground_Tile.png',
+            src: 'zombie/Ground_Tile.png',
             catalog: 'zombie',
             name: 'ground',
             height: 100,

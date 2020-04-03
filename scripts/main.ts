@@ -4,6 +4,7 @@ import { memory } from './memory/memory';
 import { grid } from './grid/grid';
 import { KEY_CONST, _DEBUG } from './shared/utility';
 import { Game } from './shared/game';
+import { ImageManager } from './shared/images';
 
 var gamesList: Game[] = [grid, zombie, memory, lobby];
 
@@ -53,8 +54,10 @@ var menuOptions = [
 ]
 
 lobby.SetMenu(menuOptions);
-// lobby.Play();
 
+export function ImageAssets(baseUrl: string){
+    ImageManager.baseUrl = baseUrl;
+}
 
 export function Start() {
     lobby.Resize();

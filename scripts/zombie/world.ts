@@ -26,7 +26,7 @@ export class ZombieWorld extends World {
         
 
         this.addImage({
-            src: 'assets/images/zombie/RoadLine.png',
+            src: 'zombie/RoadLine.png',
             catalog: 'zombie',
             name: 'road',
             height: 100,
@@ -67,7 +67,7 @@ export class ZombieWorld extends World {
         this.add(centerStreet); //center street
 
         this.addImage({
-            src: 'assets/images/zombie/Ground_Tile_Dark.png',
+            src: 'zombie/Ground_Tile_Dark.png',
             catalog: 'zombie',
             name: 'ground',
             height: 100,

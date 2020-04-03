@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "npm run compile && npm run pack",
+    "bundle": "npm run compile && npm run pack & npm run pack-deploy",
     "compile": "tsc",
     "watch": "tsc -w",
     "pack": "webpack --mode=development --config-name=dev",
