@@ -4,6 +4,7 @@ import { GameCanvas } from '../shared/canvas';
 import { Debug, ID_CONST, Mouse } from '../shared/utility';
 import { Physics } from '../shared/physics';
 import { Card } from './objects';
+import { LevelConst } from '../lobby/lobby';
 
 class Memory extends Game {
     world: MemoryWorld;
@@ -101,7 +102,7 @@ class Memory extends Game {
         super._init();
 
         if (!this._initialized){
-            this.world = new MemoryWorld(6, 0); //must be an even number of cards
+            this.world = new MemoryWorld(LevelConst.Memory, 6, 0); //must be an even number of cards
             this.mouse = new Mouse(0, GameCanvas.canvas, true);
             
             this.Resize();

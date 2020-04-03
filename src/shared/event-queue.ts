@@ -1,10 +1,35 @@
-import { BaseEvent, TypeOfBaseEvent, BaseEventCallback } from './events';
-
 import { Observable, Observer, Subscription, Subject } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
+import { Debug } from './utility';
 
-declare var setImmediate; 
-if(typeof(setImmediate) === 'undefined') { var setImmediate: any = setTimeout; }
+export class BaseEvent<T> {
+    static eventName: string;
+    static isSocketEvent: boolean;
+
+    eventName: string;
+    isSocketEvent: boolean;
+    data: T;
+    
+    date: number;
+    senderId: string;
+    created: number;
+    platformId?: number;
+    
+    constructor(data: T, date: number = null) {
+        this.data = data;
+        this.date = date !== null ? date : Date.now();
+        this.eventName = (<typeof BaseEvent> this.constructor).eventName;
+        this.isSocketEvent = (<typeof BaseEvent> this.constructor).isSocketEvent;
+
+        this.created = Date.now();
+    }
+}
+
+export declare type TypeOfBaseEvent<T extends BaseEvent<any>> = { new(data: any): T; };
+
+export interface BaseEventCallback<T extends BaseEvent<any>> {
+    (event: T);
+}
 
 export class EventQueue {
     protected events: { [key: string]: Observable<BaseEvent<any>> } = {};
@@ -83,9 +108,10 @@ export class EventQueue {
 
     notify(event: BaseEvent<any>) {
         var eventName = event.eventName;
+        Debug.event('notify', event);
 
         if (this.activators[eventName]) {
-            setImmediate(() => {
+            setTimeout(() => {
                 this.activators[eventName].next(event);
             });
         }
@@ -114,3 +140,5 @@ export class EventQueue {
 export class QueueOperators<T extends BaseEvent<any>> {
     filter: (value: T, index: number) => boolean;
 }
+
+export var GameEventQueue = new EventQueue();

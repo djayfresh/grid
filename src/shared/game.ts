@@ -4,6 +4,8 @@ import { GameCanvas } from './canvas';
 import { World } from './world';
 import { Physics } from './physics';
 import { Rectangle } from './objects';
+import { GameEventQueue } from './event-queue';
+import { GameResizeEvent } from './events';
 
 export class Game {
     renderer = new Renderer();
@@ -106,10 +108,15 @@ export class Game {
         if (GameCanvas.height !== GameCanvas.width){
             GameCanvas.height = GameCanvas.width;
         }
-        if (this.world){
-            this.world.setScreen(GameCanvas.canvas.clientWidth, GameCanvas.canvas.clientHeight);
-            this.world.setCanvas(GameCanvas.canvas.width, GameCanvas.canvas.height);
-        }
+
+        GameEventQueue.notify(new GameResizeEvent({
+            screen: {x: GameCanvas.canvas.clientWidth, y: GameCanvas.canvas.clientHeight},
+            canvas: {x: GameCanvas.canvas.width, y: GameCanvas.canvas.height}
+        }))
+        // if (this.world){
+        //     this.world.setScreen(GameCanvas.canvas.clientWidth, GameCanvas.canvas.clientHeight);
+        //     this.world.setCanvas(GameCanvas.canvas.width, GameCanvas.canvas.height);
+        // }
     }
 
     Setup() {

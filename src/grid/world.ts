@@ -13,8 +13,8 @@ export class GridWorld extends World {
     difficulty: number;
     gridSize: number;
 
-    constructor(gridSize: number, difficulty: number) {
-        super(LevelConst.Grid);
+    constructor(id: number, gridSize: number, difficulty: number) {
+        super(id);
 
         this.gridSize = gridSize;
         this.difficulty = difficulty;

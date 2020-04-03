@@ -3,7 +3,7 @@ import { Point } from './physics';
 export enum ID_CONST { Player = 100, Enemy = 2, PowerUp = -3, Tile = -1, Grid = 9001, Flag = 11, Wall = -101, Ground = -100, Bullet = 101, Street = -80, Spawner = 10 }
 export enum KEY_CONST { left = 65, right = 68, up = 87, down = 83, pause = 80, x = 88, r = 82, menu = 77, j = 74 };
 
-export var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false, image: true };
+export var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false, image: false, event: true };
 
 export class Debug {
     static log(...logMessages: any[]) {
@@ -26,38 +26,48 @@ export class Debug {
 
     static physics(...logMessages: any[]) {
         if (_DEBUG.physics) {
-            console.log('PHYSICS: ', logMessages);
+            console.log('PHYSICS: ', logMessages, Debug.stack());
         }
     }
 
     static keyboard(...logMessages: any[]) {
         if (_DEBUG.keyboard) {
-            console.log('KEYBOARD: ', logMessages);
+            console.log('KEYBOARD: ', logMessages, Debug.stack());
         }
     }
 
     static generation(...logMessages: any[]) {
         if (_DEBUG.generation) {
-            console.log('GENERATION: ', ...logMessages);
+            console.log('GENERATION: ', ...logMessages, Debug.stack());
         }
     }
 
     static mouse(...logMessages: any[]) {
         if (_DEBUG.mouse) {
-            console.log('MOUSE: ', ...logMessages);
+            console.log('MOUSE: ', ...logMessages, Debug.stack());
         }
     }
 
     static game(...logMessages: any[]) {
         if (_DEBUG.game) {
-            console.log('GAME: ', ...logMessages);
+            console.log('GAME: ', ...logMessages, Debug.stack());
         }
     }
 
     static image(...logMessages: any[]) {
         if (_DEBUG.image) {
-            console.log('IMAGE: ', ...logMessages);
+            console.log('IMAGE: ', ...logMessages, Debug.stack());
         }
+    } 
+
+    static event(...logMessages: any[]) {
+        if (_DEBUG.event) {
+            console.log('EVENT: ', ...logMessages, Debug.stack());
+        }
+    }
+
+    static stack() {
+        return {stack: new Error().stack};
     }
 }
 

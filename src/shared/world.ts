@@ -4,6 +4,8 @@ import { Physics, Point, IPoint } from './physics';
 import { Debug } from './utility';
 import { GameCanvas } from './canvas';
 import { Renderer } from './renderer';
+import { GameEventQueue } from './event-queue';
+import { GameResizeEvent } from './events';
 
 export class World {
     pos = new Point(0, 0);
@@ -29,6 +31,11 @@ export class World {
         this.origin = new Point(0, 0);
         this.$canvas = GameCanvas.createCanvas(GameCanvas.canvas.width, GameCanvas.canvas.height);
         this.$ctx = this.$canvas.getContext('2d');
+        
+        GameEventQueue.subscribe(GameResizeEvent, id, resizeEvent => {
+            this.setScreen(resizeEvent.data.screen.x, resizeEvent.data.screen.y);
+            this.setCanvas(resizeEvent.data.canvas.x, resizeEvent.data.canvas.y);
+        });
     }
 
     addImage(img: ImageSource){

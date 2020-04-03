@@ -5,10 +5,10 @@ import { grid } from './grid/grid';
 import { KEY_CONST, _DEBUG, Key } from './shared/utility';
 import { Game } from './shared/game';
 import { ImageManager } from './shared/images';
+import { GameCanvas } from './shared/canvas';
 
 const gamesList: Game[] = [grid, zombie, memory, lobby];
 let selectedGame: Game = lobby;
-
 
 window.addEventListener('keydown', ev => {
     if (ev.keyCode === KEY_CONST.menu){
@@ -20,10 +20,9 @@ window.addEventListener('keydown', ev => {
         selectedGame = lobby;
         lobby.Play();
     }
-});
-
-new Key(KEY_CONST.pause).onClick(() => {    
-    selectedGame.TogglePlayPause();
+    if(ev.keyCode === KEY_CONST.pause){
+        selectedGame.TogglePlayPause();
+    }
 });
 
 var menuOptions = [
@@ -64,6 +63,10 @@ var menuOptions = [
 ]
 
 lobby.SetMenu(menuOptions);
+
+export function SetCanvasId(canvasId: string){
+    GameCanvas.id = canvasId; //TODO: Make multi-canvas work on same page
+}
 
 export function ImageAssets(baseUrl: string){
     ImageManager.baseUrl = baseUrl;

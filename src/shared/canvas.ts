@@ -2,6 +2,7 @@ import { Point } from './physics';
 
 export class GameCanvas {
     static _canvas: HTMLCanvasElement;
+    static id: string = 'grid-canvas';
 
     static get width() {
         return GameCanvas.canvas ? GameCanvas.canvas.width : 0;
@@ -17,7 +18,7 @@ export class GameCanvas {
 
     static get canvas() {
         if (!GameCanvas._canvas){
-            GameCanvas._canvas = document.getElementById('grid-canvas') as HTMLCanvasElement;
+            GameCanvas._canvas = document.getElementById(GameCanvas.id) as HTMLCanvasElement;
         }
 
         return GameCanvas._canvas;

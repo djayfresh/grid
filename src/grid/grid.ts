@@ -3,6 +3,7 @@ import { GameCanvas } from '../shared/canvas';
 import { GridWorld } from './world';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Point } from '../shared/physics';
+import { LevelConst } from '../lobby/lobby';
 
 class Grid extends Game {
     world: GridWorld;
@@ -84,7 +85,7 @@ class Grid extends Game {
         super._init();
 
         if (!this._initialized) {
-            this.world = new GridWorld(this.gridSize, this.difficulty);
+            this.world = new GridWorld(LevelConst.Grid, this.gridSize, this.difficulty);
             this.Resize();
             this.mouse = new Mouse(0, GameCanvas.canvas, true);
         }
