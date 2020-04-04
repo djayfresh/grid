@@ -10,7 +10,6 @@ class Memory extends Game {
     world: MemoryWorld;
     cards: Card[];
     mouse: Mouse;
-    wasDownLastFrame: boolean;
 
     constructor() {
         super();
@@ -34,7 +33,9 @@ class Memory extends Game {
         this.firstFrame = true;
     }
 
-    RunRound() {
+    RunRound(dt: number) {
+        super.RunRound(dt);
+
         let isMouseOverButton = false;
 
         //hover mouse
@@ -52,23 +53,6 @@ class Memory extends Game {
             GameCanvas.canvas.style.cursor = 'default';
         }
 
-        if (this.mouse.isDown) {
-            this.wasDownLastFrame = true;
-        }
-        else {
-            if (this.wasDownLastFrame) {
-                //temp
-                this.cards.filter(c => !c.locked).forEach(ro => {
-                    if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
-                        Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
-
-                        ro.Flip();
-                    }
-                });
-            }
-            this.wasDownLastFrame = false;
-        }
-
         const flippedCards = this.cards.filter(c => c.isFlipped);
         if (flippedCards.length >= 2) {
             if (flippedCards[0].cardColor === flippedCards[1].cardColor) {
@@ -84,6 +68,16 @@ class Memory extends Game {
         if (this.cards.every(c => c.locked)){
             this.NextRound();
         }
+    }
+
+    onMouseDown(){
+        this.cards.filter(c => !c.locked).forEach(ro => {
+            if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
+                Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
+
+                ro.Flip();
+            }
+        });
     }
 
     NextRound() {

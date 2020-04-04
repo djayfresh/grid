@@ -24,6 +24,7 @@ export class Game {
 
     firstFrame: boolean = false;
     imageLoadedThisFrame: boolean = false;
+    wasDownLastFrame: boolean = false;
 
     constructor() {
         this.Run();
@@ -101,7 +102,19 @@ export class Game {
     }
 
     RunRound(_dt: number) {
+        if (this.mouse.isDown) {
+            this.wasDownLastFrame = true;
+        }
 
+        if (this.mouse.isDown && this.mouse.wasTouch){
+            this.onMouseDown();
+        }
+        else if(!this.mouse.isDown && !this.mouse.wasTouch) {
+            if (this.wasDownLastFrame) {
+                this.onMouseDown();
+            }
+            this.wasDownLastFrame = false;
+        }
     }
 
     Resize() {
@@ -126,6 +139,10 @@ export class Game {
 
     isPaused() {
         return this._state === this._pause;
+    }
+
+    onMouseDown() {
+
     }
 
     _init() {

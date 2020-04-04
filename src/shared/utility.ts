@@ -80,6 +80,7 @@ export class Mouse {
     move: (ps: Point) => void;
     lastPos: Point = new Point(0, 0);
     pos: Point = new Point(0, 0);
+    wasTouch: boolean;
 
     _canvas: HTMLCanvasElement;
     relative: boolean = false;
@@ -132,6 +133,7 @@ export class Mouse {
 
     //The `downHandler`
     downHandler(event: MouseEvent | TouchEvent) {
+        this.wasTouch = event instanceof TouchEvent;
         const pos = this.getMousePos(event);
         this.setPos(pos);
 
@@ -150,6 +152,7 @@ export class Mouse {
 
     //The `upHandler`
     upHandler(event: MouseEvent | TouchEvent) {
+        this.wasTouch = event instanceof TouchEvent;
         const pos = this.getMousePos(event);
         this.setPos(pos);
 

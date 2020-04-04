@@ -22,25 +22,17 @@ class Grid extends Game {
         this.currentDelay += dt;
     }
 
-    RunRound() {
-        if (this.mouse.isDown) {
-            this.wasDownLastFrame = true;
-        }
-        else {
-            if (this.wasDownLastFrame) {
-                const pos = this.world.board.posToBoard(this.mouse.pos);
-                const player = this.world.board.posToBoard(this.world.player.pos);
+    onMouseDown() {
+        const pos = this.world.board.posToBoard(this.mouse.pos);
+        const player = this.world.board.posToBoard(this.world.player.pos);
 
-                const moveX = pos.x - player.x;
-                const moveY = pos.y - player.y;
+        const moveX = pos.x - player.x;
+        const moveY = pos.y - player.y;
 
-                Debug.mouse("Move player", player, pos, moveX, moveY, this.mouse.pos, this.world.player.pos);
+        Debug.mouse("Move player", player, pos, moveX, moveY, this.mouse.pos, this.world.player.pos);
 
-                if (1 >= moveX && moveX >= -1 && 1 >= moveY && moveY >= -1) {
-                    this.movePlayer(player.x, player.y, moveX, moveY);
-                }
-            }
-            this.wasDownLastFrame = false;
+        if (1 >= moveX && moveX >= -1 && 1 >= moveY && moveY >= -1) {
+            this.movePlayer(player.x, player.y, moveX, moveY);
         }
     }
 

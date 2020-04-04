@@ -64,24 +64,18 @@ export class Lobby extends Game {
         else {
             GameCanvas.canvas.style.cursor = 'default';
         }
+    }
 
-        if (this.mouse.isDown) {
-            this.wasDownLastFrame = true;
-        }
-        else {
-            if (this.wasDownLastFrame) {
-                this.world.map.filter(ro => Levels.indexOf(ro.id) >= 0).forEach((ro: Rectangle) => {
-                    ro.color = Colors.White;
+    onMouseDown() {
+        this.world.map.filter(ro => Levels.indexOf(ro.id) >= 0).forEach((ro: Rectangle) => {
+            ro.color = Colors.White;
 
-                    if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
-                        setTimeout(() => {
-                            this._selectMenuOption(ro.id);
-                        }, 100);
-                    }
-                });
+            if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
+                setTimeout(() => {
+                    this._selectMenuOption(ro.id);
+                }, 100);
             }
-            this.wasDownLastFrame = false;
-        }
+        });
     }
 
     _init() {
