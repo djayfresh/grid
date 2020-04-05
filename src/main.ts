@@ -6,8 +6,9 @@ import { KEY_CONST, _DEBUG, Key } from './shared/utility';
 import { Game } from './shared/game';
 import { ImageManager } from './shared/images';
 import { GameCanvas } from './shared/canvas';
+import { highscore } from './highscore/highscore';
 
-const gamesList: Game[] = [grid, zombie, memory, lobby];
+const gamesList: Game[] = [grid, zombie, memory, lobby, highscore];
 let selectedGame: Game = lobby;
 
 window.addEventListener('keydown', ev => {
@@ -52,14 +53,15 @@ var menuOptions = [
             selectedGame = memory;
         },
         text: 'Memory'
+    },
+    {
+        id: LevelConst.HighScore,
+        action: () => {
+            lobby.Pause();
+            highscore.Play();
+        },
+        text: 'Highscores'
     }
-    // {
-    //     id: LevelConst.HighScore,
-    //     action: () => {
-    //         console.log("Play highscores")
-    //     },
-    //     text: 'Highscores'
-    // }
 ]
 
 lobby.SetMenu(menuOptions);

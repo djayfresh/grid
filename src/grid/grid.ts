@@ -4,6 +4,7 @@ import { GridWorld } from './world';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Point } from '../shared/physics';
 import { LevelConst } from '../lobby/lobby';
+import { HighScoreManager } from '../highscore/manager';
 
 class Grid extends Game {
     world: GridWorld;
@@ -118,6 +119,8 @@ class Grid extends Game {
     GameOver() {
         this.currentDelay = 0;
         this.difficulty = 1;
+
+        HighScoreManager.add(LevelConst.Grid, 'Tester', this.score, false);
 
         this.world.difficulty = this.difficulty;
 

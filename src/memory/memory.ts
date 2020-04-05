@@ -5,6 +5,7 @@ import { Debug, ID_CONST, Mouse } from '../shared/utility';
 import { Physics } from '../shared/physics';
 import { Card } from './objects';
 import { LevelConst } from '../lobby/lobby';
+import { HighScoreManager } from '../highscore/manager';
 
 class Memory extends Game {
     world: MemoryWorld;
@@ -87,6 +88,8 @@ class Memory extends Game {
 
         this.currentDelay = 0;
         this.cards = [];
+        
+        HighScoreManager.add(LevelConst.Memory, 'Tester', this.score, true);
 
         this.world.reset();
         this.world.setGameOver(this.score);
