@@ -91,7 +91,7 @@ class Grid extends Game {
         this.world.difficulty = this.difficulty;
 
         this.world.reset();
-        this.world.setRoundStart(1);
+        this.world.setRoundStart(this.difficulty);
 
         GameCanvas.canvas.style.cursor = 'pointer'; //change mouse pointer
     }
@@ -117,17 +117,13 @@ class Grid extends Game {
     }
 
     GameOver() {
-        this.currentDelay = 0;
-        this.difficulty = 1;
-
-        HighScoreManager.add(LevelConst.Grid, 'Tester', this.score, false);
-
-        this.world.difficulty = this.difficulty;
-
-        this.world.reset();
-        this.world.setGameOver(this.score);
-
-        this.score = 0;
+        this.roundStartDisabled = true;
+        this.world.setHighScorePicker(LevelConst.Grid, this.score, false, () => {
+            this.roundStartDisabled = false;
+            this.difficulty = 1;
+            this.world.difficulty = this.difficulty;
+            this.score = 0;
+        });
     }
 
     Restart() {

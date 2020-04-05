@@ -4,6 +4,8 @@ import { LevelConst } from '../lobby/lobby';
 
 
 export class HighScores extends Game {
+    world: HighScoreWorld;
+    
     StartRound() {
         this.world.reset();
         this.world.generateMap();

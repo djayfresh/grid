@@ -21,6 +21,7 @@ export class Game {
     roundDelay: number = 2000;
     currentDelay: number = 0;
     hasRoundStarted: boolean = false;
+    roundStartDisabled: boolean = false;
 
     firstFrame: boolean = false;
     imageLoadedThisFrame: boolean = false;
@@ -63,7 +64,7 @@ export class Game {
             this.$score.innerText = '' + this.score;
         }
 
-        if (this.currentDelay >= this.roundDelay && this.hasRoundStarted === false){
+        if (this.currentDelay >= this.roundDelay && !this.hasRoundStarted && !this.roundStartDisabled){
             this.hasRoundStarted = true;
             this.StartRound(dt);
         }

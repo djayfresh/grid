@@ -7,6 +7,7 @@ import { Renderer } from './renderer';
 import { GameEventQueue } from './event-queue';
 import { GameResizeEvent } from './events';
 import { Colors } from './colors';
+import { HighScoreManager } from '../highscore/manager';
 
 export class World {
     pos = new Point(0, 0);
@@ -207,5 +208,66 @@ export class World {
         renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
         
         this.setMap(renderObjects);
+    }
+
+    setHighScorePicker(gameId: number, score: number, highScoreIsBest: boolean, callback: () => void){ 
+        const $div = document.createElement('div');
+        GameCanvas.canvas.parentElement.appendChild($div);
+        $div.style.position = 'absolute';
+        $div.style.backgroundColor = Colors.Black;
+        $div.style.width = `${GameCanvas.canvas.clientWidth}px`;
+        $div.style.height = `${GameCanvas.canvas.clientHeight}px`;
+        $div.style.top = `${GameCanvas.canvas.offsetTop}px`;
+        $div.style.left = `${GameCanvas.canvas.offsetLeft}px`;
+
+        const $h3 = document.createElement('h3');
+        $h3.innerHTML = `High Score: ${score}`;
+        $h3.style.color = Colors.White;
+        $h3.style.marginBottom = '15px';
+        $div.appendChild($h3);
+
+        const $playerName = document.createElement('input');
+        $playerName.placeholder = 'Enter Player Initials';
+        $playerName.maxLength = 3;
+        $playerName.classList.add('form-control');
+        $playerName.style.marginBottom = '15px';
+        $playerName.style.marginRight = '25%';
+        $playerName.style.marginLeft = '25%';
+        $playerName.style.width = '50%';
+        $playerName.value = HighScoreManager.getLastPlayerName();
+        $div.appendChild($playerName);
+
+        const $save = document.createElement('button');
+        $save.innerText = 'Save';
+        $save.classList.add('btn');
+        $save.classList.add('btn-primary');
+        checkSaveDisabled($playerName, $save);
+        $save.addEventListener('click', () => {
+            HighScoreManager.setLastPlayerName($playerName.value);
+            HighScoreManager.add(gameId, $playerName.value, score, highScoreIsBest);
+            callback();
+
+            GameCanvas.canvas.parentElement.removeChild($div);
+        });
+
+        $playerName.addEventListener('keyup', () => {
+            checkSaveDisabled($playerName, $save);
+        });
+
+        $div.appendChild($save);
+    }
+}
+
+function checkSaveDisabled($playerName: HTMLInputElement, $save: HTMLButtonElement) {
+    const disabled = !$playerName.value;
+    if (disabled) {
+        if (!$save.hasAttribute('disabled')) {
+            $save.setAttribute('disabled', 'disabled');
+        }
+    }
+    else {
+        if ($save.hasAttribute('disabled')) {
+            $save.removeAttribute('disabled');
+        }
     }
 }

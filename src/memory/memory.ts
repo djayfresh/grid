@@ -82,14 +82,17 @@ class Memory extends Game {
     }
 
     NextRound() {
-        this.roundDelay = 2000;
-        this.currentDelay = 0;
         this.hasRoundStarted = false;
+        this.roundStartDisabled = true;
+        this.world.setHighScorePicker(LevelConst.Memory, this.score, true, () => {
+            this.roundDelay = 2000;
+            this.currentDelay = 0;
+            this.hasRoundStarted = false;
 
-        this.currentDelay = 0;
-        this.cards = [];
-        
-        HighScoreManager.add(LevelConst.Memory, 'Tester', this.score, true);
+            this.cards = [];
+            this.roundStartDisabled = false;
+
+        });
 
         this.world.reset();
         this.world.setGameOver(this.score);
@@ -99,7 +102,7 @@ class Memory extends Game {
         super._init();
 
         if (!this._initialized){
-            this.world = new MemoryWorld(LevelConst.Memory, 6, 0); //must be an even number of cards
+            this.world = new MemoryWorld(LevelConst.Memory, 2, 0); //must be an even number of cards
             this.mouse = new Mouse(0, GameCanvas.canvas, true);
             
             this.Resize();

@@ -1,5 +1,15 @@
 export class HighScoreManager {
     private static HIGH_SCORE_KEY = 'Grid-High-Score';
+    private static PLAYER_NAME = 'Grid-Last-Player-Name';
+
+    static getLastPlayerName() {
+        return localStorage.getItem(HighScoreManager.PLAYER_NAME) || '';
+    }
+
+    static setLastPlayerName(value: string) {
+        localStorage.setItem(HighScoreManager.PLAYER_NAME, value);
+    }
+
     static add(gameId: number, player: string, score: number, highScoreIsBest: boolean) {
         const highScores = HighScoreManager.getScores();
 
