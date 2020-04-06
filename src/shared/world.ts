@@ -1,5 +1,5 @@
 import { ImageSource, ImageManager } from './images';
-import { Rectangle, GameObject, RenderObject, GameObjectAttributes, IRectangle, IGameObject, RenderText } from './objects';
+import { Rectangle, GameObject, RenderObject, GameObjectAttributes, IRectangle, IGameObject, RenderText, Prefab } from './objects';
 import { Physics, Point, IPoint } from './physics';
 import { Debug } from './utility';
 import { GameCanvas } from './canvas';
@@ -137,9 +137,15 @@ export class World {
     }
 
     noCollisions(origin: IPoint, newPos: IPoint, rect: {x: number, y: number, w: number, h: number}) {
+        //start with prefabs
+        const prefabCheck = this.map.ofType<Prefab>(ro => ro instanceof Prefab).some(p => !p.noCollisions(origin, newPos, rect));
+
+        if (prefabCheck){
+            return false;
+        }
+
         //TODO: Other types of collision besides Rectangles
         const rectangles = this.map.ofType<IRectangle>((ro: any) => (ro as IRectangle).width !== undefined);
-
         const blockers = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Blocking) >= 0);
 
         const rectBlocked = blockers.some(s => {

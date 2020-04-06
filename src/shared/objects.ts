@@ -339,6 +339,7 @@ export class Prefab extends RenderObject implements IRectangle {
         super(id, pos, bounds);
         this.prefabCanvas = GameCanvas.createCanvas(bounds.x, bounds.y);
         this.prefabCtx = this.prefabCanvas.getContext('2d');
+        this.childObjects = [];
     }
 
     get width() {
@@ -362,7 +363,40 @@ export class Prefab extends RenderObject implements IRectangle {
     update(dt: number, world: World){
         this.childObjects.forEach(c => c.update(dt, world));
     }
+    
+    noCollisions(origin: IPoint, newPos: IPoint, rect: {x: number, y: number, w: number, h: number}) {
+        //TODO: Other types of collision besides Rectangles
+        const rectangles = this.childObjects.ofType<IRectangle>((ro: any) => (ro as IRectangle).width !== undefined);
+        const blockers = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Blocking) >= 0);
 
+        const rectBlocked = blockers.some(s => {
+            return Physics.collision(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x + this.pos.x, s.pos.y + newPos.y + this.pos.y, s.width, s.height)
+        });
+
+        if (rectBlocked){
+            return false;
+        }
+
+        const holders = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Holding) >= 0);
+
+        const rectLeavingHolding = holders.filter(s => {
+            const wasInside = Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + origin.x + this.pos.x, s.pos.y + origin.y + this.pos.y, s.width, s.height);
+            return wasInside && !Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x + this.pos.x, s.pos.y + newPos.y + this.pos.y, s.width, s.height)
+        });
+
+        if (rectLeavingHolding && rectLeavingHolding.length > 0){
+            if (rectLeavingHolding.some(ro => ro.attributes.indexOf(GameObjectAttributes.NoExit) >= 0)) {
+                return false;
+            }
+            
+            const exits = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Exiting) >= 0);
+            //moving into an exit
+            const rectInExit = exits.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x + this.pos.x, s.pos.y + newPos.y + this.pos.y, s.width, s.height))
+            return rectInExit;
+        }
+
+        return true;
+    }
 }
 
 export class CanvasBounds extends GameObject implements IRectangle {

@@ -85,7 +85,7 @@ class Memory extends Game {
         this.hasRoundStarted = false;
         this.roundStartDisabled = true;
         this.world.setHighScorePicker(LevelConst.Memory, this.score, true, () => {
-            this.roundDelay = 2000;
+            this.roundDelay = 0;
             this.currentDelay = 0;
             this.hasRoundStarted = false;
 

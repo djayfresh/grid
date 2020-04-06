@@ -9,6 +9,7 @@ import { GameEventQueue } from '../shared/event-queue';
 import { EnemyKilledEvent } from './events';
 import { ImagesLoadedEvent } from '../shared/events';
 import { ImageManager } from '../shared/images';
+import { PrefabWorld } from '../test-worlds/prefab-word';
 
 class ZombieGame extends Game {
     world: ZombieWorld;
@@ -45,7 +46,7 @@ class ZombieGame extends Game {
         super._init();
 
         if (!this._initialized){
-            this.world = new ZombieWorld(LevelConst.Zombie);
+            this.world = new PrefabWorld(LevelConst.Zombie);
             this.world.loadImages();
             this.mouse.relative = true;
             this.Resize();
