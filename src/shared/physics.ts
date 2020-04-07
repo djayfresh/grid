@@ -40,7 +40,7 @@ export class Physics {
     }
 
     static simpleCollision(object: IGameObject, object2: IGameObject, collisionBuffer: number = 4, origin: IPoint = {x: 0, y: 0}, origin2: IPoint = {x: 0, y: 0}): boolean {
-        if ((object as any).width !== undefined && (object2 as any).width !== undefined){
+        if ((object as IRectangle).width !== undefined && (object2 as IRectangle).width !== undefined){
             const rect = (object as any) as IRectangle;
             const bRect = (object2 as any) as IRectangle;
 
