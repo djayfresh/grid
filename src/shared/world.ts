@@ -1,5 +1,5 @@
 import { ImageSource, ImageManager } from './images';
-import { Rectangle, GameObject, RenderObject, GameObjectAttributes, IRectangle, IGameObject, RenderText, Prefab } from './objects';
+import { Rectangle, GameObject, RenderObject, GameObjectAttributes, IRectangle, IGameObject, RenderText, Prefab, IDestroyable, IDestroyer } from './objects';
 import { Physics, Point, IPoint } from './physics';
 import { Debug } from './utility';
 import { GameCanvas } from './canvas';
@@ -175,6 +175,34 @@ export class World {
         }
 
         return true;
+    }
+
+    doDestroyableCheck() {
+        this.map.ofType<Prefab>(ro => ro instanceof Prefab).forEach(p => p.doDestroyableCheck(this));
+
+        const destroyers = this.map.ofType<IDestroyer>(ro => (ro as IDestroyer).damage && !ro.isDeleted());
+        const destroyable = this.map.ofType<IDestroyable>(ro => (ro as IDestroyable).totalHealth && !ro.isDeleted());
+
+        destroyers.forEach(b => {
+            destroyable.forEach(d => {
+                const dis = Point.distance(b.pos, d.center);
+
+                if (dis < 4){ //dis ^2
+                    if (d.health > b.damage){
+                        b.delete();
+                        d.health -= b.damage;
+                    }
+                    else if (d.health < b.damage){
+                        b.damage -= d.health;
+                        d.delete();
+                    }
+                    else {
+                        b.delete();
+                        d.delete();
+                    }
+                }
+            });
+        });
     }
 
     add(...renderObjects: IGameObject[]) {

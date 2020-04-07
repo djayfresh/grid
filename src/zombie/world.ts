@@ -1,5 +1,5 @@
 import { World } from '../shared/world';
-import { Player, Spawner } from './objects';
+import { Player, Spawner, Enemy } from './objects';
 import { CanvasBounds, TiledImage, GameObjectAttributes, Box } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
@@ -7,6 +7,9 @@ import { GameCanvas } from '../shared/canvas';
 import { SceneImage, ImageManager } from '../shared/images';
 import { Point } from '../shared/physics';
 import { House } from './prefabs';
+import { GameEventQueue } from '../shared/event-queue';
+import { ObjectDestroyedEvent } from '../shared/events';
+import { EnemyKilledEvent } from './events';
 
 export class ZombieWorld extends World {
     player: Player;
@@ -16,6 +19,11 @@ export class ZombieWorld extends World {
         super.subscribe();
 
         //add map logic here
+        GameEventQueue.subscribe(ObjectDestroyedEvent, 'zombie-world', event => {
+            if (event.data instanceof Enemy){
+                GameEventQueue.notify(new EnemyKilledEvent(event.data, event.date), true);
+            }
+        });
     }
     
     setPlayer(player: Player){

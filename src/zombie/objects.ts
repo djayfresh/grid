@@ -1,4 +1,4 @@
-import { Rectangle, GameObjectAttributes, StatusBar, IDestroyable } from '../shared/objects';
+import { Rectangle, GameObjectAttributes, StatusBar, IDestroyable, IDestroyer } from '../shared/objects';
 import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse } from '../shared/utility';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
@@ -152,7 +152,7 @@ export class Player extends Rectangle {
     }
 }
 
-export class Bullet extends Rectangle {
+export class Bullet extends Rectangle implements IDestroyer {
     lifeSpan = 500;
     lifeTime = 0;
     damage = 1;
@@ -171,8 +171,8 @@ export class Bullet extends Rectangle {
         this.setPos(this.pos.x + (dt * this.force.x) - worldMove.x, this.pos.y + (dt * this.force.y) - worldMove.y);
 
         this.checkViewVisibility(world);
-        if (!this._isVisible || this.lifeTime >= this.lifeSpan || this.damage <= 0) {
-            this._deleted = true;
+        if (!this.isVisible() || this.lifeTime >= this.lifeSpan || this.damage <= 0) {
+            this.delete();
         }
     }
 }
@@ -205,33 +205,9 @@ export class Enemy extends Rectangle implements IDestroyable {
     }
 
     update(dt: number, world: ZombieWorld){
-        const bullets = world.map.ofType<Bullet>(ro => ro instanceof Bullet && !ro.isDeleted());
-
-        bullets.forEach(b => {
-            const dis = Point.distance(b.pos, this.center);
-
-            if (dis < 4){ //dis ^2
-                if (this.health > b.damage){
-                    b._deleted = true;
-                    this.health -= b.damage;
-                }
-                else if (this.health < b.damage){
-                    b.damage -= this.health;
-                    this._deleted = true;
-
-                    GameEventQueue.notify(new EnemyKilledEvent(this));
-                }
-                else {
-                    b._deleted = true;
-                    this._deleted = true;
-
-                    GameEventQueue.notify(new EnemyKilledEvent(this));
-                }
-            }
-        });
 
         //bullet killed us
-        if (this._deleted){
+        if (this.isDeleted()){
             return;
         }
 
@@ -243,7 +219,7 @@ export class Enemy extends Rectangle implements IDestroyable {
         if (distanceToPlayer <= world.player.width) { //TODO: Replace with Physics collision check
             //player hit
             GameEventQueue.notify(new EnemyHitPlayerEvent(this));
-            this._deleted = true;
+            this.delete();
             return;
         }
         else if (distanceToPlayer <= this.siteRange){

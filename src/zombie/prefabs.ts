@@ -1,4 +1,4 @@
-import { Prefab, Rectangle, IRectangle, GameObjectAttributes } from '../shared/objects';
+import { Prefab, Rectangle, IRectangle, GameObjectAttributes, Wall } from '../shared/objects';
 import { IPoint, Physics } from '../shared/physics';
 import { Colors } from '../shared/colors';
 
@@ -25,7 +25,7 @@ export class House extends Prefab {
         ];
 
         walls.forEach(wall => {
-            const wallRect = new Rectangle(2, Colors.Black, { x: wall.x, y: wall.y }, { x: wall.w, y: wall.h });
+            const wallRect = new Wall(2, Colors.Black, { x: wall.x, y: wall.y }, { x: wall.w, y: wall.h }, 200);
             wallRect.attributes.push(GameObjectAttributes.Blocking);
             this.add(wallRect);
         });

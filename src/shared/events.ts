@@ -1,6 +1,7 @@
 import { IPoint } from './physics';
 import { BaseEvent } from './event-queue';
 import { SceneImage } from './images';
+import { GameObject } from './objects';
 
 export function GameEvent(name: string) {
     return function (target: any) {
@@ -28,3 +29,6 @@ export class ImageLoadedEvent extends BaseEvent<SceneImage> {}
 
 @GameEvent('Event.General.ImagesLoaded')
 export class ImagesLoadedEvent extends BaseEvent<SceneImage[]> {}
+
+@GameEvent('Event.Object.Destroyed')
+export class ObjectDestroyedEvent extends BaseEvent<GameObject> {}

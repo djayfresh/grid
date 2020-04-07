@@ -84,6 +84,7 @@ export class Game {
         }
         if (this._shouldUpdateFrame()) {
             this.renderer.update(dt, this.world);
+            this.world.doDestroyableCheck();
         }
 
         this.world.loadedImages = loadedImages;

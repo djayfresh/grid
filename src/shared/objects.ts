@@ -4,14 +4,21 @@ import { World } from './world';
 import { Colors } from './colors';
 import { SceneImage, ImageManager, ImageSource } from './images';
 import { GameCanvas } from './canvas';
+import { GameEventQueue } from './event-queue';
+import { ObjectDestroyedEvent } from './events';
 
 export interface IGameObject {
     id: number;
     pos: Point;
     attributes: GameObjectAttributes[];
-    update: (dt: number, world: World) => void;
-    isDeleted: () => boolean;
-    isVisible: () => boolean;
+    center: IPoint;
+
+    update(dt: number, world: World): void;
+    isDeleted(): boolean;
+    isVisible(): boolean;
+    setVisible(value: boolean);
+    
+    delete(): void;
 }
 
 export interface IRectangle extends IGameObject {
@@ -19,7 +26,11 @@ export interface IRectangle extends IGameObject {
     height: number;
 }
 
-export interface IDestroyable {
+export interface IDestroyer extends IGameObject {
+    damage: number;
+}
+
+export interface IDestroyable extends IGameObject {
     health: number;
     totalHealth: number;
     statusBar: StatusBar;
@@ -36,8 +47,8 @@ export class GameObject implements IGameObject {
     id: number;
     pos: Point;
     bounds: IPoint;
-    _isVisible = true;
-    _deleted = false;
+    private _isVisible = true;
+    private _deleted = false;
     attributes: GameObjectAttributes[] = [];
 
     constructor(id: number, pos?: IPoint, bounds?: IPoint) {
@@ -63,8 +74,19 @@ export class GameObject implements IGameObject {
         return this._isVisible && !this._deleted;
     };
 
+    setVisible(value: boolean){
+        this._isVisible = value;
+    }
+
     isDeleted() {
         return this._deleted;
+    }
+
+    delete() {
+        if (!this._deleted){
+            GameEventQueue.notify(new ObjectDestroyedEvent(this), true, true);
+        }
+        this._deleted = true;
     }
 }
 
@@ -148,9 +170,9 @@ export class Rectangle extends RenderObject implements IRectangle {
     }
 
     checkViewVisibility(world: World) {
-        this._isVisible = Physics.boxInBounds(this.pos, this.width, this.height, world);
+        this.setVisible(Physics.boxInBounds(this.pos, this.width, this.height, world));
 
-        if (!this._isVisible) {
+        if (!this.isVisible) {
             Debug.physics("Hidden", this);
         }
     }
@@ -403,6 +425,33 @@ export class Prefab extends RenderObject implements IRectangle {
 
         return true;
     }
+
+    doDestroyableCheck(world: World) {
+        
+        const destroyers = world.map.ofType<IDestroyer>(ro => (ro as IDestroyer).damage && !ro.isDeleted());
+        const destroyable = this.childObjects.ofType<IDestroyable>(ro => (ro as IDestroyable).totalHealth && !ro.isDeleted());
+
+        destroyers.forEach(b => {
+            destroyable.forEach(d => {
+                const dis = Point.distance(b.pos, d.center);
+
+                if (dis < 4){ //dis ^2
+                    if (d.health > b.damage){
+                        b.delete();
+                        d.health -= b.damage;
+                    }
+                    else if (d.health < b.damage){
+                        b.damage -= d.health;
+                        d.delete();
+                    }
+                    else {
+                        b.delete();
+                        d.delete();
+                    }
+                }
+            });
+        });
+    }
 }
 
 export class CanvasBounds extends GameObject implements IRectangle {
@@ -470,5 +519,34 @@ export class StatusBar extends Rectangle {
 
         ctx.fillStyle = this.color;
         ctx.fillRect(pos.x + this.pos.x + this.padding, pos.y + this.pos.y + this.padding, (this.width / (this.maxStatus / this._currentStatus)) - (this.padding * 2), this.height - (this.padding * 2));
+    }
+}
+
+export class Wall extends Rectangle implements IDestroyable {
+    totalHealth: number;
+    health: number;
+    statusBar: StatusBar;
+
+    constructor(id: number, color: string, pos: IPoint, bounds: IPoint, totalHealth: number){
+        super(id, color, pos, bounds);
+
+        this.totalHealth = totalHealth;
+        this.health = totalHealth;
+
+        this.statusBar = new StatusBar(Colors.Environment, {x: 0, y: 0}, {x: 20, y: 4}, totalHealth, totalHealth);
+        this.statusBar._attachedTo = this;
+    }
+    
+    draw(ctx: CanvasRenderingContext2D, world: World){
+        super.draw(ctx, world);
+
+        if (this.health < (this.totalHealth * 0.75)) {
+            this.statusBar.draw(ctx, world);
+        }
+    }
+
+    update(dt: number, world: World){
+        this.statusBar._currentStatus = this.health;
+        this.statusBar.update(dt, world);
     }
 }
