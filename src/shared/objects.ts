@@ -19,6 +19,12 @@ export interface IRectangle extends IGameObject {
     height: number;
 }
 
+export interface IDestroyable {
+    health: number;
+    totalHealth: number;
+    statusBar: StatusBar;
+}
+
 export enum GameObjectAttributes {
     Blocking = 1, // collision with
     Holding = 2, // prevent leaving object

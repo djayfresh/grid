@@ -1,4 +1,4 @@
-import { Rectangle, GameObjectAttributes, StatusBar } from '../shared/objects';
+import { Rectangle, GameObjectAttributes, StatusBar, IDestroyable } from '../shared/objects';
 import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse } from '../shared/utility';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
@@ -177,11 +177,11 @@ export class Bullet extends Rectangle {
     }
 }
 
-export class Enemy extends Rectangle {
+export class Enemy extends Rectangle implements IDestroyable {
     speed = 1;
     health = 1;
     totalHealth: number;
-    healthBar: StatusBar;
+    statusBar: StatusBar;
     siteRange: number;
     _renderer;
 
@@ -192,20 +192,20 @@ export class Enemy extends Rectangle {
         this.totalHealth = health;
         this.siteRange = siteRange;
         
-        this.healthBar = new StatusBar(Colors.Enemy, {x: -5, y: 5}, {x: 20, y: 4}, health, health);
-        this.healthBar._attachedTo = this;
+        this.statusBar = new StatusBar(Colors.Enemy, {x: -5, y: 5}, {x: 20, y: 4}, health, health);
+        this.statusBar._attachedTo = this;
     }
     
     draw(ctx: CanvasRenderingContext2D, world: World){
         super.draw(ctx, world);
 
         if (this.health < this.totalHealth) {
-            this.healthBar.draw(ctx, world);
+            this.statusBar.draw(ctx, world);
         }
     }
 
     update(dt: number, world: ZombieWorld){
-        const bullets = world.map.ofType<Bullet>(ro => ro.id === ID_CONST.Bullet && !ro.isDeleted());
+        const bullets = world.map.ofType<Bullet>(ro => ro instanceof Bullet && !ro.isDeleted());
 
         bullets.forEach(b => {
             const dis = Point.distance(b.pos, this.center);
@@ -250,8 +250,8 @@ export class Enemy extends Rectangle {
             this.setPos(this.pos.x + (norm.x * this.speed), this.pos.y + (norm.y * this.speed));
         }
 
-        this.healthBar._currentStatus = this.health;
-        this.healthBar.update(dt, world);
+        this.statusBar._currentStatus = this.health;
+        this.statusBar.update(dt, world);
     }
 }
 

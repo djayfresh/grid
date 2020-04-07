@@ -6,6 +6,7 @@ import { Colors } from '../shared/colors';
 import { GameCanvas } from '../shared/canvas';
 import { SceneImage, ImageManager } from '../shared/images';
 import { Point } from '../shared/physics';
+import { House } from './prefabs';
 
 export class ZombieWorld extends World {
     player: Player;
@@ -104,6 +105,9 @@ export class ZombieWorld extends World {
         bounds.attributes.push(GameObjectAttributes.Holding);
         bounds.attributes.push(GameObjectAttributes.NoExit);
         this.add(bounds);
+
+        //prefab test
+        this.add(new House(0, {x: 550, y: 550}, {x: 200, y: 200}));
 
         this.setPlayer(player);
     }
