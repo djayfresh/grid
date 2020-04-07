@@ -231,7 +231,7 @@ export class Enemy extends Rectangle implements IDestroyable {
     }
 }
 
-export class Spawner extends Rectangle {
+export class Spawner extends Rectangle implements IDestroyable {
     private _spawnPoint = new Point(0, 0);
     rate = 2000; //ms
     spawnCount = 0;
@@ -240,6 +240,9 @@ export class Spawner extends Rectangle {
     maxEnemyHealth = 5;
     private _currentSpawnTime = 0;
     maxSpawns = 10; //should get reset each day
+    totalHealth: number = 100;
+    health: number = 100;
+    statusBar: StatusBar;
 
     constructor(color: string, pos: IPoint, options?: Partial<Spawner>){
         super(ID_CONST.Spawner, color, pos, {x: 20, y: 20});
@@ -247,6 +250,17 @@ export class Spawner extends Rectangle {
         Object.assign(this, options || {});
         this.attributes.push(GameObjectAttributes.Blocking);
         this._spawnPoint = new Point(pos.x + (this.width/2), pos.y + (this.height/2));
+
+        this.statusBar = new StatusBar(Colors.Enemy, {x: 5, y: 5}, {x: 10, y: 4}, this.totalHealth, this.totalHealth);
+        this.statusBar._attachedTo = this;
+    }
+
+    draw(ctx: CanvasRenderingContext2D, world: World) {
+        super.draw(ctx, world);
+
+        if (this.health < (this.totalHealth * 0.9)){
+            this.statusBar.draw(ctx, world);
+        }
     }
 
     update(dt: number, world: World){
@@ -257,6 +271,9 @@ export class Spawner extends Rectangle {
             this.spawn(dt, world);
             this._currentSpawnTime = 0;
         }
+
+        this.statusBar.setStatus(this.health);
+        this.statusBar.update(dt, world);
     }
 
     spawn(_dt: number, world: World) {

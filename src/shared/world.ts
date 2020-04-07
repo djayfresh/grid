@@ -138,14 +138,17 @@ export class World {
 
     noCollisions(origin: IPoint, newPos: IPoint, rect: {x: number, y: number, w: number, h: number}) {
         //start with prefabs
-        const prefabCheck = this.map.ofType<Prefab>(ro => ro instanceof Prefab).some(p => !p.noCollisions(origin, newPos, rect));
+        const prefabCheck = this.map
+            .filter(ro => ro.isVisible())
+            .ofType<Prefab>(ro => ro instanceof Prefab)
+            .some(p => !p.noCollisions(origin, newPos, rect));
 
         if (prefabCheck){
             return false;
         }
 
         //TODO: Other types of collision besides Rectangles
-        const rectangles = this.map.ofType<IRectangle>((ro: any) => (ro as IRectangle).width !== undefined);
+        const rectangles = this.map.filter(ro => ro.isVisible()).ofType<IRectangle>((ro: any) => (ro as IRectangle).width !== undefined);
         const blockers = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Blocking) >= 0);
 
         const rectBlocked = blockers.some(s => {
@@ -185,9 +188,7 @@ export class World {
 
         destroyers.forEach(b => {
             destroyable.forEach(d => {
-                const dis = Point.distance(b.pos, d.center);
-
-                if (dis < 4){ //dis ^2
+                if (Physics.simpleCollision(d, b)) {
                     if (d.health > b.damage){
                         b.delete();
                         d.health -= b.damage;

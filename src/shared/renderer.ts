@@ -41,7 +41,7 @@ export class Renderer {
         ctx.translate(world.pos.x, world.pos.y); //reset the translate to w/e the world has been translated to
     }
 
-    private static clearRect(ctx: CanvasRenderingContext2D, screen: IPoint) {
+    static clearRect(ctx: CanvasRenderingContext2D, screen: IPoint) {
         ctx.clearRect(-10, -10, screen.x + 10, screen.y + 10); //clear off boarder too
         ctx.fillStyle = 'rgba(0, 0, 0, 1)';
         ctx.strokeStyle = 'rgba(0, 153, 255, 1)';

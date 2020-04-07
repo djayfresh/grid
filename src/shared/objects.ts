@@ -6,6 +6,7 @@ import { SceneImage, ImageManager, ImageSource } from './images';
 import { GameCanvas } from './canvas';
 import { GameEventQueue } from './event-queue';
 import { ObjectDestroyedEvent } from './events';
+import { Renderer } from './renderer';
 
 export interface IGameObject {
     id: number;
@@ -172,13 +173,13 @@ export class Rectangle extends RenderObject implements IRectangle {
     checkViewVisibility(world: World) {
         this.setVisible(Physics.boxInBounds(this.pos, this.width, this.height, world));
 
-        if (!this.isVisible) {
+        if (!this.isVisible()) {
             Debug.physics("Hidden", this);
         }
     }
 
     update(_dt: number, world: World) {
-        this.checkViewVisibility(world);
+        //this.checkViewVisibility(world);
     }
 }
 
@@ -383,18 +384,24 @@ export class Prefab extends RenderObject implements IRectangle {
     }
 
     draw(ctx: CanvasRenderingContext2D, world: World){
-        this.childObjects.forEach(c => c.draw(this.prefabCtx, world));
+        Renderer.clearRect(this.prefabCtx, {x: this.width, y: this.height});
+
+        this.childObjects
+        .filter(ro => ro.isVisible())
+        .forEach(c => c.draw(this.prefabCtx, world));
 
         ctx.drawImage(this.prefabCanvas, this.pos.x, this.pos.y);
     }
 
     update(dt: number, world: World){
-        this.childObjects.forEach(c => c.update(dt, world));
+        this.childObjects
+        .filter(c => !c.isDeleted())
+        .forEach(c => c.update(dt, world));
     }
     
     noCollisions(origin: IPoint, newPos: IPoint, rect: {x: number, y: number, w: number, h: number}) {
         //TODO: Other types of collision besides Rectangles
-        const rectangles = this.childObjects.ofType<IRectangle>((ro: any) => (ro as IRectangle).width !== undefined);
+        const rectangles = this.childObjects.filter(ro => ro.isVisible()).ofType<IRectangle>((ro: any) => (ro as IRectangle).width !== undefined);
         const blockers = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Blocking) >= 0);
 
         const rectBlocked = blockers.some(s => {
@@ -427,15 +434,12 @@ export class Prefab extends RenderObject implements IRectangle {
     }
 
     doDestroyableCheck(world: World) {
-        
         const destroyers = world.map.ofType<IDestroyer>(ro => (ro as IDestroyer).damage && !ro.isDeleted());
         const destroyable = this.childObjects.ofType<IDestroyable>(ro => (ro as IDestroyable).totalHealth && !ro.isDeleted());
 
         destroyers.forEach(b => {
             destroyable.forEach(d => {
-                const dis = Point.distance(b.pos, d.center);
-
-                if (dis < 4){ //dis ^2
+                if (Physics.simpleCollision(d, b, 4, this.pos)) {
                     if (d.health > b.damage){
                         b.delete();
                         d.health -= b.damage;

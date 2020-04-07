@@ -1,4 +1,5 @@
 import { World } from './world';
+import { GameObject, IRectangle, IGameObject } from './objects';
 
 export class Physics {
     static collision(x: number, y: number, w: number, h: number, x1: number, y1: number, w1: number, h1: number){
@@ -36,6 +37,26 @@ export class Physics {
     
     static lerp(value: number, x: number, y: number){
         return (1 - value) * x + value * y;
+    }
+
+    static simpleCollision(object: IGameObject, object2: IGameObject, collisionBuffer: number = 4, origin: IPoint = {x: 0, y: 0}, origin2: IPoint = {x: 0, y: 0}): boolean {
+        if ((object as any).width !== undefined && (object2 as any).width !== undefined){
+            const rect = (object as any) as IRectangle;
+            const bRect = (object2 as any) as IRectangle;
+
+            if (Physics.collision(rect.pos.x + origin.x, rect.pos.y + origin.y, rect.width, rect.height, bRect.pos.x + origin2.x, bRect.pos.y + origin2.y, bRect.width, bRect.height)) {
+                return true;
+            }
+        }
+        else {
+            const dis = Point.distance({x: object2.pos.x + origin2.x, y: object2.pos.y + origin2.y}, {x: object.center.x + origin.x, y: object.center.y + origin.y});
+
+            if (dis < collisionBuffer){ //dis ^2
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
