@@ -102,7 +102,7 @@ class Memory extends Game {
         super._init();
 
         if (!this._initialized){
-            this.world = new MemoryWorld(LevelConst.Memory, 2, 0); //must be an even number of cards
+            this.world = new MemoryWorld(LevelConst.Memory, 6, 0); //must be an even number of cards
             this.mouse = new Mouse(0, GameCanvas.canvas, true);
             
             this.Resize();

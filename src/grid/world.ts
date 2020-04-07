@@ -23,7 +23,7 @@ export class GridWorld extends World {
         renderObjects.push(this.board.createGrid());
         let map: ID_CONST[][];
         let i = 1;
-        const failThreshold = 5;
+        const failThreshold = 15;
         do {
             map = this.board.generateMap((map) => {
                 

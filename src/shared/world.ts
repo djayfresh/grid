@@ -255,7 +255,7 @@ export class World {
         $div.style.top = `${GameCanvas.canvas.offsetTop}px`;
         $div.style.left = `${GameCanvas.canvas.offsetLeft}px`;
 
-        const $h3 = document.createElement('h3');
+        const $h3 = document.createElement('h4');
         $h3.innerHTML = `High Score: ${score}`;
         $h3.style.color = Colors.White;
         $h3.style.marginBottom = '15px';
@@ -265,6 +265,8 @@ export class World {
         $playerName.placeholder = 'Enter Player Initials';
         $playerName.maxLength = 3;
         $playerName.classList.add('form-control');
+        $playerName.style.color = Colors.White;
+        $playerName.style.backgroundColor = Colors.Black;
         $playerName.style.marginBottom = '15px';
         $playerName.style.marginRight = '25%';
         $playerName.style.marginLeft = '25%';
@@ -276,6 +278,9 @@ export class World {
         $save.innerText = 'Save';
         $save.classList.add('btn');
         $save.classList.add('btn-primary');
+        $save.style.marginRight = '25%';
+        $save.style.marginLeft = '25%';
+        $save.style.width = '50%';
         checkSaveDisabled($playerName, $save);
         $save.addEventListener('click', () => {
             HighScoreManager.setLastPlayerName($playerName.value);

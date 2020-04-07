@@ -17,12 +17,6 @@ class Grid extends Game {
         super();
     }
 
-    _frame(dt: number) {
-        super._frame(dt);
-
-        this.currentDelay += dt;
-    }
-
     onMouseDown() {
         const pos = this.world.board.posToBoard(this.mouse.pos);
         const player = this.world.board.posToBoard(this.world.player.pos);
@@ -103,11 +97,11 @@ class Grid extends Game {
 
     NextRound() {
         this.hasRoundStarted = false;
+
         if (this.difficulty > ((this.gridSize - 1) * (this.gridSize - 1))){
             this.GameOver();
             return;
         }
-
         this.world.difficulty = this.difficulty;
 
         this.currentDelay = 0;
@@ -120,9 +114,8 @@ class Grid extends Game {
         this.roundStartDisabled = true;
         this.world.setHighScorePicker(LevelConst.Grid, this.score, false, () => {
             this.roundStartDisabled = false;
-            this.difficulty = 1;
-            this.world.difficulty = this.difficulty;
-            this.score = 0;
+
+            this._init();
         });
     }
 

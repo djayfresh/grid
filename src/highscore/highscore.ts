@@ -1,6 +1,7 @@
 import { Game } from '../shared/game';
 import { HighScoreWorld } from './world';
 import { LevelConst } from '../lobby/lobby';
+import { GameCanvas } from '../shared/canvas';
 
 
 export class HighScores extends Game {
@@ -18,7 +19,10 @@ export class HighScores extends Game {
             this.world = new HighScoreWorld(LevelConst.HighScore);
         }
 
+        GameCanvas.canvas.style.cursor = 'default';
+
         this.roundDelay = 0;
+        this.hasRoundStarted = false;
     }
 }
 
