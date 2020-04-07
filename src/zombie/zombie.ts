@@ -46,7 +46,7 @@ class ZombieGame extends Game {
         super._init();
 
         if (!this._initialized){
-            this.world = new PrefabWorld(LevelConst.Zombie);
+            this.world = new ZombieWorld(LevelConst.Zombie);
             this.world.loadImages();
             this.mouse.relative = true;
             this.Resize();

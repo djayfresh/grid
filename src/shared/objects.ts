@@ -1,5 +1,5 @@
 import { Physics, Point, IPoint } from './physics';
-import { Debug } from './utility';
+import { Debug, ID_CONST } from './utility';
 import { World } from './world';
 import { Colors } from './colors';
 import { SceneImage, ImageManager, ImageSource } from './images';
@@ -432,5 +432,37 @@ export class CanvasRender extends RenderObject {
     draw(ctx: CanvasRenderingContext2D, world: World) {
         
         ctx.drawImage(this.canvas, this.pos.x, this.pos.y);
+    }
+}
+
+export class StatusBar extends Rectangle {
+    maxStatus: number;
+    _currentStatus: number;
+    padding: number = 2;
+    _attachedTo?: GameObject;
+
+    constructor(color: string, pos: IPoint, bounds: IPoint, maxStatus: number, currentStatus: number){
+        super(ID_CONST.StatusBar, color, pos, bounds);
+
+        if (this.bounds.y <= 4){
+            this.padding = 1;
+        }
+        
+        this.maxStatus = maxStatus;
+        this.setStatus(currentStatus);
+    }
+
+    setStatus(value: number){
+        this._currentStatus = value;
+    }
+
+    draw(ctx: CanvasRenderingContext2D, _world: World) {
+        let pos = this._attachedTo? this._attachedTo.pos : {x: 0, y: 0};
+
+        ctx.fillStyle = Colors.Black;
+        ctx.fillRect(pos.x + this.pos.x, pos.y + this.pos.y, this.width, this.height);
+
+        ctx.fillStyle = this.color;
+        ctx.fillRect(pos.x + this.pos.x + this.padding, pos.y + this.pos.y + this.padding, (this.width / (this.maxStatus / this._currentStatus)) - (this.padding * 2), this.height - (this.padding * 2));
     }
 }

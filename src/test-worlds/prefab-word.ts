@@ -1,6 +1,6 @@
 import { World } from '../shared/world';
 import { Player, Spawner } from '../zombie/objects';
-import { CanvasBounds, TiledImage, GameObjectAttributes, Box } from '../shared/objects';
+import { CanvasBounds, TiledImage, GameObjectAttributes, Box, StatusBar } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { Colors } from '../shared/colors';
 import { GameCanvas } from '../shared/canvas';
@@ -59,6 +59,9 @@ export class PrefabWorld extends World {
         bounds.attributes.push(GameObjectAttributes.Holding);
         bounds.attributes.push(GameObjectAttributes.NoExit);
         this.add(bounds);
+
+        const statusBar = new StatusBar(Colors.Enemy, {x: 150, y: 150}, {x: 20, y: 4}, 100, 100);
+        this.add(statusBar);
 
         this.setPlayer(player);
     }

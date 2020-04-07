@@ -1,4 +1,4 @@
-import { Rectangle, GameObjectAttributes } from '../shared/objects';
+import { Rectangle, GameObjectAttributes, StatusBar } from '../shared/objects';
 import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse } from '../shared/utility';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
@@ -181,16 +181,30 @@ export class Enemy extends Rectangle {
     speed = 1;
     health = 1;
     totalHealth: number;
+    healthBar: StatusBar;
+    siteRange: number;
     _renderer;
 
-    constructor(color: string, pos: IPoint, speed: number, health: number){
+    constructor(color: string, pos: IPoint, speed: number, health: number, siteRange: number){
         super(ID_CONST.Enemy, color, pos, {x: 10, y: 10});
         this.speed = speed;
         this.health = health;
         this.totalHealth = health;
+        this.siteRange = siteRange;
+        
+        this.healthBar = new StatusBar(Colors.Enemy, {x: -5, y: 5}, {x: 20, y: 4}, health, health);
+        this.healthBar._attachedTo = this;
+    }
+    
+    draw(ctx: CanvasRenderingContext2D, world: World){
+        super.draw(ctx, world);
+
+        if (this.health < this.totalHealth) {
+            this.healthBar.draw(ctx, world);
+        }
     }
 
-    update(_dt: number, world: ZombieWorld){
+    update(dt: number, world: ZombieWorld){
         const bullets = world.map.ofType<Bullet>(ro => ro.id === ID_CONST.Bullet && !ro.isDeleted());
 
         bullets.forEach(b => {
@@ -225,19 +239,19 @@ export class Enemy extends Rectangle {
         const norm = toPlayer.normalized();
         Debug.physics('To Player', toPlayer, 'norm', norm);
 
-        if (toPlayer.magnitude() <= world.player.width) { //TODO: Replace with Physics collision check
+        const distanceToPlayer = toPlayer.magnitude();
+        if (distanceToPlayer <= world.player.width) { //TODO: Replace with Physics collision check
             //player hit
             GameEventQueue.notify(new EnemyHitPlayerEvent(this));
             this._deleted = true;
             return;
         }
+        else if (distanceToPlayer <= this.siteRange){
+            this.setPos(this.pos.x + (norm.x * this.speed), this.pos.y + (norm.y * this.speed));
+        }
 
-        this.setPos(this.pos.x + (norm.x * this.speed), this.pos.y + (norm.y * this.speed));
-    }
-
-    //only some objects need this, probably /shrug
-    setRenderer(renderer){
-        this._renderer = renderer;
+        this.healthBar._currentStatus = this.health;
+        this.healthBar.update(dt, world);
     }
 }
 
@@ -245,7 +259,7 @@ export class Spawner extends Rectangle {
     private _spawnPoint = new Point(0, 0);
     rate = 2000; //ms
     spawnCount = 0;
-    enemySpeed = 1;
+    enemySpeed = 0.5;
     minEnemyHealth = 1;
     maxEnemyHealth = 5;
     private _currentSpawnTime = 0;
@@ -273,7 +287,7 @@ export class Spawner extends Rectangle {
         this.spawnCount++;
         const spawnPoint = this._spawnPoint;
         const enemyHealth = Math.range(this.minEnemyHealth, this.maxEnemyHealth);
-        const enemy = new Enemy(Colors.Enemy, spawnPoint, (this.enemySpeed / enemyHealth) + 0.5, enemyHealth);
+        const enemy = new Enemy(Colors.Enemy, spawnPoint, (this.enemySpeed / enemyHealth) + 0.5, enemyHealth, 200);
         Debug.game('Spawn ', spawnPoint, "Enemy ", enemy);
 
         world.add(enemy);

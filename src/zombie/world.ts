@@ -81,7 +81,7 @@ export class ZombieWorld extends World {
         this.add(leftStreet);
         this.add(centerStreet); //center street
 
-        const spawner = new Spawner(Colors.Environment, {x: 200, y: 200}, { maxSpawns: 20, rate: 4000 });
+        const spawner = new Spawner(Colors.Environment, {x: 200, y: 200}, { maxSpawns: 20, rate: 4000, enemySpeed: 0.01 });
         spawner.attributes.push(GameObjectAttributes.Blocking);
 
         this.add(spawner)
