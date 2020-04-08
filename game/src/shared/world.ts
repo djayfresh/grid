@@ -9,6 +9,7 @@ import { GameResizeEvent } from './events';
 import { Colors } from './colors';
 import { HighScoreManager } from '../highscore/manager';
 import { Analytics } from './analytics';
+import { HighScoreService } from '../services/highscore.service';
 
 export class World {
     pos = new Point(0, 0);
@@ -246,9 +247,8 @@ export class World {
         this.setMap(renderObjects);
     }
 
-    setHighScorePicker(gameId: number, score: number, highScoreIsBest: boolean, callback: () => void){ 
+    setHighScorePicker(gameId: number, score: number, callback: () => void){ 
         const $div = document.createElement('div');
-        GameCanvas.canvas.parentElement.appendChild($div);
         $div.style.position = 'absolute';
         $div.style.backgroundColor = Colors.Black;
         $div.style.width = `${GameCanvas.canvas.clientWidth}px`;
@@ -283,24 +283,34 @@ export class World {
         $save.style.marginLeft = '25%';
         $save.style.width = '50%';
         checkSaveDisabled($playerName, $save);
-        $save.addEventListener('click', () => {
+
+        const onClick = () => {
+            $save.removeEventListener('click', onClick);
+            $save.setAttribute('disabled', 'disabled');
+            
             Analytics.onEvent({
                 action: 'high-score',
                 category: 'engagement',
                 label: 'method'
             }, { player: $playerName.value });
             HighScoreManager.setLastPlayerName($playerName.value);
-            HighScoreManager.add(gameId, $playerName.value, score, highScoreIsBest);
+            HighScoreManager.add(gameId, $playerName.value, score);
 
-            GameCanvas.canvas.parentElement.removeChild($div);
-            callback();
-        });
+            const $sub = HighScoreService.save().subscribe(() => {
+                $sub.unsubscribe();
+                GameCanvas.canvas.parentElement.removeChild($div);
+                callback();
+            });
+        };
+        
+        $save.addEventListener('click', onClick);
 
         $playerName.addEventListener('keyup', () => {
             checkSaveDisabled($playerName, $save);
         });
 
         $div.appendChild($save);
+        GameCanvas.canvas.parentElement.appendChild($div);
     }
 }
 

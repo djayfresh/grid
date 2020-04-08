@@ -1,4 +1,5 @@
-import { LevelConst, lobby } from './lobby/lobby';
+import { lobby } from './lobby/lobby';
+import { LevelConst } from './lobby/levels';
 import { zombie } from './zombie/zombie';
 import { memory } from './memory/memory';
 import { grid } from './grid/grid';
@@ -11,6 +12,7 @@ import { GameEventQueue } from './shared/event-queue';
 import { MenuLoadMainEvent } from './shared/events';
 import { Analytics } from './shared/analytics';
 import { HighScoreService } from './services/highscore.service';
+import { HighScoreManager } from './highscore/manager';
 
 const gamesList: Game[] = [grid, zombie, memory, lobby, highscore];
 let selectedGame: Game = lobby;
@@ -30,12 +32,7 @@ GameEventQueue.subscribe(MenuLoadMainEvent, 'main', () => {
     loadMainMenu();
 });
 
-const service = new HighScoreService();
-service.save().subscribe(() => {
-    service.getList().subscribe();
-});
-
-
+HighScoreService.load();
 
 window.addEventListener('keydown', ev => {
     if (ev.keyCode === KEY_CONST.menu){

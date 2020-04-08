@@ -1,6 +1,6 @@
 import { Game } from '../shared/game';
 import { HighScoreWorld } from './world';
-import { LevelConst } from '../lobby/lobby';
+import { LevelConst } from '../lobby/levels';
 import { GameCanvas } from '../shared/canvas';
 
 

@@ -6,9 +6,7 @@ import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Rectangle, RenderText } from '../shared/objects';
 import { CanvasRender } from '../shared/objects';
 import { Colors } from '../shared/colors';
-
-export enum LevelConst { Grid = 0, Zombie = 1, HighScore = 2, Memory = 3 };
-export var Levels = [LevelConst.Grid, LevelConst.Zombie, LevelConst.HighScore, LevelConst.Memory];
+import { Levels } from './levels';
 
 export interface MenuOption {
     id: number;

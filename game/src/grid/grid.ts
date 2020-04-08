@@ -3,7 +3,7 @@ import { GameCanvas } from '../shared/canvas';
 import { GridWorld } from './world';
 import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Point } from '../shared/physics';
-import { LevelConst } from '../lobby/lobby';
+import { LevelConst } from '../lobby/levels';
 import { HighScoreManager } from '../highscore/manager';
 import { GameEventQueue } from '../shared/event-queue';
 import { MenuLoadMainEvent } from '../shared/events';
@@ -143,7 +143,7 @@ class Grid extends Game {
 
     GameOver() {
         this.roundStartDisabled = true;
-        this.world.setHighScorePicker(LevelConst.Grid, this.score, false, () => {
+        this.world.setHighScorePicker(LevelConst.Grid, this.score, () => {
             this.roundStartDisabled = false;
 
             GameEventQueue.notify(new MenuLoadMainEvent(null));

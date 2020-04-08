@@ -1,10 +1,13 @@
-interface IHighScore {
+import { LevelConst } from '../lobby/levels';
+
+export interface IHighScore {
     [gameId: string]: {[player: string]: number}
 }
 
 export class HighScoreManager {
     private static HIGH_SCORE_KEY = 'Grid-High-Score';
     private static PLAYER_NAME = 'Grid-Last-Player-Name';
+    private static HighScoreGames = [LevelConst.Memory, LevelConst.Zombie];
 
     static getLastPlayerName() {
         return localStorage.getItem(HighScoreManager.PLAYER_NAME) || '';
@@ -14,44 +17,50 @@ export class HighScoreManager {
         localStorage.setItem(HighScoreManager.PLAYER_NAME, value);
     }
 
-    static save(values: IHighScore) {
-        localStorage.setItem(HighScoreManager.HIGH_SCORE_KEY, JSON.stringify(Object.assign(HighScoreManager.load(), values)));
-    }
+    // static save(values: IHighScore) {
+    //     localStorage.setItem(HighScoreManager.HIGH_SCORE_KEY, JSON.stringify(Object.assign(HighScoreManager.load(), values)));
+    // }
 
-    static clear() {
-        localStorage.setItem(HighScoreManager.HIGH_SCORE_KEY, '');
-    }
+    // static clear() {
+    //     localStorage.setItem(HighScoreManager.HIGH_SCORE_KEY, '');
+    // }
 
     static load(): IHighScore {
         return HighScoreManager.getScores();
     }
 
-    static add(gameId: number, player: string, score: number, highScoreIsBest: boolean) {
+    static add(gameId: number, player: string, score: number) {
         const highScores = HighScoreManager.getScores();
 
-        if (!highScores[gameId]){
-            highScores[gameId] = { [player]: score };
+        HighScoreManager.setScore(highScores, gameId, player, score);
+
+        localStorage.setItem(HighScoreManager.HIGH_SCORE_KEY, JSON.stringify(highScores));
+    }
+    
+    static setScore(list: IHighScore, gameId: number, player: string, score: number){
+        if (!list[gameId]){
+            list[gameId] = { [player]: score };
         }
 
-        if (!highScores[gameId][player]) {
-            highScores[gameId][player] = score;
+        if (!list[gameId][player]) {
+            list[gameId][player] = score;
         }
         else {
-            const playerScore = highScores[gameId][player];
-            if (highScoreIsBest) {
+            const playerScore = list[gameId][player];
+            if (HighScoreManager.HighScoreGames.indexOf(gameId) >= 0) {
                 if (playerScore < score){
-                    highScores[gameId][player] = score;
+                    list[gameId][player] = score;
                 }
             }
             else {
                 if (playerScore > score){
-                    highScores[gameId][player] = score;
+                    list[gameId][player] = score;
                 }
             }
         }
-
-        localStorage.setItem(HighScoreManager.HIGH_SCORE_KEY, JSON.stringify(highScores));
     }
+
+
     static loadForGame(gameId: number): {[playerId: string]: number}{
         const highScores = HighScoreManager.getScores();
         return highScores[gameId];

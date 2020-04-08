@@ -4,7 +4,7 @@ import { Weapon } from '../shared/weapons';
 import { Mouse, Debug, KeyboardManager, KEY_CONST } from '../shared/utility';
 import { GameCanvas } from '../shared/canvas';
 import { Rectangle } from '../shared/objects';
-import { LevelConst } from '../lobby/lobby';
+import { LevelConst } from '../lobby/levels';
 import { GameEventQueue } from '../shared/event-queue';
 import { EnemyKilledEvent } from './events';
 import { ImagesLoadedEvent } from '../shared/events';
