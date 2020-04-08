@@ -1,4 +1,6 @@
-import * as express from 'express'
+import * as express from 'express';
+import { RouteConfig } from './routes/config';
+import bodyParser = require('body-parser');
 
 class App {
   public express: express.Express;
@@ -9,13 +11,8 @@ class App {
   }
 
   private mountRoutes (): void {
-    const router = express.Router();
-    router.get('/api/', (req, res) => {
-      res.json({
-        message: 'Hello World!'
-      });
-    });
-    this.express.use('/', router);
+    this.express.use(bodyParser.json());
+    this.express.use('/api/', RouteConfig.routes());
   }
 }
 
