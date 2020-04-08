@@ -4,8 +4,6 @@ import { BaseController } from './base.controller';
 import * as fs from 'fs';
 
 export class HighScoreController extends BaseController {
-    highScores: any = { '1': { 'TTT': 1 } };
-
     @Get('list')
     list(_req: Request, res: Response) {
         this.loadFile((data) => {
@@ -16,8 +14,6 @@ export class HighScoreController extends BaseController {
     @Post('save')
     save(req: Request, res: Response) {
         console.log("save", req.body);
-
-        Object.assign(this.highScores, req.body);
 
         this.saveFile(req.body, () => {
             res.sendStatus(200);

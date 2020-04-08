@@ -1,7 +1,7 @@
 import { IHighScore, HighScoreManager } from '../highscore/manager';
 import { ajax } from 'rxjs/ajax'
-import { tap, map } from 'rxjs/operators';
-import { Observable, concat } from 'rxjs';
+import { tap, map, flatMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 export class HighScoreService {
     static list: IHighScore;
@@ -14,6 +14,7 @@ export class HighScoreService {
 
         return request.pipe(tap(res => {
             this.list = this.mergeWithLocal(res.response);
+            console.log("list loaded", this.list);
         }), map(res => res.response as IHighScore));
     }
 
@@ -51,23 +52,20 @@ export class HighScoreService {
     //     return newList;
     // }
 
-    static save() {
-        const request = ajax({
-            url: 'http://localhost:3000/api/high-score/save',
-            method: 'POST',
-            headers: {
-                /*some headers*/
-                'Content-Type': 'application/json'
-            },
-            body: {
-                ...this.list
-            }
-        });
-
-        return concat(
-            this.getList(),
-            request
-        );
+    static save(): Observable<any> {
+        return this.getList().pipe(flatMap((list) => {
+            return ajax({
+                url: 'http://localhost:3000/api/high-score/save',
+                method: 'POST',
+                headers: {
+                    /*some headers*/
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    ...this.list
+                }
+            });
+        }));
     }
 
     static load() {
