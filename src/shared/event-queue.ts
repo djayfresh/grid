@@ -1,6 +1,7 @@
 import { Observable, Observer, Subscription, Subject } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
 import { Debug } from './utility';
+import { Analytics } from './analytics';
 
 export class BaseEvent<T> {
     static eventName: string;
@@ -112,6 +113,11 @@ class EventQueue {
 
         if (!suppressDebug){
             Debug.event('notify', event, immediate);
+            Analytics.onEvent({
+                action: 'general',
+                category: 'event',
+                label: 'method'
+            }, eventName);
         }
 
         if (this.activators[eventName]) {

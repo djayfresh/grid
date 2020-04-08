@@ -8,6 +8,7 @@ import { LevelConst } from '../lobby/lobby';
 import { HighScoreManager } from '../highscore/manager';
 import { GameEventQueue } from '../shared/event-queue';
 import { MenuLoadMainEvent } from '../shared/events';
+import { Analytics } from '../shared/analytics';
 
 class Memory extends Game {
     world: MemoryWorld;
@@ -60,9 +61,22 @@ class Memory extends Game {
         if (flippedCards.length >= 2) {
             if (flippedCards[0].cardColor === flippedCards[1].cardColor) {
                 this.score += 2;
+                
+                Analytics.onEvent({
+                    action: 'memory',
+                    category: 'engagement',
+                    label: 'win'
+                }, { score: this.score, color: flippedCards[0].cardColor});
+
                 flippedCards.forEach(c => c.Lock()); //prevent clicking again
             } else {
                 this.score -= flippedCards.length;
+
+                Analytics.onEvent({
+                    action: 'memory',
+                    category: 'engagement',
+                    label: 'loss'
+                }, { score: this.score });
             }
 
             flippedCards.forEach(c => c.Flip(true));

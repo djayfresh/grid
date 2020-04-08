@@ -8,6 +8,7 @@ import { GameEventQueue } from './event-queue';
 import { GameResizeEvent } from './events';
 import { Colors } from './colors';
 import { HighScoreManager } from '../highscore/manager';
+import { Analytics } from './analytics';
 
 export class World {
     pos = new Point(0, 0);
@@ -283,11 +284,16 @@ export class World {
         $save.style.width = '50%';
         checkSaveDisabled($playerName, $save);
         $save.addEventListener('click', () => {
+            Analytics.onEvent({
+                action: 'high-score',
+                category: 'engagement',
+                label: 'method'
+            }, { player: $playerName.value });
             HighScoreManager.setLastPlayerName($playerName.value);
             HighScoreManager.add(gameId, $playerName.value, score, highScoreIsBest);
-            callback();
 
             GameCanvas.canvas.parentElement.removeChild($div);
+            callback();
         });
 
         $playerName.addEventListener('keyup', () => {

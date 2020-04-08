@@ -9,6 +9,7 @@ import { GameCanvas } from './shared/canvas';
 import { highscore } from './highscore/highscore';
 import { GameEventQueue } from './shared/event-queue';
 import { MenuLoadMainEvent } from './shared/events';
+import { Analytics } from './shared/analytics';
 
 const gamesList: Game[] = [grid, zombie, memory, lobby, highscore];
 let selectedGame: Game = lobby;
@@ -20,6 +21,8 @@ function loadMainMenu() {
     });
     selectedGame = lobby;
     lobby.Play();
+
+    Analytics.onGameChange('main_menu');
 }
 
 GameEventQueue.subscribe(MenuLoadMainEvent, 'main', () => {
@@ -33,6 +36,11 @@ window.addEventListener('keydown', ev => {
     }
     if(ev.keyCode === KEY_CONST.pause){
         selectedGame.TogglePlayPause();
+        Analytics.onEvent({
+            action: 'main_menu',
+            category: 'bounce',
+            label: 'keyboard'
+        }, 'pause');
     }
 });
 
@@ -43,6 +51,8 @@ var menuOptions = [
             lobby.Pause();
             grid.Play();
             selectedGame = grid;
+
+            Analytics.onGameChange(LevelConst[LevelConst.Grid]);
         },
         text: 'Grid'
     },
@@ -52,6 +62,8 @@ var menuOptions = [
             lobby.Pause();
             zombie.Play();
             selectedGame = zombie;
+
+            Analytics.onGameChange(LevelConst[LevelConst.Zombie]);
         },
         text: 'Zombie'
     },
@@ -61,6 +73,8 @@ var menuOptions = [
             lobby.Pause();
             memory.Play();
             selectedGame = memory;
+
+            Analytics.onGameChange(LevelConst[LevelConst.Memory]);
         },
         text: 'Memory'
     },
@@ -69,8 +83,11 @@ var menuOptions = [
         action: () => {
             lobby.Pause();
             highscore.Play();
+
+            selectedGame = highscore;
+            Analytics.onGameChange(LevelConst[LevelConst.HighScore]);
         },
-        text: 'Highscores'
+        text: 'High Scores'
     }
 ]
 
@@ -87,6 +104,8 @@ export function ImageAssets(baseUrl: string){
 export function Start() {
     lobby.Resize();
     lobby.Play();
+
+    Analytics.onGameChange('main_menu');
 }
 
 export var _Debug = _DEBUG;

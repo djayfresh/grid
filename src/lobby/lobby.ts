@@ -116,13 +116,13 @@ export class Lobby extends Game {
 
         this.menuOptions.forEach((mo, i) => {
 
-            const textOffset = mo.text.length > 8 ? 10 : 0; //Do real pixel centering
+            const textOffset = mo.text.length > 8 ? mo.text.length + 4 : 0; //Do real pixel centering
             const y = (height * i) + (buttonH * i) + height;
             const x = left - textOffset;
             const btn = new Rectangle(mo.id, Colors.White, {x, y}, {x: buttonW + (textOffset * 2), y: buttonH});
             this.world.add(btn);
 
-            const btnTextPos = new Point(btn.pos.x + buttonW / 2, btn.pos.y + buttonH * 0.75);
+            const btnTextPos = new Point(btn.pos.x + (buttonW / 2) + textOffset, btn.pos.y + buttonH * 0.75);
             const btnText = new RenderText(100, {text: mo.text, color: Colors.Black, pos: btnTextPos, centered: true});
             btnText.setContext(t_canvas);
         });

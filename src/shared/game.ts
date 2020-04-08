@@ -6,6 +6,7 @@ import { Physics } from './physics';
 import { Rectangle } from './objects';
 import { GameEventQueue } from './event-queue';
 import { GameResizeEvent } from './events';
+import { Analytics } from './analytics';
 
 export class Game {
     renderer = new Renderer();
@@ -158,6 +159,12 @@ export class Game {
             this.mouse = new Mouse(0, GameCanvas.canvas);
     
             const onReset = debounce(() => {
+                Analytics.onEvent({
+                    action: 'general',
+                    category: 'bounce',
+                    label: 'method'
+                }, { score: this.score, id: this.world.id, method: 'reset' });
+
                 this.Restart();
             }, 500, true);
             new Key(KEY_CONST.r).onClick(onReset);
@@ -171,6 +178,8 @@ export class Game {
             }, 200, true);
             window.addEventListener('resize', onResize, false);
 
+
+            //todo move this up so we don't double subscribe for each game
             window.addEventListener('focus', () => {
                 if (this.focusPaused && this._state == this._pause){
                     this.focusPaused = false;
@@ -181,6 +190,12 @@ export class Game {
             window.addEventListener('blur', () => {
                 this.focusPaused = this._state !== this._pause; //we paused for another reason
                 this.Pause();
+
+                Analytics.onEvent({
+                    action: 'general',
+                    category: 'bounce',
+                    label: 'method'
+                }, { score: this.score, id: this.world.id, method: 'blur' });
             });
         }
     }

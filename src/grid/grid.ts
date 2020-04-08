@@ -7,6 +7,7 @@ import { LevelConst } from '../lobby/lobby';
 import { HighScoreManager } from '../highscore/manager';
 import { GameEventQueue } from '../shared/event-queue';
 import { MenuLoadMainEvent } from '../shared/events';
+import { Analytics } from '../shared/analytics';
 
 class Grid extends Game {
     world: GridWorld;
@@ -46,12 +47,26 @@ class Grid extends Game {
                     Debug.log("Lost Game");
                     this.score += 1;
                     this.NextRound();
+
+                    Analytics.onEvent({
+                        action: 'grid',
+                        category: 'engagement',
+                        label: 'loss'
+                    }, { score: this.score, difficulty: this.difficulty });
+
                     break;
                 case ID_CONST.Flag:
                     move();
                     Debug.log("Win Game");
                     this.score += 1;
                     this.difficulty += 1;
+                    
+                    Analytics.onEvent({
+                        action: 'grid',
+                        category: 'engagement',
+                        label: 'win'
+                    }, { score: this.score, difficulty: this.difficulty });
+                    
                     this.NextRound();
                     break;
                 case ID_CONST.PowerUp:
@@ -60,6 +75,13 @@ class Grid extends Game {
                     this.world.remove(ID_CONST.PowerUp); //player picked up
 
                     this.score -= 10;
+                    
+                    Analytics.onEvent({
+                        action: 'grid',
+                        category: 'engagement',
+                        label: 'click'
+                    }, { score: this.score, difficulty: this.difficulty, ['power-up']: this.score + 10 });
+
                     move();
                     break;
                 default:
@@ -101,9 +123,16 @@ class Grid extends Game {
         this.hasRoundStarted = false;
 
         if (this.difficulty > ((this.gridSize - 1) * (this.gridSize - 1))){
+            Analytics.onEvent({
+                action: 'grid',
+                category: 'engagement',
+                label: 'game-over'
+            }, { score: this.score });
+
             this.GameOver();
             return;
         }
+
         this.world.difficulty = this.difficulty;
 
         this.currentDelay = 0;

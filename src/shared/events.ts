@@ -3,6 +3,8 @@ import { BaseEvent } from './event-queue';
 import { SceneImage } from './images';
 import { GameObject } from './objects';
 
+declare const gtag: Function;
+
 export function GameEvent(name: string) {
     return function (target: any) {
         target.eventName = name;
