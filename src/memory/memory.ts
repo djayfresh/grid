@@ -6,6 +6,8 @@ import { Physics } from '../shared/physics';
 import { Card } from './objects';
 import { LevelConst } from '../lobby/lobby';
 import { HighScoreManager } from '../highscore/manager';
+import { GameEventQueue } from '../shared/event-queue';
+import { MenuLoadMainEvent } from '../shared/events';
 
 class Memory extends Game {
     world: MemoryWorld;
@@ -85,13 +87,9 @@ class Memory extends Game {
         this.hasRoundStarted = false;
         this.roundStartDisabled = true;
         this.world.setHighScorePicker(LevelConst.Memory, this.score, true, () => {
-            this.roundDelay = 0;
-            this.currentDelay = 0;
-            this.hasRoundStarted = false;
-
-            this.cards = [];
             this.roundStartDisabled = false;
 
+            GameEventQueue.notify(new MenuLoadMainEvent(null));
         });
 
         this.world.reset();
@@ -102,7 +100,7 @@ class Memory extends Game {
         super._init();
 
         if (!this._initialized){
-            this.world = new MemoryWorld(LevelConst.Memory, 6, 0); //must be an even number of cards
+            this.world = new MemoryWorld(LevelConst.Memory, 2, 0); //must be an even number of cards
             this.mouse = new Mouse(0, GameCanvas.canvas, true);
             
             this.Resize();

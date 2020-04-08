@@ -7,19 +7,29 @@ import { Game } from './shared/game';
 import { ImageManager } from './shared/images';
 import { GameCanvas } from './shared/canvas';
 import { highscore } from './highscore/highscore';
+import { GameEventQueue } from './shared/event-queue';
+import { MenuLoadMainEvent } from './shared/events';
 
 const gamesList: Game[] = [grid, zombie, memory, lobby, highscore];
 let selectedGame: Game = lobby;
 
+function loadMainMenu() {
+    gamesList.forEach(game => {
+        game.Pause();
+        game.Restart();
+    });
+    selectedGame = lobby;
+    lobby.Play();
+}
+
+GameEventQueue.subscribe(MenuLoadMainEvent, 'main', () => {
+    loadMainMenu();
+});
+
+
 window.addEventListener('keydown', ev => {
     if (ev.keyCode === KEY_CONST.menu){
-        gamesList.forEach(game => {
-            game.Pause();
-            game.Restart();
-        });
-
-        selectedGame = lobby;
-        lobby.Play();
+        loadMainMenu();
     }
     if(ev.keyCode === KEY_CONST.pause){
         selectedGame.TogglePlayPause();

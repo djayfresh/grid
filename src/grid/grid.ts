@@ -5,6 +5,8 @@ import { Debug, Mouse, ID_CONST } from '../shared/utility';
 import { Point } from '../shared/physics';
 import { LevelConst } from '../lobby/lobby';
 import { HighScoreManager } from '../highscore/manager';
+import { GameEventQueue } from '../shared/event-queue';
+import { MenuLoadMainEvent } from '../shared/events';
 
 class Grid extends Game {
     world: GridWorld;
@@ -115,7 +117,7 @@ class Grid extends Game {
         this.world.setHighScorePicker(LevelConst.Grid, this.score, false, () => {
             this.roundStartDisabled = false;
 
-            this._init();
+            GameEventQueue.notify(new MenuLoadMainEvent(null));
         });
     }
 

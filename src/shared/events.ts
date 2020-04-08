@@ -32,3 +32,6 @@ export class ImagesLoadedEvent extends BaseEvent<SceneImage[]> {}
 
 @GameEvent('Event.Object.Destroyed')
 export class ObjectDestroyedEvent extends BaseEvent<GameObject> {}
+
+@GameEvent('Event.Menu.LoadMain')
+export class MenuLoadMainEvent extends BaseEvent<null> {}
