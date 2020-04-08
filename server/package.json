@@ -1,0 +1,16 @@
+{
+  "name": "game-server",
+  "version": "1.0.0",
+  "description": "Server for mangaging games",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.4",
+    "express": "^4.17.1",
+    "node-js": "^1.0.0"
+  }
+}

@@ -1,6 +1,0 @@
-#Deploy Folders
-/[dD]ist
-/[bB]uild
-
-#NPM
-/node_modules
