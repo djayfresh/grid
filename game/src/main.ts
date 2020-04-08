@@ -10,6 +10,7 @@ import { highscore } from './highscore/highscore';
 import { GameEventQueue } from './shared/event-queue';
 import { MenuLoadMainEvent } from './shared/events';
 import { Analytics } from './shared/analytics';
+import { HighScoreService } from './services/highscore.service';
 
 const gamesList: Game[] = [grid, zombie, memory, lobby, highscore];
 let selectedGame: Game = lobby;
@@ -28,6 +29,12 @@ function loadMainMenu() {
 GameEventQueue.subscribe(MenuLoadMainEvent, 'main', () => {
     loadMainMenu();
 });
+
+const service = new HighScoreService();
+service.save().subscribe(() => {
+    service.getList().subscribe();
+});
+
 
 
 window.addEventListener('keydown', ev => {

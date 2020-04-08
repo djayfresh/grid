@@ -1,3 +1,7 @@
+interface IHighScore {
+    [gameId: string]: {[player: string]: number}
+}
+
 export class HighScoreManager {
     private static HIGH_SCORE_KEY = 'Grid-High-Score';
     private static PLAYER_NAME = 'Grid-Last-Player-Name';
@@ -8,6 +12,18 @@ export class HighScoreManager {
 
     static setLastPlayerName(value: string) {
         localStorage.setItem(HighScoreManager.PLAYER_NAME, value);
+    }
+
+    static save(values: IHighScore) {
+        localStorage.setItem(HighScoreManager.HIGH_SCORE_KEY, JSON.stringify(Object.assign(HighScoreManager.load(), values)));
+    }
+
+    static clear() {
+        localStorage.setItem(HighScoreManager.HIGH_SCORE_KEY, '');
+    }
+
+    static load(): IHighScore {
+        return HighScoreManager.getScores();
     }
 
     static add(gameId: number, player: string, score: number, highScoreIsBest: boolean) {
@@ -51,7 +67,7 @@ export class HighScoreManager {
         }, {})
     }
 
-    private static getScores(): {[gameId: string]: {[player: string]: number}} {
+    private static getScores(): IHighScore {
         return JSON.parse(localStorage.getItem(HighScoreManager.HIGH_SCORE_KEY) || '{}');
     }
 }
