@@ -32,8 +32,6 @@ GameEventQueue.subscribe(MenuLoadMainEvent, 'main', () => {
     loadMainMenu();
 });
 
-HighScoreService.load();
-
 window.addEventListener('keydown', ev => {
     if (ev.keyCode === KEY_CONST.menu){
         loadMainMenu();
@@ -97,6 +95,10 @@ var menuOptions = [
 
 lobby.SetMenu(menuOptions);
 
+export function SetApiUrl(url: string){
+    HighScoreService.baseUrl = url;
+}
+
 export function SetCanvasId(canvasId: string){
     GameCanvas.id = canvasId; //TODO: Make multi-canvas work on same page
 }
@@ -106,6 +108,8 @@ export function ImageAssets(baseUrl: string){
 }
 
 export function Start() {
+    HighScoreService.load();
+    
     lobby.Resize();
     lobby.Play();
 

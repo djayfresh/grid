@@ -4,7 +4,6 @@ import { Colors } from '../shared/colors';
 import { GameCanvas } from '../shared/canvas';
 import { Point } from '../shared/physics';
 import { Levels, LevelConst } from '../lobby/levels';
-import { IHighScore } from './manager';
 import { HighScoreService } from '../services/highscore.service';
 
 export class HighScoreWorld extends World {

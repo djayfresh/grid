@@ -4,11 +4,12 @@ import { tap, map, flatMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export class HighScoreService {
-    static list: IHighScore;
+    static list: IHighScore = {};
+    static baseUrl: string = 'http://localhost:3000/';
 
     static getList(): Observable<IHighScore> {
         const request = ajax({
-            url: 'http://localhost:3000/api/high-score/list',
+            url: `${this.baseUrl}api/high-score/list`,
             method: 'GET',
         });
 
@@ -55,7 +56,7 @@ export class HighScoreService {
     static save(): Observable<any> {
         return this.getList().pipe(flatMap((list) => {
             return ajax({
-                url: 'http://localhost:3000/api/high-score/save',
+                url: `${this.baseUrl}api/high-score/save`,
                 method: 'POST',
                 headers: {
                     /*some headers*/
