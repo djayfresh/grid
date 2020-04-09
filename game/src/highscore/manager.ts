@@ -60,6 +60,16 @@ export class HighScoreManager {
         }
     }
 
+    static sortPlayers(players: {[player: string]: number}, gameId: number) {
+        const playerNames = Object.keys(players);
+
+        return playerNames.sort((p1, p2) => {
+            if (HighScoreManager.HighScoreGames.indexOf(gameId) >= 0)
+                return players[p2] - players[p1];
+            return players[p1] - players[p2];
+        });
+    }
+
 
     static loadForGame(gameId: number): {[playerId: string]: number}{
         const highScores = HighScoreManager.getScores();

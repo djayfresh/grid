@@ -1,5 +1,5 @@
 import { World } from '../shared/world';
-import { Rectangle, RenderText } from '../shared/objects';
+import { Rectangle } from '../shared/objects';
 import { ID_CONST } from '../shared/utility';
 import { GridPlayer } from './objects';
 import { Board } from './board';

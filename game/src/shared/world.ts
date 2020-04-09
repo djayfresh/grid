@@ -228,10 +228,10 @@ export class World {
         const renderObjects = [];
 
         renderObjects.push(new Rectangle(0, Colors.White, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height}));
-        renderObjects.push(new RenderText(1, { text: `Round Starting - ${roundNumber}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
+        renderObjects.push(new RenderText(1, { text: `Round Starting - ${roundNumber}`, color: Colors.Black, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
         
         if (score !== undefined){
-            renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
+            renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
         }
         
         this.setMap(renderObjects);
@@ -241,8 +241,8 @@ export class World {
         const renderObjects = [];
         
         renderObjects.push(new Rectangle(0, Colors.White, {x: 0, y: 0}, {x: GameCanvas.width, y: GameCanvas.height}));
-        renderObjects.push(new RenderText(1, { text: `Game Over`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
-        renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, centered: true, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
+        renderObjects.push(new RenderText(1, { text: `Game Over`, color: Colors.Black, pos: new Point(GameCanvas.width/2, GameCanvas.height/3) }));
+        renderObjects.push(new RenderText(1, { text: `Score: ${score}`, color: Colors.Black, pos: new Point(GameCanvas.width/2, GameCanvas.height/2) }));
         
         this.setMap(renderObjects);
     }

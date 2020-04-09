@@ -188,7 +188,7 @@ export class RenderText extends RenderObject {
     font: string = 'Arial';
     size: string = '30px';
     color: string = Colors.Black;
-    centered: boolean = false;
+    alignment: CanvasTextAlign = 'center';
 
     constructor(id: number, options: Partial<RenderText>) {
         super(id);
@@ -199,7 +199,7 @@ export class RenderText extends RenderObject {
     preDraw(ctx: CanvasRenderingContext2D) {
         ctx.font = `${this.size} ${this.font}`;
         ctx.fillStyle = this.color;
-        if(this.centered) ctx.textAlign = 'center';
+        ctx.textAlign = this.alignment;
         ctx.fillText(this.text, this.pos.x, this.pos.y);
     }
 

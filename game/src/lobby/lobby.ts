@@ -121,7 +121,7 @@ export class Lobby extends Game {
             this.world.add(btn);
 
             const btnTextPos = new Point(btn.pos.x + (buttonW / 2) + textOffset, btn.pos.y + buttonH * 0.75);
-            const btnText = new RenderText(100, {text: mo.text, color: Colors.Black, pos: btnTextPos, centered: true});
+            const btnText = new RenderText(100, {text: mo.text, color: Colors.Black, pos: btnTextPos});
             btnText.setContext(t_canvas);
         });
 
