@@ -37,10 +37,14 @@ class App {
     }
 
     private initSockets(): void {
-        const socketIO = io(this.server);
+        const socketIO = io(this.server, { path: '/io' });
+
+        console.log("Setup sockets", socketIO.sockets.server.path())
 
         socketIO.on('connection', socket => {
             console.log("Connected", socket.id);
+
+            socket.emit('welcome', 'Welcome to the server');
 
             socket.on('disconnect', () => {
                 console.log("Disconnected", socket.id);

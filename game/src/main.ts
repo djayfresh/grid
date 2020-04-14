@@ -9,10 +9,28 @@ import { ImageManager } from './shared/images';
 import { GameCanvas } from './shared/canvas';
 import { highscore } from './highscore/highscore';
 import { GameEventQueue } from './shared/event-queue';
-import { MenuLoadMainEvent } from './shared/events';
+import { MenuLoadMainEvent, SocketDataEvent } from './shared/events';
 import { Analytics } from './shared/analytics';
 import { HighScoreService } from './services/highscore.service';
 import { HighScoreManager } from './highscore/manager';
+import * as io from 'socket.io-client';
+
+var socket = io('http://localhost:3000', { path: '/io' });
+  socket.on('connect', () => {
+    console.log("connected to socket");
+    socket.emit('high-score', HighScoreManager.load());
+  });
+  socket.on('*', (data) => {
+    console.log("WildCard", data);
+  });
+  socket.on('event', (data) => {
+      console.log("Event", data);
+      GameEventQueue.notify(new SocketDataEvent(data));
+  });
+  socket.on('welcome', (data) => {
+      console.log("Welcome", data);
+  });
+  socket.on('disconnect', function(){});
 
 const gamesList: Game[] = [grid, zombie, memory, lobby, highscore];
 let selectedGame: Game = lobby;
