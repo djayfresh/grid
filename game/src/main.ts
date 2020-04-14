@@ -12,25 +12,7 @@ import { GameEventQueue } from './shared/event-queue';
 import { MenuLoadMainEvent, SocketDataEvent } from './shared/events';
 import { Analytics } from './shared/analytics';
 import { HighScoreService } from './services/highscore.service';
-import { HighScoreManager } from './highscore/manager';
-import * as io from 'socket.io-client';
-
-var socket = io('http://localhost:3000', { path: '/io' });
-  socket.on('connect', () => {
-    console.log("connected to socket");
-    socket.emit('high-score', HighScoreManager.load());
-  });
-  socket.on('*', (data) => {
-    console.log("WildCard", data);
-  });
-  socket.on('event', (data) => {
-      console.log("Event", data);
-      GameEventQueue.notify(new SocketDataEvent(data));
-  });
-  socket.on('welcome', (data) => {
-      console.log("Welcome", data);
-  });
-  socket.on('disconnect', function(){});
+import { socketService, SocketService } from './services/socket.service';
 
 const gamesList: Game[] = [grid, zombie, memory, lobby, highscore];
 let selectedGame: Game = lobby;
@@ -51,10 +33,10 @@ GameEventQueue.subscribe(MenuLoadMainEvent, 'main', () => {
 });
 
 window.addEventListener('keydown', ev => {
-    if (ev.keyCode === KEY_CONST.menu){
+    if (ev.keyCode === KEY_CONST.menu) {
         loadMainMenu();
     }
-    if(ev.keyCode === KEY_CONST.pause){
+    if (ev.keyCode === KEY_CONST.pause) {
         selectedGame.TogglePlayPause();
         Analytics.onEvent({
             action: 'main_menu',
@@ -113,23 +95,26 @@ var menuOptions = [
 
 lobby.SetMenu(menuOptions);
 
-export function SetApiUrl(url: string){
+export function SetApiUrl(url: string) {
     HighScoreService.baseUrl = url;
+    SocketService.baseUrl = url;
 }
 
-export function SetCanvasId(canvasId: string){
+export function SetCanvasId(canvasId: string) {
     GameCanvas.id = canvasId; //TODO: Make multi-canvas work on same page
 }
 
-export function ImageAssets(baseUrl: string){
+export function ImageAssets(baseUrl: string) {
     ImageManager.baseUrl = baseUrl;
 }
 
 export function Start() {
     HighScoreService.load();
-    
+
     lobby.Resize();
     lobby.Play();
+
+    socketService.open();
 
     Analytics.onGameChange('main_menu');
 }
