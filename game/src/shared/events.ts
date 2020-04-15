@@ -38,6 +38,11 @@ export class ObjectDestroyedEvent extends BaseEvent<GameObject> {}
 @GameEvent('Event.Menu.LoadMain')
 export class MenuLoadMainEvent extends BaseEvent<null> {}
 
+@GameEvent('Event.Game.Start')
+export class GameStartEvent extends BaseEvent<any> {} //should be all the game info needed to join
+
+
+/* Socket Events */
 
 @SocketEvent('Socket.Data')
-export class SocketDataEvent extends BaseEvent<any> {}
+export class SocketDataEvent extends BaseEvent<BaseEvent<any>> {}

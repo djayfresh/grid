@@ -53,6 +53,12 @@ class App {
             socket.on('high-score', (msg) => {
                 console.log("High Score", socket.id, "msg:", msg);
             });
+
+            socket.on('event', (event) => {
+                console.log("event", event);
+                console.log("echo");
+                socket.emit(event.data);
+            });
         });
     }
 }

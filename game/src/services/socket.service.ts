@@ -1,5 +1,5 @@
 import { HighScoreManager } from '../highscore/manager';
-import { GameEventQueue } from '../shared/event-queue';
+import { GameEventQueue, BaseEvent } from '../shared/event-queue';
 import { SocketDataEvent } from '../shared/events';
 import * as io from 'socket.io-client';
 
@@ -8,6 +8,10 @@ export class SocketService {
     public socket: SocketIOClient.Socket;
 
     constructor() {
+        GameEventQueue.subscribe(SocketDataEvent, 'service-io', event => {
+            this.emit('event', event);
+        });
+
         this.socket = io(SocketService.baseUrl, { path: '/io', autoConnect: false });
 
         this.on('connect', () => {
@@ -16,9 +20,9 @@ export class SocketService {
             this.emit('high-score', HighScoreManager.load());
         });
         
-        this.on('event', (data) => {
-            console.log("Event", data);
-            GameEventQueue.notify(new SocketDataEvent(data));
+        this.on('event', (data: BaseEvent<any>) => {
+            console.log("On event", data);
+            GameEventQueue.notify(data);
         });
 
         this.on('welcome', (data) => {
@@ -42,6 +46,10 @@ export class SocketService {
         if (!this.socket.connected){
             this.socket.open();
         }
+    }
+
+    public notify(event: BaseEvent<any>){
+        GameEventQueue.notify(new SocketDataEvent(event));
     }
 }
 

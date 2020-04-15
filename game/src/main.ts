@@ -9,7 +9,7 @@ import { ImageManager } from './shared/images';
 import { GameCanvas } from './shared/canvas';
 import { highscore } from './highscore/highscore';
 import { GameEventQueue } from './shared/event-queue';
-import { MenuLoadMainEvent, SocketDataEvent } from './shared/events';
+import { MenuLoadMainEvent, SocketDataEvent, GameStartEvent } from './shared/events';
 import { Analytics } from './shared/analytics';
 import { HighScoreService } from './services/highscore.service';
 import { socketService, SocketService } from './services/socket.service';
@@ -75,6 +75,9 @@ var menuOptions = [
             lobby.Pause();
             memory.Play();
             selectedGame = memory;
+            
+            const message = socketService.socket.id + ' has joined a game';
+            socketService.notify(new GameStartEvent(message));
 
             Analytics.onGameChange(LevelConst[LevelConst.Memory]);
         },
