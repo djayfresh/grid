@@ -2,8 +2,11 @@ import { IPoint } from '../point.model';
 
 export interface IMapObject {
     id: number;
-    pos: IPoint;
+    origin: IPoint;
     attributes: GameObjectAttributes[];
+
+    //additional attributes per object type
+    [key: string]: any;
 }
 
 export interface IMapDestroyable extends IMapObject {

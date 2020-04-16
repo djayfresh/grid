@@ -1,4 +1,5 @@
 export interface IImageData {
     url: string;
-    id: number;
+    catalog: string;
+    name: string;
 }

@@ -8,7 +8,7 @@ import { GameEventQueue } from './event-queue';
 import { ObjectDestroyedEvent } from './events';
 import { Renderer } from './renderer';
 
-import { GameObjectAttributes } from '../../../models/map/map-object.model';
+import { GameObjectAttributes, IMapObject } from '../../../models/map/map-object.model';
 export { GameObjectAttributes };
 
 export interface IGameObject {
@@ -23,6 +23,7 @@ export interface IGameObject {
     setVisible(value: boolean): void;
     
     delete(): void;
+    serialize(): IMapObject;
 }
 
 export interface IDestroyable extends IGameObject {
@@ -85,6 +86,27 @@ export class GameObject implements IGameObject {
         }
         this._deleted = true;
     }
+
+    serialize(): IMapObject {
+        return {
+            id: this.id,
+            attributes: this.attributes,
+            origin: this.pos,
+            bounds: this.bounds,
+            isVisible: this._isVisible,
+            isDeleted: this._deleted
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new GameObject(data.id, data.origin, data.bounds);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted 
+        });
+
+        return obj;
+    }
 }
 
 export class Box extends GameObject implements IRectangle {
@@ -130,6 +152,26 @@ export class RenderObject extends GameObject {
         drawFunc();
 
         ctx.translate(world.pos.x, world.pos.y); //reset the translate to w/e the world has been translated to
+    }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            layer: this.layer
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new RenderObject(data.id, data.origin, data.bounds);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted, 
+            layer: data.layer 
+        });
+
+        return obj;
     }
 }
 
@@ -177,6 +219,26 @@ export class Rectangle extends RenderObject implements IRectangle {
     update(_dt: number, world: World) {
         //this.checkViewVisibility(world);
     }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            color: this.color
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new Rectangle(data.id, data.color, data.origin, data.bounds);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted, 
+            layer: data.layer 
+        });
+
+        return obj;
+    }
 }
 
 export class RenderText extends RenderObject {
@@ -206,6 +268,23 @@ export class RenderText extends RenderObject {
         else {
             this.preDraw(ctx);
         }
+    }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            text: this.text,
+            font: this.font,
+            size: this.size,
+            color: this.color,
+            alignment: this.alignment
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        return new RenderText(data.id, data);
     }
 }
 

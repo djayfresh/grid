@@ -11,17 +11,11 @@ export interface IMap {
     weapons: IMapWeapon[];
 
     origin: IPoint;
-    
-    load(): void;
-    destroy(): void;
 }
 
 export interface IRegion {
     origin: IPoint;
     chunks: IChunk[];
-
-    load(): void;
-    destroy(): void;
 }
 
 export interface IChunk {
@@ -29,9 +23,6 @@ export interface IChunk {
     size: IPoint;
     gameObjects: IMapObject[];
     joints: IJoint[];
-
-    load(): void;
-    destroy(): void;
 }
 
 export enum JointTypes {
