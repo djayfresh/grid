@@ -8,19 +8,8 @@ import { GameEventQueue } from './event-queue';
 import { ObjectDestroyedEvent } from './events';
 import { Renderer } from './renderer';
 
-export interface IGameObject {
-    id: number;
-    pos: Point;
-    attributes: GameObjectAttributes[];
-    center: IPoint;
-
-    update(dt: number, world: World): void;
-    isDeleted(): boolean;
-    isVisible(): boolean;
-    setVisible(value: boolean);
-    
-    delete(): void;
-}
+import { IGameObject, GameObjectAttributes, IDestroyable } from '../../../models/game-object.model';
+export { IGameObject, GameObjectAttributes, IDestroyable };
 
 export interface IRectangle extends IGameObject {
     width: number;
@@ -29,19 +18,6 @@ export interface IRectangle extends IGameObject {
 
 export interface IDestroyer extends IGameObject {
     damage: number;
-}
-
-export interface IDestroyable extends IGameObject {
-    health: number;
-    totalHealth: number;
-    statusBar: StatusBar;
-}
-
-export enum GameObjectAttributes {
-    Blocking = 1, // collision with
-    Holding = 2, // prevent leaving object
-    Exiting = 3, // way to leave a holding object
-    NoExit = 4
 }
 
 export class GameObject implements IGameObject {
