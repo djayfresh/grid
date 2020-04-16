@@ -1,12 +1,14 @@
-import { IPoint } from './point.model';
-import { IGameObject } from './game-object.model';
+import { IPoint } from '../point.model';
+import { IMapObject } from './map-object.model';
 import { IImageData } from './image.model';
 import { IPlayer } from './player.model';
+import { IMapWeapon } from './weapon.model';
 
 export interface IMap {
     regions: IRegion[];
     players: IPlayer[];
     images: IImageData[];
+    weapons: IMapWeapon[];
 
     origin: IPoint;
     
@@ -25,7 +27,7 @@ export interface IRegion {
 export interface IChunk {
     origin: IPoint;
     size: IPoint;
-    gameObjects: IGameObject[];
+    gameObjects: IMapObject[];
     joints: IJoint[];
 
     load(): void;

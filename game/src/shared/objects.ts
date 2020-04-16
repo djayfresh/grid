@@ -8,8 +8,28 @@ import { GameEventQueue } from './event-queue';
 import { ObjectDestroyedEvent } from './events';
 import { Renderer } from './renderer';
 
-import { IGameObject, GameObjectAttributes, IDestroyable } from '../../../models/game-object.model';
-export { IGameObject, GameObjectAttributes, IDestroyable };
+import { GameObjectAttributes } from '../../../models/map/map-object.model';
+export { GameObjectAttributes };
+
+export interface IGameObject {
+    id: number;
+    pos: IPoint;
+    attributes: GameObjectAttributes[];
+    center: IPoint;
+
+    update(dt: number, world: any): void; //TODO: replace world: any with proper world definition
+    isDeleted(): boolean;
+    isVisible(): boolean;
+    setVisible(value: boolean): void;
+    
+    delete(): void;
+}
+
+export interface IDestroyable extends IGameObject {
+    health: number;
+    totalHealth: number;
+    statusBar: StatusBar;
+}
 
 export interface IRectangle extends IGameObject {
     width: number;
