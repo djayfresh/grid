@@ -1,8 +1,7 @@
 import { LevelConst } from '../lobby/levels';
 
-export interface IHighScore {
-    [gameId: string]: {[player: string]: number}
-}
+import { IHighScore } from '../../../models/high-score.model';
+export { IHighScore };
 
 export class HighScoreManager {
     private static HIGH_SCORE_KEY = 'Grid-High-Score';

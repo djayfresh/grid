@@ -1,5 +1,8 @@
 import { World } from './world';
-import { GameObject, IRectangle, IGameObject } from './objects';
+import { IRectangle, IGameObject } from './objects';
+
+import { IPoint } from '../../../models/point.model';
+export { IPoint };
 
 export class Physics {
     static collision(x: number, y: number, w: number, h: number, x1: number, y1: number, w1: number, h1: number){
@@ -58,11 +61,6 @@ export class Physics {
 
         return false;
     }
-}
-
-export interface IPoint {
-    x: number;
-    y: number;
 }
 
 export class Point implements IPoint {
