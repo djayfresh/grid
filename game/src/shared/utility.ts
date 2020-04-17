@@ -268,7 +268,7 @@ export class KeyboardManager {
         return this.trackedKeys[keyCode];
     }
 
-    static moves(reversed: boolean = false) {
+    static moves(reversed: boolean = false, movementSpeed: number = 1) {
         let x = 0;
         let y = 0;
 
@@ -285,7 +285,7 @@ export class KeyboardManager {
             y += reversed? -1 : 1;
         }
 
-        return { x, y };
+        return { x: x * movementSpeed, y: y * movementSpeed };
     }
 }
 

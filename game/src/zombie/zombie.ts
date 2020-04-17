@@ -10,7 +10,7 @@ import { EnemyKilledEvent } from './events';
 import { ImagesLoadedEvent } from '../shared/events';
 import { ImageManager } from '../shared/images';
 import { PrefabWorld } from '../test-worlds/prefab-word';
-import { generateMap } from '../CuBE/world';
+import { TestingGroupsMap } from '../CuBE/world';
 
 class ZombieGame extends Game {
     world: ZombieWorld;
@@ -22,7 +22,7 @@ class ZombieGame extends Game {
 
     RunRound() {
         if (this.world.player){
-            const move = KeyboardManager.moves();
+            const move = KeyboardManager.moves(false, this.world.playerSpeed);
 
             //move the world
             const worldX = this.world.pos.x;
@@ -64,12 +64,11 @@ class ZombieGame extends Game {
                 this.score += enemyKilledEvent.data.totalHealth; //score based on enemy health before death?
             });
 
-            GameEventQueue.subscribe(ImagesLoadedEvent, 'zombie-game', () => {
-                this.world.reset();
-                console.log("Gen map - Event");
-                generateMap(this.world);
-                console.log("Gen Map - Size", this.world.map.length);
-            });
+            // GameEventQueue.subscribe(ImagesLoadedEvent, 'zombie-game', () => {
+            //     this.world.reset();
+            //     TestingGroupsMap.generateMap(this.world);
+            //     TestingGroupsMap.initializeRender(this.world);
+            // });
         }
         this.world.setPos(0, 0);
 
@@ -77,6 +76,9 @@ class ZombieGame extends Game {
 
         this.world.reset();
         this.world.setRoundStart(1);
+        this.world.reset();
+        TestingGroupsMap.generateMap(this.world);
+        TestingGroupsMap.initializeRender(this.world);
 
         // if (ImageManager.getImages('zombie').every(i => i.isLoaded)){
         //     GameEventQueue.notify(new ImagesLoadedEvent([]));

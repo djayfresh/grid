@@ -12,6 +12,9 @@ import { WeaponFoundEvent, EnemyHitPlayerEvent, EnemyKilledEvent } from './event
 
 export class Player extends Rectangle {    
     pos: Point; //Player POS is always relative to the screen pos, not the world movement;
+    
+    movementSpeed: number = 1;
+    
     weaponIndex = 0;
     activeWeapon: Weapon;
     weapons: Weapon[];
@@ -149,6 +152,10 @@ export class Player extends Rectangle {
         Debug.mouse('direction', direction, 'mouse', mouse.pos, 'player', playerCenter, "player pos", this.pos);
 
         return { pos: playerCenter, direction: direction };
+    }
+
+    get speed() {
+        return this.movementSpeed;
     }
 }
 

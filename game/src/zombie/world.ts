@@ -30,6 +30,10 @@ export class ZombieWorld extends World {
         this.player = player;
     }
 
+    get playerSpeed() {
+        return this.player.speed;
+    }
+
     loadImages() {
         this.addImage({
             src: 'zombie/RoadLine.png',
