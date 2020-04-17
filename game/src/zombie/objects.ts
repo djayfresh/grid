@@ -1,4 +1,4 @@
-import { Rectangle, GameObjectAttributes, StatusBar, IDestroyable, IDestroyer } from '../shared/objects';
+import { Rectangle, GameObjectAttributes, StatusBar, IDestroyable, IDestroyer, GameObject } from '../shared/objects';
 import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse } from '../shared/utility';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
@@ -9,8 +9,10 @@ import { Point, IPoint } from '../shared/physics';
 import { Renderer } from '../shared/renderer';
 import { GameEventQueue } from '../shared/event-queue';
 import { WeaponFoundEvent, EnemyHitPlayerEvent, EnemyKilledEvent } from './events';
+import { GameObjectTypes, IMapObject } from '../../../models/map/map-object.model';
 
-export class Player extends Rectangle {    
+export class Player extends Rectangle {   
+    type: GameObjectTypes = GameObjectTypes.Player; 
     pos: Point; //Player POS is always relative to the screen pos, not the world movement;
     weaponIndex = 0;
     activeWeapon: Weapon;
@@ -153,6 +155,7 @@ export class Player extends Rectangle {
 }
 
 export class Bullet extends Rectangle implements IDestroyer {
+    type: GameObjectTypes = GameObjectTypes.Bullet;
     lifeSpan = 500;
     lifeTime = 0;
     damage = 1;
@@ -178,12 +181,12 @@ export class Bullet extends Rectangle implements IDestroyer {
 }
 
 export class Enemy extends Rectangle implements IDestroyable {
+    type: GameObjectTypes = GameObjectTypes.Enemy;
     speed = 1;
     health = 1;
     totalHealth: number;
     statusBar: StatusBar;
     siteRange: number;
-    _renderer;
 
     constructor(color: string, pos: IPoint, speed: number, health: number, siteRange: number){
         super(ID_CONST.Enemy, color, pos, {x: 10, y: 10});
@@ -192,7 +195,7 @@ export class Enemy extends Rectangle implements IDestroyable {
         this.totalHealth = health;
         this.siteRange = siteRange;
         
-        this.statusBar = new StatusBar(Colors.Enemy, {x: -5, y: 5}, {x: 20, y: 4}, health, health);
+        this.statusBar = new StatusBar(0, Colors.Enemy, {x: -5, y: 5}, {x: 20, y: 4}, health, health);
         this.statusBar._attachedTo = this;
     }
     
@@ -229,9 +232,42 @@ export class Enemy extends Rectangle implements IDestroyable {
         this.statusBar._currentStatus = this.health;
         this.statusBar.update(dt, world);
     }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            layer: this.layer,
+            bounds: this.bounds,
+            speed: this.speed,
+            health: this.health,
+            siteRange: this.siteRange,
+            totalHealth: this.totalHealth,
+            statusBar: this.statusBar.serialize()
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new Enemy(data.color, data.origin, data.speed, data.health, data.siteRight);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted, 
+            layer: data.layer,
+            bounds: data.bounds,
+            speed: data.speed,
+            health: data.health,
+            siteRange: data.siteRange,
+            totalHealth: data.totalHealth,
+            //statusBar: data.statusBar.deserialize() //TODO:
+        });
+
+        return obj;
+    }
 }
 
 export class Spawner extends Rectangle implements IDestroyable {
+    type: GameObjectTypes = GameObjectTypes.Spawner;
     private _spawnPoint = new Point(0, 0);
     rate = 2000; //ms
     spawnCount = 0;
@@ -251,7 +287,7 @@ export class Spawner extends Rectangle implements IDestroyable {
         this.attributes.push(GameObjectAttributes.Blocking);
         this._spawnPoint = new Point(pos.x + (this.width/2), pos.y + (this.height/2));
 
-        this.statusBar = new StatusBar(Colors.Enemy, {x: 5, y: 5}, {x: 10, y: 4}, this.totalHealth, this.totalHealth);
+        this.statusBar = new StatusBar(0, Colors.Enemy, {x: 5, y: 5}, {x: 10, y: 4}, this.totalHealth, this.totalHealth);
         this.statusBar._attachedTo = this;
     }
 

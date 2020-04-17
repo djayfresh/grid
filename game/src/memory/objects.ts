@@ -90,4 +90,6 @@ export class Card extends Rectangle {
             this.width = Physics.lerp((this.currentState - 0.5) * 2, 1, this.originalBounds.x);
         }
     }
+
+    //TODO: Add serializer
 }

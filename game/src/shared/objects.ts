@@ -1,5 +1,4 @@
 import { Physics, Point, IPoint } from './physics';
-import { Debug, ID_CONST } from './utility';
 import { World } from './world';
 import { Colors } from './colors';
 import { SceneImage, ImageManager, ImageSource } from './images';
@@ -8,10 +7,11 @@ import { GameEventQueue } from './event-queue';
 import { ObjectDestroyedEvent } from './events';
 import { Renderer } from './renderer';
 
-import { GameObjectAttributes, IMapObject } from '../../../models/map/map-object.model';
+import { GameObjectAttributes, IMapObject, GameObjectTypes } from '../../../models/map/map-object.model';
 export { GameObjectAttributes };
 
 export interface IGameObject {
+    type: GameObjectTypes;
     id: number;
     pos: IPoint;
     attributes: GameObjectAttributes[];
@@ -42,6 +42,7 @@ export interface IDestroyer extends IGameObject {
 }
 
 export class GameObject implements IGameObject {
+    type: GameObjectTypes = GameObjectTypes.GameObject;
     id: number;
     pos: Point;
     bounds: IPoint;
@@ -89,6 +90,7 @@ export class GameObject implements IGameObject {
 
     serialize(): IMapObject {
         return {
+            type: this.type,
             id: this.id,
             attributes: this.attributes,
             origin: this.pos,
@@ -100,7 +102,8 @@ export class GameObject implements IGameObject {
 
     static deserialize(data: IMapObject): GameObject {
         const obj = new GameObject(data.id, data.origin, data.bounds);
-        Object.assign(obj, { 
+        Object.assign(obj, {
+            type: data.type,
             _isVisible: data.isVisible, 
             _deleted: data.isDeleted 
         });
@@ -110,6 +113,7 @@ export class GameObject implements IGameObject {
 }
 
 export class Box extends GameObject implements IRectangle {
+    type: GameObjectTypes = GameObjectTypes.Box;
     bounds: IPoint;
 
     get width() {
@@ -122,6 +126,7 @@ export class Box extends GameObject implements IRectangle {
 }
 
 export class RenderObject extends GameObject {
+    type: GameObjectTypes = GameObjectTypes.RenderObject;
     layer = 0;
     canvas?: HTMLCanvasElement;
 
@@ -176,6 +181,7 @@ export class RenderObject extends GameObject {
 }
 
 export class Rectangle extends RenderObject implements IRectangle {
+    type: GameObjectTypes = GameObjectTypes.Rectangle;
     color = '';
     constructor(id: number, color: string, pos: IPoint, bounds: IPoint) {
         super(id, pos, bounds);
@@ -210,10 +216,6 @@ export class Rectangle extends RenderObject implements IRectangle {
 
     checkViewVisibility(world: World) {
         this.setVisible(Physics.boxInBounds(this.pos, this.width, this.height, world));
-
-        if (!this.isVisible()) {
-            Debug.physics("Hidden", this);
-        }
     }
 
     update(_dt: number, world: World) {
@@ -242,6 +244,7 @@ export class Rectangle extends RenderObject implements IRectangle {
 }
 
 export class RenderText extends RenderObject {
+    type: GameObjectTypes = GameObjectTypes.RenderText;
     text: string = '';
     font: string = 'Arial';
     size: string = '30px';
@@ -289,6 +292,7 @@ export class RenderText extends RenderObject {
 }
 
 export class Line extends RenderObject implements IRectangle {
+    type: GameObjectTypes = GameObjectTypes.Line;
     color: string = Colors.Black;
     bounds = { x: 0, y: 0 }
     constructor(id: number, pos: Point, pos2: Point, color?: string) {
@@ -322,9 +326,31 @@ export class Line extends RenderObject implements IRectangle {
             this.preDraw(ctx);
         }
     }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            layer: this.layer,
+
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new Line(data.id, Point.create(data.origin), data.bounds, data.color);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted, 
+            layer: data.layer,
+        });
+
+        return obj;
+    }
 }
 
 export class RenderImage extends RenderObject implements IRectangle {
+    type: GameObjectTypes = GameObjectTypes.RenderImage;
     sceneImage: SceneImage;
     previewColor: string = Colors.White;
     bounds: IPoint;
@@ -407,9 +433,36 @@ export class RenderImage extends RenderObject implements IRectangle {
             this.preDraw(ctx);
         }
     }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            layer: this.layer,
+            previousColor: this.previewColor,
+            sceneImage: this.sceneImage,
+            bounds: this.bounds
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new RenderImage(data.sceneImage, data.id, data.origin);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted, 
+            layer: data.layer,
+            bounds: data.bounds,
+            previousColor: data.previousColor
+        });
+
+        return obj;
+    }
 }
 
 export class TiledImage extends RenderImage {
+    type: GameObjectTypes = GameObjectTypes.TiledImage;
+
     constructor(img: SceneImage, id: number, pos: IPoint, bounds: IPoint){
         super(img, id, pos);
 
@@ -435,6 +488,7 @@ export class TiledImage extends RenderImage {
 }
 
 export class Prefab extends RenderObject implements IRectangle {
+    type: GameObjectTypes = GameObjectTypes.Prefab;
     childObjects: RenderObject[];
     prefabCanvas: HTMLCanvasElement;
     prefabCtx: CanvasRenderingContext2D;
@@ -531,9 +585,37 @@ export class Prefab extends RenderObject implements IRectangle {
             });
         });
     }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            layer: this.layer,
+            children: this.childObjects.forEach(c => c.serialize()),
+            bounds: this.bounds
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new Prefab(data.id, data.origin, data.bounds);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted, 
+            layer: data.layer,
+            bounds: data.bounds,
+        });
+
+        //TODO: 
+        //obj.add(data.children.map(c => c.deserialize()));
+
+        return obj;
+    }
 }
 
 export class CanvasBounds extends GameObject implements IRectangle {
+    type: GameObjectTypes = GameObjectTypes.CanvasBounds;
+
     constructor(id: number, pos: IPoint, bounds: IPoint){
         super(id, pos);
 
@@ -554,9 +636,34 @@ export class CanvasBounds extends GameObject implements IRectangle {
         this.pos.x = -world.pos.x;
         this.pos.y = -world.pos.y;
     }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            bounds: this.bounds
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new CanvasBounds(data.id, data.origin, data.bounds);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted, 
+            bounds: data.bounds,
+        });
+
+        //TODO: 
+        //obj.add(data.children.map(c => c.deserialize()));
+
+        return obj;
+    }
 }
 
 export class CanvasRender extends RenderObject {
+    type: GameObjectTypes = GameObjectTypes.CanvasRender;
+
     constructor(id: number, canvas: HTMLCanvasElement) {
         super(id);
         
@@ -570,13 +677,14 @@ export class CanvasRender extends RenderObject {
 }
 
 export class StatusBar extends Rectangle {
+    type: GameObjectTypes = GameObjectTypes.StatusBar;
     maxStatus: number;
     _currentStatus: number;
     padding: number = 2;
     _attachedTo?: GameObject;
 
-    constructor(color: string, pos: IPoint, bounds: IPoint, maxStatus: number, currentStatus: number){
-        super(ID_CONST.StatusBar, color, pos, bounds);
+    constructor(id: number, color: string, pos: IPoint, bounds: IPoint, maxStatus: number, currentStatus: number){
+        super(id, color, pos, bounds);
 
         if (this.bounds.y <= 4){
             this.padding = 1;
@@ -599,9 +707,40 @@ export class StatusBar extends Rectangle {
         ctx.fillStyle = this.color;
         ctx.fillRect(pos.x + this.pos.x + this.padding, pos.y + this.pos.y + this.padding, (this.width / (this.maxStatus / this._currentStatus)) - (this.padding * 2), this.height - (this.padding * 2));
     }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            layer: this.layer,
+            bounds: this.bounds,
+            maxStatus: this.maxStatus,
+            currentStatus: this._currentStatus,
+            padding: this.padding,
+            _attachTo: this._attachedTo.serialize()
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new Prefab(data.id, data.origin, data.bounds);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted, 
+            layer: data.layer,
+            bounds: data.bounds,
+            maxStatus: data.maxStatus,
+            _currentStatus: data.currentStatus,
+            padding: data.padding,
+
+        });
+
+        return obj;
+    }
 }
 
 export class Wall extends Rectangle implements IDestroyable {
+    type: GameObjectTypes = GameObjectTypes.Wall;
     totalHealth: number;
     health: number;
     statusBar: StatusBar;
@@ -612,7 +751,7 @@ export class Wall extends Rectangle implements IDestroyable {
         this.totalHealth = totalHealth;
         this.health = totalHealth;
 
-        this.statusBar = new StatusBar(Colors.Environment, {x: 0, y: 0}, {x: 20, y: 4}, totalHealth, totalHealth);
+        this.statusBar = new StatusBar(0, Colors.Environment, {x: 0, y: 0}, {x: 20, y: 4}, totalHealth, totalHealth);
         this.statusBar._attachedTo = this;
     }
     
@@ -627,5 +766,33 @@ export class Wall extends Rectangle implements IDestroyable {
     update(dt: number, world: World){
         this.statusBar._currentStatus = this.health;
         this.statusBar.update(dt, world);
+    }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            totalHealth: this.totalHealth,
+            health: this.health,
+            statusBar: this.statusBar.serialize()
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new Prefab(data.id, data.origin, data.bounds);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted, 
+            layer: data.layer,
+            bounds: data.bounds,
+            totalHealth: data.totalHealth,
+            health: data.health,
+            
+            //TODO:
+            //statusBar: data.statusBar.deserialize();
+        });
+
+        return obj;
     }
 }

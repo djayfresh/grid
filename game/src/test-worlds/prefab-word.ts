@@ -60,7 +60,7 @@ export class PrefabWorld extends World {
         bounds.attributes.push(GameObjectAttributes.NoExit);
         this.add(bounds);
 
-        const statusBar = new StatusBar(Colors.Enemy, {x: 150, y: 150}, {x: 20, y: 4}, 100, 100);
+        const statusBar = new StatusBar(0, Colors.Enemy, {x: 150, y: 150}, {x: 20, y: 4}, 100, 100);
         this.add(statusBar);
 
         this.setPlayer(player);
