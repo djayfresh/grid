@@ -45,7 +45,7 @@ class Memory extends Game {
         //hover mouse
         this.cards.filter(c => !c.locked).forEach(ro => {
             if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height) && !ro.flipped) {
-                Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
+                Debug.mouse("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
                 isMouseOverButton = true;
             }
         });
@@ -90,7 +90,7 @@ class Memory extends Game {
     onMouseDown(){
         this.cards.filter(c => !c.locked).forEach(ro => {
             if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
-                Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
+                Debug.mouse("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
 
                 ro.Flip();
             }

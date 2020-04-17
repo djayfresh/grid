@@ -5,7 +5,7 @@ import * as io from 'socket.io-client';
 
 export class SocketService {
     public static baseUrl: string = 'http://localhost:3000/';
-    public socket: SocketIOClient.Socket;
+    public socket: any; //
 
     constructor() {
         GameEventQueue.subscribe(SocketDataEvent, 'service-io', event => {

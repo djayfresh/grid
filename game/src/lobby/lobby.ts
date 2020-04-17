@@ -45,7 +45,7 @@ export class Lobby extends Game {
         //hover mouse
         this.world.map.filter(ro => Levels.indexOf(ro.id) >= 0).forEach((ro: Rectangle) => {
             if (Physics.collision(this.mouse.pos.x, this.mouse.pos.y, 1, 1, ro.pos.x, ro.pos.y, ro.width, ro.height)) {
-                Debug.game("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
+                Debug.mouse("Mouse down on RO", ro.pos, ro.bounds, "mouse info", this.mouse.pos);
 
                 //button highlight
                 ro.color = Colors.HoverDark;

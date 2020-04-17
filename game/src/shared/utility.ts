@@ -3,7 +3,7 @@ import { Point } from './physics';
 export enum ID_CONST { Player = 100, Enemy = 2, PowerUp = -3, Tile = -1, Grid = 9001, Flag = 11, Wall = -101, Ground = -100, Bullet = 101, Street = -80, Spawner = 10, StatusBar = 200 }
 export enum KEY_CONST { left = 65, right = 68, up = 87, down = 83, pause = 80, x = 88, r = 82, menu = 77, j = 74 };
 
-export var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: false, mouse: false, game: false, image: false, event: true, includeStack: false };
+export var _DEBUG = { draw: false, time: false, physics: false, keyboard: false, generation: true, mouse: false, game: true, image: false, event: true, includeStack: false };
 
 export class Debug {
     static log(...logMessages: any[]) {

@@ -48,6 +48,7 @@ export class ZombieWorld extends World {
         });
     }
 
+    /**
     //TODO: Move to board
     generateMap() {
         const streetWidth = 40;
@@ -119,4 +120,6 @@ export class ZombieWorld extends World {
 
         this.setPlayer(player);
     }
+
+    **/
 }

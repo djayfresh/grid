@@ -10,6 +10,7 @@ import { EnemyKilledEvent } from './events';
 import { ImagesLoadedEvent } from '../shared/events';
 import { ImageManager } from '../shared/images';
 import { PrefabWorld } from '../test-worlds/prefab-word';
+import { generateMap } from '../CuBE/world';
 
 class ZombieGame extends Game {
     world: ZombieWorld;
@@ -65,7 +66,9 @@ class ZombieGame extends Game {
 
             GameEventQueue.subscribe(ImagesLoadedEvent, 'zombie-game', () => {
                 this.world.reset();
-                this.world.generateMap();
+                console.log("Gen map - Event");
+                generateMap(this.world);
+                console.log("Gen Map - Size", this.world.map.length);
             });
         }
         this.world.setPos(0, 0);
@@ -75,9 +78,9 @@ class ZombieGame extends Game {
         this.world.reset();
         this.world.setRoundStart(1);
 
-        if (ImageManager.getImages('zombie').every(i => i.isLoaded)){
-            GameEventQueue.notify(new ImagesLoadedEvent([]));
-        }
+        // if (ImageManager.getImages('zombie').every(i => i.isLoaded)){
+        //     GameEventQueue.notify(new ImagesLoadedEvent([]));
+        // }
 
         GameCanvas.canvas.style.cursor = 'default';
     }
