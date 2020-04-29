@@ -13,6 +13,7 @@
     "bundle": "npm run compile && npm run pack & npm run pack-deploy",
     "compile": "tsc",
     "watch": "tsc -w",
+    "pack-debug": "webpack --mode=development --config-name=dev --display-error-details",
     "pack": "webpack --mode=development --config-name=dev",
     "pack-deploy": "webpack --mode=production --config-name=deploy",
     "publish": "npm run compile && npm run pack-deploy"

@@ -1,4 +1,4 @@
-import { GameObjectTypes, IMapObject } from '../../../models/map/map-object.model';
+import { GameObjectTypes, IMapObject } from 'models/map';
 import { GameObject, RenderObject, Rectangle, Box, Line, Prefab, RenderImage, RenderText, CanvasBounds, CanvasRender, StatusBar, TiledImage, Wall } from './objects';
 import { Bullet, Player, Enemy, Spawner } from '../zombie/objects';
 

@@ -1,6 +1,6 @@
 import { LevelConst } from '../lobby/levels';
 
-import { IHighScore } from '../../../models/high-score.model';
+import { IHighScore } from 'models';
 export { IHighScore };
 
 export class HighScoreManager {

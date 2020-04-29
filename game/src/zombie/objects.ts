@@ -9,7 +9,7 @@ import { Point, IPoint } from '../shared/physics';
 import { Renderer } from '../shared/renderer';
 import { GameEventQueue } from '../shared/event-queue';
 import { WeaponFoundEvent, EnemyHitPlayerEvent, EnemyKilledEvent } from './events';
-import { GameObjectTypes, IMapObject } from '../../../models/map/map-object.model';
+import { GameObjectTypes, IMapObject } from 'models/map';
 
 export class Player extends Rectangle {   
     type: GameObjectTypes = GameObjectTypes.Player; 

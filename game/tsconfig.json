@@ -4,9 +4,11 @@
         "allowJs": true,
         "target": "es6",
         "module": "commonjs",
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "baseUrl": ".",
     },
     "include": [
-        "./src/**/*"
-    ]
+        "./src/**/*",
+        "./src/node_modules/**/*.ts"
+    ],
 }

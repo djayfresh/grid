@@ -1,7 +1,7 @@
 import { World } from './world';
 import { IRectangle, IGameObject } from './objects';
 
-import { IPoint } from '../../../models/point.model';
+import { IPoint } from 'models';
 export { IPoint };
 
 export class Physics {

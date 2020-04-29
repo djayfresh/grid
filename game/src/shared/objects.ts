@@ -7,7 +7,7 @@ import { GameEventQueue } from './event-queue';
 import { ObjectDestroyedEvent } from './events';
 import { Renderer } from './renderer';
 
-import { GameObjectAttributes, IMapObject, GameObjectTypes } from '../../../models/map/map-object.model';
+import { GameObjectAttributes, IMapObject, GameObjectTypes } from 'models/map';
 export { GameObjectAttributes };
 
 export interface IGameObject {
