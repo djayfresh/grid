@@ -12,7 +12,7 @@ export class SocketService {
             this.emit('event', event);
         });
 
-        this.socket = io(SocketService.baseUrl, { path: '/io', autoConnect: false });
+        this.socket = io(SocketService.baseUrl, { path: '/io', autoConnect: false, reconnectionAttempts: 1 });
 
         this.on('connect', () => {
             console.log("connected to socket", this.socket.id);
@@ -32,6 +32,15 @@ export class SocketService {
         this.on('disconnect', () => {
             console.log("socket disconnected");
         });
+
+        this.on('connect_error', (err) => {
+            console.log("connection error", err);
+            this.socket.disconnect();
+        });
+
+        this.on('reconnect_error', (err) => {
+            console.log("reconnect error", err);
+        });
     }
 
     public on(eventName: string, callback: Function){
@@ -43,6 +52,7 @@ export class SocketService {
     }
 
     public open() {
+        console.log("Open socket, socket connected: ", this.socket.connected);
         if (!this.socket.connected){
             this.socket.open();
         }

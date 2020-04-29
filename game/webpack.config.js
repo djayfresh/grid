@@ -2,16 +2,13 @@ const path = require('path');
 
 module.exports = [{
     name: 'dev',
-    entry: "./build/runner.js",
+    entry: "./build/game/src/runner.js",
     output: {
         filename: "./runner.js",
     },
     devtool: "source-map",
     resolve: {
         extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
-        alias: {
-            "models/*": path.resolve(__dirname, '../../models/')
-        }
     },
     module: {
         rules: [
@@ -30,7 +27,7 @@ module.exports = [{
     }
 }, {
     name: 'deploy',
-    entry: "./build/main.js",
+    entry: "./build/game/src/main.js",
     output: {
         filename: "./launcher.js",
         library: 'Grid'
