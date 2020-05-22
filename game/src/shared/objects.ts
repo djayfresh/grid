@@ -16,6 +16,7 @@ export interface IGameObject {
     pos: IPoint;
     attributes: GameObjectAttributes[];
     center: IPoint;
+    bounds: IPoint;
 
     update(dt: number, world: any): void; //TODO: replace world: any with proper world definition
     isDeleted(): boolean;
@@ -170,6 +171,68 @@ export class RenderObject extends GameObject {
 
     static deserialize(data: IMapObject): GameObject {
         const obj = new RenderObject(data.id, data.origin, data.bounds);
+        Object.assign(obj, { 
+            _isVisible: data.isVisible, 
+            _deleted: data.isDeleted, 
+            layer: data.layer 
+        });
+
+        return obj;
+    }
+}
+
+export class Circle extends RenderObject implements IGameObject {
+    type: GameObjectTypes = GameObjectTypes.Circle;
+    color = '';
+    constructor(id: number, color: string, pos: IPoint, radius: number) {
+        super(id, pos, {x: radius, y: radius});
+        this.color = color;
+    }
+
+    get center() {
+        return new Point(this.pos.x + (this.width/2), this.pos.y + (this.height/2));
+    }
+
+    set width(value: number) {
+        this.bounds.x = value;
+    }
+
+    get width() {
+        return this.bounds.x;
+    }
+
+    set height(value: number) {
+        this.bounds.y = value;
+    }
+
+    get height() {
+        return this.bounds.y;
+    }
+
+    draw(ctx: CanvasRenderingContext2D, _world: World) {
+        ctx.fillStyle = this.color;
+        ctx.ellipse(this.pos.x, this.pos.y, this.width, this.height, 0, 0, 360, false);
+    }
+
+    checkViewVisibility(world: World) {
+        this.setVisible(Physics.boxInBounds(this.pos, this.width, this.height, world));
+    }
+
+    update(_dt: number, world: World) {
+        //this.checkViewVisibility(world);
+    }
+
+    serialize(): IMapObject {
+        const obj = super.serialize();
+
+        return {
+            ...obj,
+            color: this.color
+        };
+    }
+
+    static deserialize(data: IMapObject): GameObject {
+        const obj = new Rectangle(data.id, data.color, data.origin, data.bounds);
         Object.assign(obj, { 
             _isVisible: data.isVisible, 
             _deleted: data.isDeleted, 

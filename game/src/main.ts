@@ -3,13 +3,14 @@ import { LevelConst } from './lobby/levels';
 import { zombie } from './zombie/zombie';
 import { memory } from './memory/memory';
 import { grid } from './grid/grid';
-import { KEY_CONST, _DEBUG, Key } from './shared/utility';
+import { three } from './three/three';
+import { KEY_CONST, _DEBUG } from './shared/utility';
 import { Game } from './shared/game';
 import { ImageManager } from './shared/images';
 import { GameCanvas } from './shared/canvas';
 import { highscore } from './highscore/highscore';
 import { GameEventQueue } from './shared/event-queue';
-import { MenuLoadMainEvent, SocketDataEvent, GameStartEvent } from './shared/events';
+import { MenuLoadMainEvent, GameStartEvent } from './shared/events';
 import { Analytics } from './shared/analytics';
 import { HighScoreService } from './services/highscore.service';
 import { socketService, SocketService } from './services/socket.service';
@@ -47,28 +48,28 @@ window.addEventListener('keydown', ev => {
 });
 
 var menuOptions = [
-    {
-        id: LevelConst.Grid,
-        action: () => {
-            lobby.Pause();
-            grid.Play();
-            selectedGame = grid;
+    // {
+    //     id: LevelConst.Grid,
+    //     action: () => {
+    //         lobby.Pause();
+    //         grid.Play();
+    //         selectedGame = grid;
 
-            Analytics.onGameChange(LevelConst[LevelConst.Grid]);
-        },
-        text: 'Grid'
-    },
-    {
-        id: LevelConst.Zombie,
-        action: () => {
-            lobby.Pause();
-            zombie.Play();
-            selectedGame = zombie;
+    //         Analytics.onGameChange(LevelConst[LevelConst.Grid]);
+    //     },
+    //     text: 'Grid'
+    // },
+    // {
+    //     id: LevelConst.Zombie,
+    //     action: () => {
+    //         lobby.Pause();
+    //         zombie.Play();
+    //         selectedGame = zombie;
 
-            Analytics.onGameChange(LevelConst[LevelConst.Zombie]);
-        },
-        text: 'Zombie'
-    },
+    //         Analytics.onGameChange(LevelConst[LevelConst.Zombie]);
+    //     },
+    //     text: 'Zombie'
+    // },
     {
         id: LevelConst.Memory,
         action: () => {
@@ -93,6 +94,17 @@ var menuOptions = [
             Analytics.onGameChange(LevelConst[LevelConst.HighScore]);
         },
         text: 'High Scores'
+    },
+    {
+        id: LevelConst.Three,
+        action: () => {
+            lobby.Pause();
+            three.Play();
+
+            selectedGame = three;
+            Analytics.onGameChange(LevelConst[LevelConst.Three]);
+        },
+        text: 'First Player'
     }
 ]
 

@@ -1,2 +1,2 @@
-export enum LevelConst { Grid = 0, Zombie = 1, HighScore = 2, Memory = 3, Hockey = 4 };
-export var Levels = [LevelConst.Grid, LevelConst.Zombie, LevelConst.HighScore, LevelConst.Memory, LevelConst.Hockey];
+export enum LevelConst { Grid = 0, Zombie = 1, HighScore = 2, Memory = 3, Hockey = 4, Three = 5 };
+export var Levels = [LevelConst.Grid, LevelConst.Zombie, LevelConst.HighScore, LevelConst.Memory, LevelConst.Hockey, LevelConst.Three];

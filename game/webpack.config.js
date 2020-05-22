@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = [{
     name: 'dev',
-    entry: "./build/runner.js",
+    entry: "./build/game/src/runner.js",
     output: {
         filename: "./runner.js",
     },

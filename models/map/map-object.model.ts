@@ -40,5 +40,6 @@ export enum GameObjectTypes {
     Player = 14,
     Enemy = 15,
     Spawner = 16,
-    Bullet = 17
+    Bullet = 17,
+    Circle = 18
 }
