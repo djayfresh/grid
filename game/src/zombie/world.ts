@@ -128,12 +128,14 @@ export class ZombieWorld extends World {
         this.add(new Barricade({x: COLS_X[1], y: ROWS_Y[0] + 100}, {x: STREET_WIDTH, y: 20}, Math.round(barricadeHealth * 0.7)));
         this.add(new Barricade({x: COLS_X[2], y: ROWS_Y[1] + 100}, {x: STREET_WIDTH, y: 20}, Math.round(barricadeHealth * 0.7)));
 
-        //spawner-houses: destroy or skip, skipping risks zombies piling up
+        //spawner-houses: destroy or skip, skipping risks zombies piling up. Placed flush against a
+        //vertical road's edge so the player can always walk up and shoot them - never stranded out
+        //in a field of grass the player can't reach.
         const spawnerPositions = [
-            {x: 510, y: 130},
-            {x: 850, y: 130},
-            {x: 510, y: 390},
-            {x: 850, y: 390},
+            {x: COLS_X[1] + STREET_WIDTH, y: ROWS_Y[0] + STREET_WIDTH + 10},
+            {x: COLS_X[2] + STREET_WIDTH, y: ROWS_Y[0] + STREET_WIDTH + 10},
+            {x: COLS_X[1] + STREET_WIDTH, y: ROWS_Y[1] + STREET_WIDTH + 10},
+            {x: COLS_X[2] + STREET_WIDTH, y: ROWS_Y[1] + STREET_WIDTH + 10},
         ];
 
         for (let i = 0; i < spawnerCount; i++) {

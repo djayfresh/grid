@@ -424,9 +424,11 @@ export class Prefab extends RenderObject implements IRectangle {
                 return false;
             }
 
-            //still inside some other holder - allowed
-            const stillHeld = holders.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h,
-                s.pos.x + newPos.x + this.pos.x, s.pos.y + newPos.y + this.pos.y, s.width, s.height));
+            //still inside some other MEANINGFUL holder - allowed. NoExit holders don't count (see World.noCollisions)
+            const stillHeld = holders
+                .filter(s => s.attributes.indexOf(GameObjectAttributes.NoExit) < 0)
+                .some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h,
+                    s.pos.x + newPos.x + this.pos.x, s.pos.y + newPos.y + this.pos.y, s.width, s.height));
             if (stillHeld) {
                 return true;
             }

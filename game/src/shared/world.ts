@@ -187,9 +187,14 @@ export class World {
                 return false;
             }
 
-            //still inside some other holder (eg. an overlapping road/path segment) - allowed
-            const stillHeld = holders.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h,
-                s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height));
+            //still inside some other MEANINGFUL holder (eg. an overlapping road/path segment) - allowed.
+            //NoExit holders (eg. the outer world boundary) don't count here - they're a backstop that
+            //covers the whole level, so treating them as "still held" would let you leave any road
+            //onto grass as long as you're still somewhere inside the level at all
+            const stillHeld = holders
+                .filter(s => s.attributes.indexOf(GameObjectAttributes.NoExit) < 0)
+                .some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h,
+                    s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height));
             if (stillHeld) {
                 return true;
             }
