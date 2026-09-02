@@ -18,7 +18,7 @@ module.exports = [{
             },
             {
                 test: /\.tsx?$/,
-                loaders: ['awesome-typescript-loader'],
+                loader: 'ts-loader',
                 exclude: /(node_modules)/
             }
         ]
@@ -37,7 +37,7 @@ module.exports = [{
         rules: [
             {
                 test: /\.tsx?$/,
-                loaders: ['awesome-typescript-loader'],
+                loader: 'ts-loader',
                 exclude: /(node_modules)/
             }
         ]

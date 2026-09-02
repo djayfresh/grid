@@ -1,9 +1,8 @@
-import * as express from 'express';
-import * as cors from 'cors';
+import express from 'express';
+import cors from 'cors';
 import * as http from 'http';
-import * as io from 'socket.io';
+import { Server } from 'socket.io';
 import { RouteConfig } from './routes/config';
-import bodyParser = require('body-parser');
 
 class App {
     public express: express.Express;
@@ -32,14 +31,14 @@ class App {
 
         this.express.use(cors(corsOptions));
 
-        this.express.use(bodyParser.json());
+        this.express.use(express.json());
         this.express.use('/api/', RouteConfig.routes());
     }
 
     private initSockets(): void {
-        const socketIO = io(this.server, { path: '/io' });
+        const socketIO = new Server(this.server, { path: '/io' });
 
-        console.log("Setup sockets", socketIO.sockets.server.path())
+        console.log("Setup sockets on path /io")
 
         socketIO.on('connection', socket => {
             console.log("Connected", socket.id);

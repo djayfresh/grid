@@ -1,11 +1,11 @@
 import { HighScoreManager } from '../highscore/manager';
 import { GameEventQueue, BaseEvent } from '../shared/event-queue';
 import { SocketDataEvent } from '../shared/events';
-import * as io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 export class SocketService {
     public static baseUrl: string = 'http://localhost:3000/';
-    public socket: SocketIOClient.Socket;
+    public socket: Socket;
 
     constructor() {
         GameEventQueue.subscribe(SocketDataEvent, 'service-io', event => {
@@ -34,7 +34,7 @@ export class SocketService {
         });
     }
 
-    public on(eventName: string, callback: Function){
+    public on(eventName: string, callback: (...args: any[]) => void){
         return this.socket.on(eventName, callback);
     }
 

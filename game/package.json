@@ -32,15 +32,14 @@
   "author": "DJayFresh",
   "license": "ISC",
   "dependencies": {
-    "@types/socket.io-client": "^1.4.32",
-    "awesome-typescript-loader": "^5.2.1",
     "rxjs": "^6.5.5",
-    "socket.io-client": "^2.3.0",
-    "source-map-loader": "^0.2.4",
-    "typescript": "^3.8.3"
+    "socket.io-client": "^4.8.1",
+    "typescript": "^5.6.3"
   },
   "devDependencies": {
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "source-map-loader": "^5.0.0",
+    "ts-loader": "^9.5.1",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
   }
 }
