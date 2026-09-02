@@ -12,6 +12,7 @@ export interface FiringInfo {
 export class Weapon {
     mouse: Mouse;
     rate = 500; //ms
+    rateMultiplier: number = 1;
     range: number;
     damage = 1;
     _lastShot = 0;
@@ -33,7 +34,7 @@ export class Weapon {
 
     update(dt: number, world: World) {
         if (this.mouse.isDown){ //TODO: Track in a static mouse manager
-            if (this._lastShot === 0 || this._lastShot >= this.rate){
+            if (this._lastShot === 0 || this._lastShot >= (this.rate * this.rateMultiplier)){
                 if (this.maxAmmo === 0 || this.ammo > 0) {
                     this.onFire(this.getFiringInfo(this.mouse, world), world);
                     this._lastShot = 1;

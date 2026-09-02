@@ -423,7 +423,14 @@ export class Prefab extends RenderObject implements IRectangle {
             if (rectLeavingHolding.some(ro => ro.attributes.indexOf(GameObjectAttributes.NoExit) >= 0)) {
                 return false;
             }
-            
+
+            //still inside some other holder - allowed
+            const stillHeld = holders.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h,
+                s.pos.x + newPos.x + this.pos.x, s.pos.y + newPos.y + this.pos.y, s.width, s.height));
+            if (stillHeld) {
+                return true;
+            }
+
             const exits = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Exiting) >= 0);
             //moving into an exit
             const rectInExit = exits.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x + this.pos.x, s.pos.y + newPos.y + this.pos.y, s.width, s.height))

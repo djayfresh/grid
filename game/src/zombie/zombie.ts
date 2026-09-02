@@ -1,45 +1,95 @@
 import { Game } from '../shared/game';
 import { ZombieWorld } from './world';
-import { Weapon } from '../shared/weapons';
 import { Mouse, Debug, KeyboardManager, KEY_CONST } from '../shared/utility';
 import { GameCanvas } from '../shared/canvas';
 import { Rectangle } from '../shared/objects';
 import { LevelConst } from '../lobby/levels';
 import { GameEventQueue } from '../shared/event-queue';
-import { EnemyKilledEvent } from './events';
-import { ImagesLoadedEvent } from '../shared/events';
-import { ImageManager } from '../shared/images';
-import { PrefabWorld } from '../test-worlds/prefab-word';
+import { EnemyKilledEvent, EnemyHitPlayerEvent, ObjectiveReachedEvent, BarricadeDestroyedEvent, SpawnerDestroyedEvent } from './events';
+import { MenuLoadMainEvent } from '../shared/events';
+import { PlayerStats } from './leveling';
+
+const ENEMY_TOUCH_DAMAGE = 10;
+const BARRICADE_XP = 15;
+const SPAWNER_XP = 25;
+const ROUND_CLEAR_XP = 50;
 
 class ZombieGame extends Game {
     world: ZombieWorld;
     mouse: Mouse;
+    round: number = 1;
+    stats: PlayerStats = new PlayerStats();
 
     constructor() {
         super();
     }
 
-    RunRound() {
-        if (this.world.player){
-            const move = KeyboardManager.moves();
+    StartRound(_dt: number) {
+        this.world.round = this.round;
+        this.world.stats = this.stats;
 
-            //move the world
-            const worldX = this.world.pos.x;
-            const worldY = this.world.pos.y;
-            
-            const playerX = this.world.player.pos.x;
-            const playerY = this.world.player.pos.y;
-            const playerW = (this.world.player as Rectangle).width;
-            const playerH = (this.world.player as Rectangle).height;
-            const playerRect = { x: playerX, y: playerY, w: playerW, h: playerH };
+        this.world.reset();
+        this.world.generateMap();
+    }
 
-            if (this.world.playerAttachedToCenter){
-                this.world.validateMove(move, playerRect, { x: worldX, y: worldY }, (x, y) => this.world.setPos(x, y), () => this.world.setPos(worldX, worldY));
-            }
-            else {
-                this.world.setPos(worldX, worldY);
-            }
+    RunRound(dt: number) {
+        if (this.roundStartDisabled || !this.world.player) {
+            return;
         }
+
+        const player = this.world.player;
+        player.moveSpeedMultiplier = this.stats.moveSpeedMultiplier;
+        if (player.activeWeapon) {
+            player.activeWeapon.rateMultiplier = this.stats.fireRateMultiplier;
+        }
+
+        const step = Math.min(dt, 32);
+
+        const worldX = this.world.pos.x;
+        const worldY = this.world.pos.y;
+
+        const playerX = player.pos.x;
+        const playerY = player.pos.y;
+        const playerW = (player as Rectangle).width;
+        const playerH = (player as Rectangle).height;
+        const playerRect = { x: playerX, y: playerY, w: playerW, h: playerH };
+
+        if (this.world.playerAttachedToCenter){
+            const move = player.moveDelta(step);
+            this.world.validateMove(move, playerRect, { x: worldX, y: worldY }, (x, y) => this.world.setPos(x, y), () => this.world.setPos(worldX, worldY));
+        }
+        else {
+            this.world.setPos(worldX, worldY);
+        }
+    }
+
+    award(amount: number) {
+        this.score += amount;
+        this.stats.addXp(amount);
+    }
+
+    NextRound() {
+        this.round++;
+        this.award(ROUND_CLEAR_XP);
+
+        this.hasRoundStarted = false;
+        this.currentDelay = 0;
+        this.roundDelay = 1500;
+
+        this.world.reset();
+        this.world.setRoundStart(this.round, this.score);
+    }
+
+    GameOver() {
+        this.roundStartDisabled = true;
+
+        this.world.setHighScorePicker(LevelConst.Zombie, this.score, () => {
+            this.roundStartDisabled = false;
+            GameEventQueue.notify(new MenuLoadMainEvent(null));
+        });
+
+        this.world.reset();
+        this.world.setGameOver(this.score);
     }
 
     _init() {
@@ -50,7 +100,7 @@ class ZombieGame extends Game {
             this.world.loadImages();
             this.mouse.relative = true;
             this.Resize();
-        
+
             KeyboardManager.track(KEY_CONST.down);
             KeyboardManager.track(KEY_CONST.up);
             KeyboardManager.track(KEY_CONST.left);
@@ -60,24 +110,46 @@ class ZombieGame extends Game {
             KeyboardManager.track(KEY_CONST.j);
 
             GameEventQueue.subscribe(EnemyKilledEvent, 'zombie-game', enemyKilledEvent => {
-                this.score += enemyKilledEvent.data.totalHealth; //score based on enemy health before death?
+                this.award(enemyKilledEvent.data.totalHealth);
             });
 
-            GameEventQueue.subscribe(ImagesLoadedEvent, 'zombie-game', () => {
-                this.world.reset();
-                this.world.generateMap();
+            GameEventQueue.subscribe(EnemyHitPlayerEvent, 'zombie-game', () => {
+                if (this.roundStartDisabled) {
+                    return;
+                }
+
+                if (this.world.player.takeDamage(ENEMY_TOUCH_DAMAGE) <= 0) {
+                    this.GameOver();
+                }
+            });
+
+            GameEventQueue.subscribe(BarricadeDestroyedEvent, 'zombie-game', () => {
+                this.award(BARRICADE_XP);
+            });
+
+            GameEventQueue.subscribe(SpawnerDestroyedEvent, 'zombie-game', () => {
+                this.award(SPAWNER_XP);
+            });
+
+            GameEventQueue.subscribe(ObjectiveReachedEvent, 'zombie-game', () => {
+                if (!this.roundStartDisabled) {
+                    this.NextRound();
+                }
             });
         }
-        this.world.setPos(0, 0);
 
-        this.roundDelay = 0;
+        this.world.setPos(0, 0);
+        this.round = 1;
+        this.score = 0;
+        this.stats = new PlayerStats();
+
+        this.roundDelay = 1500;
+        this.hasRoundStarted = false;
+        this.currentDelay = 0;
+        this.roundStartDisabled = false;
 
         this.world.reset();
-        this.world.setRoundStart(1);
-
-        if (ImageManager.getImages('zombie').every(i => i.isLoaded)){
-            GameEventQueue.notify(new ImagesLoadedEvent([]));
-        }
+        this.world.setRoundStart(this.round);
 
         GameCanvas.canvas.style.cursor = 'default';
     }

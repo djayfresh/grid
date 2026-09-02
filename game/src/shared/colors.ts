@@ -9,7 +9,11 @@ export enum Colors {
     Wall = '#441d00',
     Bullet = '#8e8702',
     Ground = '#043511',
-    Environment = '#00405e'
+    Environment = '#00405e',
+    ZombiePlayer = '#1e90ff',
+    Path = '#8a8a8a',
+    Barricade = '#7a5c2e',
+    SpawnerRoof = '#002b3f'
 }
 
 export class Color {

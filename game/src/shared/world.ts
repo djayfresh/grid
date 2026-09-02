@@ -66,6 +66,8 @@ export class World {
         this.lastPos = this.pos;
         this.origin = this.pos;
         this.moved = false;
+
+        this.$ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
     setPlayer(player: RenderObject){
@@ -88,6 +90,18 @@ export class World {
         this.lastPos = this.pos;
 
         this.pos = new Point(x, y);
+    }
+
+    //hard camera jump (eg. anchoring the view at round start) - unlike setPos, this doesn't leave
+    //a delta for the renderer to animate next frame; it snaps pos/lastPos/the ctx transform together
+    //so nothing is left pending to double-apply (or get swallowed) by a same-frame setPos elsewhere
+    snapPos(x: number, y: number) {
+        this.pos = new Point(x, y);
+        this.lastPos = this.pos;
+        this.origin = this.pos;
+        this.moved = false;
+
+        this.$ctx.setTransform(1, 0, 0, 1, x, y);
     }
 
     getPosDelta() {
@@ -125,11 +139,11 @@ export class World {
         if (this.noCollisions(origin, worldMove, rect)) {
             validMove(worldMove.x, worldMove.y);
         }
-        else if (this.noCollisions(origin, { x: origin.x - move.x, y: worldMove.y }, rect)) {
+        else if (this.noCollisions(origin, { x: origin.x, y: worldMove.y }, rect)) {
             Debug.game("valid 1", move);
             validMove(origin.x, worldMove.y);
         }
-        else if (this.noCollisions(origin, { x: worldMove.x, y: origin.y - move.y }, rect)) {
+        else if (this.noCollisions(origin, { x: worldMove.x, y: origin.y }, rect)) {
             Debug.game("valid 2", move);
             validMove(worldMove.x, origin.y);
         }
@@ -172,7 +186,14 @@ export class World {
             if (rectLeavingHolding.some(ro => ro.attributes.indexOf(GameObjectAttributes.NoExit) >= 0)) {
                 return false;
             }
-            
+
+            //still inside some other holder (eg. an overlapping road/path segment) - allowed
+            const stillHeld = holders.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h,
+                s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height));
+            if (stillHeld) {
+                return true;
+            }
+
             const exits = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Exiting) >= 0);
             //moving into an exit
             const rectInExit = exits.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x, s.pos.y + newPos.y, s.width, s.height))
