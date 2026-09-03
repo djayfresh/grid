@@ -1,11 +1,11 @@
-import { Rectangle, RenderObject, GameObjectAttributes, StatusBar, TiledImage, IDestroyable, IDestroyer } from '../shared/objects';
+import { Rectangle, RenderObject, GameObjectAttributes, StatusBar, TiledImage, Wall, Prefab, IDestroyable, IDestroyer } from '../shared/objects';
 import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse } from '../shared/utility';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
 import { Colors } from '../shared/colors';
 import { Weapon, FiringInfo } from '../shared/weapons';
 import { SceneImage } from '../shared/images';
-import { Point, IPoint } from '../shared/physics';
+import { Point, IPoint, Physics } from '../shared/physics';
 import { GameEventQueue } from '../shared/event-queue';
 import { WeaponFoundEvent, EnemyHitPlayerEvent, ObjectiveReachedEvent } from './events';
 
@@ -172,7 +172,16 @@ export class Player extends Rectangle {
         const playerCenter = this.actualCenterPos(world);
         Debug.mouse('direction', direction, 'mouse', mouse.pos, 'player', playerCenter, "player pos", this.pos);
 
-        return { pos: playerCenter, direction: direction };
+        //bullets live in world space and the camera follows the player, so a bullet with no velocity
+        //of its own visibly drifts off the aimed screen direction as soon as the player is moving -
+        //blending the player's current world velocity in cancels that drift out (mirrors real firing
+        //while moving). Only applies while the camera is actually tracking the player - in free-move
+        //debug mode (KEY j) the world doesn't pan, so there's no drift to cancel
+        //moveDelta's default (reversed=false) is the camera-shift delta the world pans by, which is
+        //the negative of the player's actual world velocity - reversed=true is the true velocity
+        const velocity = world.playerAttachedToCenter ? this.moveDelta(1, true) : { x: 0, y: 0 };
+
+        return { pos: playerCenter, direction: direction, velocity: velocity };
     }
 }
 
@@ -190,9 +199,11 @@ export class Bullet extends Rectangle implements IDestroyer {
 
     update(dt: number, world: World) {
         this.lifeTime += dt;
-        const worldMove = world.getPosDelta();
 
-        this.setPos(this.pos.x + (dt * this.force.x) - worldMove.x, this.pos.y + (dt * this.force.y) - worldMove.y);
+        //bullet.pos is world space (Player.actualCenterPos already cancels out world.pos at the
+        //moment it's fired) - it must NOT be re-adjusted by the camera's per-frame delta here, or
+        //an already-fired bullet drifts along with the player's own movement instead of staying put
+        this.setPos(this.pos.x + (dt * this.force.x), this.pos.y + (dt * this.force.y));
 
         this.checkViewVisibility(world);
         if (!this.isVisible() || this.lifeTime >= this.lifeSpan || this.damage <= 0) {
@@ -247,11 +258,51 @@ export class Enemy extends Rectangle implements IDestroyable {
             return;
         }
         else if (distanceToPlayer <= this.siteRange){
-            this.setPos(this.pos.x + (norm.x * this.speed * dt), this.pos.y + (norm.y * this.speed * dt));
+            const targetX = this.pos.x + (norm.x * this.speed * dt);
+            const targetY = this.pos.y + (norm.y * this.speed * dt);
+
+            //straight line to the player, but slide along whichever axis is still open rather than
+            //walking through walls/barricades - grass, roads, driveways and house interiors aren't
+            //blocking, so those keep passing through untouched
+            if (!this._moveIfOpen(world, targetX, targetY)) {
+                if (!this._moveIfOpen(world, this.pos.x, targetY)) {
+                    this._moveIfOpen(world, targetX, this.pos.y);
+                }
+            }
         }
 
         this.statusBar._currentStatus = this.health;
         this.statusBar.update(dt, world);
+    }
+
+    //true (and moves) if pos x,y is clear of Walls/Barricades; false (no move) if blocked
+    private _moveIfOpen(world: ZombieWorld, x: number, y: number): boolean {
+        if (Enemy._blockingRects(world).some(r => Physics.collision(x, y, this.width, this.height, r.x, r.y, r.w, r.h))) {
+            return false;
+        }
+
+        this.setPos(x, y);
+        return true;
+    }
+
+    private static _blockingRects(world: ZombieWorld): {x: number, y: number, w: number, h: number}[] {
+        const rects: {x: number, y: number, w: number, h: number}[] = [];
+
+        world.map.filter(ro => ro.isVisible() && !ro.isDeleted()).forEach(ro => {
+            if (ro instanceof Barricade) {
+                rects.push({ x: ro.pos.x, y: ro.pos.y, w: ro.width, h: ro.height });
+            }
+            else if (ro instanceof Prefab) {
+                ro.childObjects
+                    .filter(c => !c.isDeleted() && c.isVisible() && c instanceof Wall)
+                    .forEach(c => {
+                        const wall = c as Wall;
+                        rects.push({ x: ro.pos.x + wall.pos.x, y: ro.pos.y + wall.pos.y, w: wall.width, h: wall.height });
+                    });
+            }
+        });
+
+        return rects;
     }
 }
 

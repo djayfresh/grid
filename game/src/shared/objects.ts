@@ -530,8 +530,13 @@ export class StatusBar extends Rectangle {
         ctx.fillStyle = Colors.Black;
         ctx.fillRect(pos.x + this.pos.x, pos.y + this.pos.y, this.width, this.height);
 
+        //clamp to 0 - without this, a fillWidth that goes negative flips fillRect's draw direction,
+        //which reads as the bar "refilling" with a few px of color right before it should read empty
+        const percent = Math.max(0, Math.min(1, this._currentStatus / this.maxStatus));
+        const fillWidth = Math.max(0, (this.width * percent) - (this.padding * 2));
+
         ctx.fillStyle = this.color;
-        ctx.fillRect(pos.x + this.pos.x + this.padding, pos.y + this.pos.y + this.padding, (this.width / (this.maxStatus / this._currentStatus)) - (this.padding * 2), this.height - (this.padding * 2));
+        ctx.fillRect(pos.x + this.pos.x + this.padding, pos.y + this.pos.y + this.padding, fillWidth, this.height - (this.padding * 2));
     }
 }
 
