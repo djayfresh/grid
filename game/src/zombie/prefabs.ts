@@ -1,10 +1,14 @@
-import { Prefab, Rectangle, IRectangle, GameObjectAttributes, Wall } from '../shared/objects';
-import { IPoint, Physics } from '../shared/physics';
+import { Prefab, Rectangle, GameObjectAttributes, Wall } from '../shared/objects';
+import { IPoint } from '../shared/physics';
 import { Colors } from '../shared/colors';
 
 export class House extends Prefab {
     constructor(id: number, pos: IPoint, bounds: IPoint){
         super(id, pos, bounds);
+
+        //the whole footprint is held, so a player who enters through the door can walk the
+        //interior freely - the actual walls (Blocking, below) are what stop them, not this
+        this.attributes.push(GameObjectAttributes.Holding);
 
         this.buildHouse();
     }
@@ -25,9 +29,7 @@ export class House extends Prefab {
         ];
 
         walls.forEach(wall => {
-            const wallRect = new Wall(2, Colors.Black, { x: wall.x, y: wall.y }, { x: wall.w, y: wall.h }, 20);
-            wallRect.attributes.push(GameObjectAttributes.Blocking);
-            this.add(wallRect);
+            this.add(new Wall(2, Colors.Black, { x: wall.x, y: wall.y }, { x: wall.w, y: wall.h }));
         });
     }
 }

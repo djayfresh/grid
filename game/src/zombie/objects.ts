@@ -1,4 +1,4 @@
-import { Rectangle, RenderObject, GameObjectAttributes, StatusBar, Wall, TiledImage, IDestroyable, IDestroyer } from '../shared/objects';
+import { Rectangle, RenderObject, GameObjectAttributes, StatusBar, TiledImage, IDestroyable, IDestroyer } from '../shared/objects';
 import { ID_CONST, Debug, KeyboardManager, KEY_CONST, Mouse } from '../shared/utility';
 import { World } from '../shared/world';
 import { ZombieWorld } from './world';
@@ -324,6 +324,9 @@ export class Spawner extends Rectangle implements IDestroyable {
 export class SpawnerHouse extends Spawner {
     constructor(pos: IPoint, options?: Partial<Spawner>){
         super(Colors.SpawnerRoof, pos, options, {x: 40, y: 40});
+
+        //the base Spawner's bar position sits under where the roof band is drawn below - move it clear
+        this.statusBar.pos = new Point(5, 12);
     }
 
     protected computeSpawnPoint(): Point {
@@ -332,13 +335,19 @@ export class SpawnerHouse extends Spawner {
     }
 
     draw(ctx: CanvasRenderingContext2D, world: World) {
-        super.draw(ctx, world);
+        //body + decorations first, then the health bar last so nothing paints over it
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
 
         ctx.fillStyle = Colors.Environment;
         ctx.fillRect(this.pos.x, this.pos.y, this.width, 8); //roof band
 
         ctx.fillStyle = Colors.Wall;
         ctx.fillRect(this.pos.x + (this.width / 2) - 4, this.pos.y + this.height - 12, 8, 12); //door
+
+        if (this.health < this.totalHealth){
+            this.statusBar.draw(ctx, world);
+        }
     }
 }
 
@@ -357,21 +366,36 @@ export class Path extends Rectangle {
     }
 }
 
-//destructible obstacle blocking a route until shot down
-export class Barricade extends Wall {
+//destructible obstacle blocking a route until shot down. Doesn't extend Wall - Wall is for plain,
+//indestructible obstacles (see House); this is the one place that actually wants IDestroyable
+export class Barricade extends Rectangle implements IDestroyable {
+    totalHealth: number;
+    health: number;
+    statusBar: StatusBar;
+
     constructor(pos: IPoint, bounds: IPoint, totalHealth: number){
-        super(ID_CONST.Barricade, Colors.Barricade, pos, bounds, totalHealth);
+        super(ID_CONST.Barricade, Colors.Barricade, pos, bounds);
+
+        this.totalHealth = totalHealth;
+        this.health = totalHealth;
         this.attributes.push(GameObjectAttributes.Blocking);
+
+        this.statusBar = new StatusBar(Colors.Environment, {x: 0, y: 0}, {x: 20, y: 4}, totalHealth, totalHealth);
+        this.statusBar._attachedTo = this;
     }
 
     draw(ctx: CanvasRenderingContext2D, world: World){
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
+        super.draw(ctx, world);
 
-        //show damage immediately, unlike Wall's 75% threshold - a barricade should read as responsive right away
+        //show damage immediately - a barricade should read as responsive right away
         if (this.health < this.totalHealth) {
             this.statusBar.draw(ctx, world);
         }
+    }
+
+    update(dt: number, world: World){
+        this.statusBar._currentStatus = this.health;
+        this.statusBar.update(dt, world);
     }
 }
 

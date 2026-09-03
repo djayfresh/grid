@@ -149,12 +149,14 @@ export class ZombieWorld extends World {
             }));
         }
 
-        //homes + driveways, tucked against the west boundary column so their door always faces a road
+        //homes + driveways, tucked against the west boundary column so their door always faces a road.
+        //the path overlaps a few px into the house footprint (both are Holding) so there's no strict-
+        //inequality gap at the threshold that could strand the player mid-doorway
         this.add(new House(ID_CONST.House, {x: 100, y: 50}, {x: 200, y: 200}));
-        this.add(new Path(ID_CONST.Path, {x: 0, y: 90}, {x: 100, y: STREET_WIDTH}));
+        this.add(new Path(ID_CONST.Path, {x: 0, y: 90}, {x: 110, y: STREET_WIDTH}));
 
         this.add(new House(ID_CONST.House, {x: 100, y: 310}, {x: 200, y: 200}));
-        this.add(new Path(ID_CONST.Path, {x: 0, y: 350}, {x: 100, y: STREET_WIDTH}));
+        this.add(new Path(ID_CONST.Path, {x: 0, y: 350}, {x: 110, y: STREET_WIDTH}));
 
         //real world boundary - a plain, non-rendering box (CanvasBounds was a permanent no-op, see CLAUDE.md/plan notes)
         const boundsPos = {x: -60, y: -60};

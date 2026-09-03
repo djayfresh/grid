@@ -535,31 +535,12 @@ export class StatusBar extends Rectangle {
     }
 }
 
-export class Wall extends Rectangle implements IDestroyable {
-    totalHealth: number;
-    health: number;
-    statusBar: StatusBar;
-
-    constructor(id: number, color: string, pos: IPoint, bounds: IPoint, totalHealth: number){
+//a plain, indestructible blocking obstacle - always Blocking, no health. For a wall that can be
+//shot down, don't extend this - implement IDestroyable directly (see Barricade)
+export class Wall extends Rectangle {
+    constructor(id: number, color: string, pos: IPoint, bounds: IPoint){
         super(id, color, pos, bounds);
 
-        this.totalHealth = totalHealth;
-        this.health = totalHealth;
-
-        this.statusBar = new StatusBar(Colors.Environment, {x: 0, y: 0}, {x: 20, y: 4}, totalHealth, totalHealth);
-        this.statusBar._attachedTo = this;
-    }
-    
-    draw(ctx: CanvasRenderingContext2D, world: World){
-        super.draw(ctx, world);
-
-        if (this.health < (this.totalHealth * 0.75)) {
-            this.statusBar.draw(ctx, world);
-        }
-    }
-
-    update(dt: number, world: World){
-        this.statusBar._currentStatus = this.health;
-        this.statusBar.update(dt, world);
+        this.attributes.push(GameObjectAttributes.Blocking);
     }
 }
