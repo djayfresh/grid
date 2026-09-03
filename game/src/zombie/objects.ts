@@ -265,8 +265,14 @@ export class Enemy extends Rectangle implements IDestroyable {
             //walking through walls/barricades - grass, roads, driveways and house interiors aren't
             //blocking, so those keep passing through untouched
             if (!this._moveIfOpen(world, targetX, targetY)) {
-                if (!this._moveIfOpen(world, this.pos.x, targetY)) {
-                    this._moveIfOpen(world, targetX, this.pos.y);
+                //full speed along the open axis - reusing norm's sign (already computed above) rather
+                //than its diagonal-reduced component, which used to leave wall-hugging zombies crawling
+                //at a fraction of their normal speed
+                const slideX = this.pos.x + (Math.sign(norm.x) * this.speed * dt);
+                const slideY = this.pos.y + (Math.sign(norm.y) * this.speed * dt);
+
+                if (!this._moveIfOpen(world, this.pos.x, slideY)) {
+                    this._moveIfOpen(world, slideX, this.pos.y);
                 }
             }
         }
