@@ -41,7 +41,8 @@ export function drawFace(ctx: CanvasRenderingContext2D, shape: Shape, fill: Fill
   const lw = Math.max(2, r * 0.18);
   ctx.save();
   ctx.lineJoin = 'round';
-  shapePath(ctx, shape, cx, cy + (shape === 'triangle' ? r * 0.12 : 0), r);
+  const path = () => shapePath(ctx, shape, cx, cy + (shape === 'triangle' ? r * 0.12 : 0), r);
+  path();
   if (fill === 'solid') {
     ctx.fillStyle = color;
     ctx.shadowColor = color;
@@ -65,6 +66,8 @@ export function drawFace(ctx: CanvasRenderingContext2D, shape: Shape, fill: Fill
     }
     ctx.stroke();
     ctx.restore();
+    // The stripes replaced the current path: the outline needs the shape again.
+    path();
     ctx.strokeStyle = color;
     ctx.lineWidth = lw * 0.7;
     ctx.stroke();
