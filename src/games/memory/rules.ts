@@ -42,19 +42,29 @@ export interface Memory {
   flip(i: number): FlipOutcome;
   /** Turns a missed pair back face down. */
   settle(): void;
+  /** The board as plain data, for the save: createMemory(seed, saved) carries on from it. */
+  save(): SavedMemory;
 }
 
-export function createMemory(seed: number): Memory {
+export interface SavedMemory {
+  tiles: Tile[];
+  points: number;
+  pairs: number;
+  /** A tile turned up and waiting for its partner. */
+  open: number[];
+}
+
+export function createMemory(seed: number, saved?: SavedMemory): Memory {
   const rng = createRng(seed);
   const faces = Array.from({ length: PAIRS * 2 }, (_, i) => i % PAIRS);
   for (let i = faces.length - 1; i > 0; i--) {
     const j = rng.int(0, i + 1);
     [faces[i], faces[j]] = [faces[j], faces[i]];
   }
-  const tiles: Tile[] = faces.map((f) => ({ face: f, state: 'down' }));
-  let points = START_POINTS;
-  let pairs = 0;
-  let open: number[] = [];
+  const tiles: Tile[] = saved ? structuredClone(saved.tiles) : faces.map((f) => ({ face: f, state: 'down' }));
+  let points = saved?.points ?? START_POINTS;
+  let pairs = saved?.pairs ?? 0;
+  let open: number[] = saved ? [...saved.open] : [];
 
   return {
     tiles,
@@ -87,6 +97,12 @@ export function createMemory(seed: number): Memory {
       }
       points -= MISS_POINTS * 2;
       return 'miss';
+    },
+    save() {
+      // A missed pair waiting to turn back is saved turned back: the miss is already paid.
+      const out = structuredClone(tiles);
+      if (open.length === 2) for (const i of open) out[i].state = 'down';
+      return { tiles: out, points, pairs, open: open.length === 2 ? [] : [...open] };
     },
     settle() {
       if (open.length !== 2) return;

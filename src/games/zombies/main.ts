@@ -6,7 +6,7 @@ import { backdrop, DARK as NIGHT, PIECE, roundRect, withAlpha } from '../../arca
 import { gameById } from '../../site';
 import { bar, drawBullet, drawPlayer, drawTown, drawZombie, ZC } from './art';
 import { levelProgress } from './leveling';
-import { createGame, type Controls, type Game, type GameEvent, MAX_HEALTH, WEAPONS } from './rules';
+import { createGame, type Controls, type Game, type GameEvent, MAX_HEALTH, type SavedGame, WEAPONS } from './rules';
 
 // Zombie Grid's page: the rules (rules.ts, world.ts, leveling.ts) under a
 // camera that follows you around the town. Desktop: WASD or the arrows to
@@ -339,8 +339,8 @@ function createRound(ctx: CanvasRenderingContext2D, input: Input): Round {
   }
 
   return {
-    reset(seed = randomSeed()) {
-      g = createGame(seed);
+    reset(seed = randomSeed(), saved?: unknown) {
+      g = createGame(seed, saved as SavedGame | undefined);
       particles = [];
       floaters = [];
       shake = 0;
@@ -396,6 +396,11 @@ function createRound(ctx: CanvasRenderingContext2D, input: Input): Round {
       if (Math.hypot(x - b.x, y - b.y) <= b.r + 10) switchWeapon();
     },
     hud: () => `R${g.round} · ${g.score} pts`,
+    // A game already lost (the last bite, before the card) isn't worth keeping.
+    save: () => (g.phase === 'over' ? null : g.save()),
+    progress: () => `Round ${g.round}, ${g.score} points, ${g.player.health} health`,
+    // Zombie scores every kill as it goes, so a game given up still counts.
+    forfeit: () => g.score,
     get result() {
       return result;
     },

@@ -4,7 +4,7 @@ import { arcadePage, type Result, type Round } from '../../arcade/page';
 import { backdrop, board, easeOut, INK, PIECE, roundRect, withAlpha } from '../../arcade/theme';
 import { drawBonus, drawEnemy, drawFlag, drawPlayer } from './art';
 import { gameById } from '../../site';
-import { BOARDS, type Board, createRun, type Outcome, type Run, SIZE } from './rules';
+import { BOARDS, type Board, createRun, type Outcome, type Run, type SavedRun, SIZE } from './rules';
 
 // Grid Run's page: the rules (rules.ts) on the arcade's board. Tap a cell next
 // to you, or use the arrow keys (diagonals on Q, E, Z and C, or the numpad).
@@ -85,8 +85,8 @@ function createRound(ctx: CanvasRenderingContext2D): Round {
   });
 
   return {
-    reset(seed = randomSeed()) {
-      run = createRun(seed);
+    reset(seed = randomSeed(), saved?: unknown) {
+      run = createRun(seed, saved as SavedRun | undefined);
       shown = run.board;
       from = { ...run.board.player };
       banner = BANNER;
@@ -113,6 +113,8 @@ function createRound(ctx: CanvasRenderingContext2D): Round {
       step(cx - run.board.player.x, cy - run.board.player.y);
     },
     hud: () => `${run.moves} moves · ${Math.min(run.number, BOARDS)}/${BOARDS}`,
+    save: () => run.save(),
+    progress: () => `Board ${run.number} of ${BOARDS}, ${run.moves} ${run.moves === 1 ? 'move' : 'moves'} so far`,
     get result() {
       return result;
     },

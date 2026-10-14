@@ -4,7 +4,7 @@ import { arcadePage, type Input, type Result, type Round } from '../../arcade/pa
 import { backdrop, board, withAlpha } from '../../arcade/theme';
 import { gameById } from '../../site';
 import { drawBack, drawFront } from './art';
-import { createMemory, type FlipOutcome, type Memory, PAIRS, SIZE, START_POINTS } from './rules';
+import { createMemory, type FlipOutcome, type Memory, PAIRS, type SavedMemory, SIZE, START_POINTS } from './rules';
 
 // Memory Grid's page: the rules (rules.ts) on the arcade's board. Tap a tile to
 // turn it over; two that don't match stay up long enough to remember, then
@@ -74,9 +74,10 @@ function createRound(ctx: CanvasRenderingContext2D, input: Input): Round {
   });
 
   return {
-    reset(seed = randomSeed()) {
-      memory = createMemory(seed);
-      turn = memory.tiles.map(() => 0);
+    reset(seed = randomSeed(), saved?: unknown) {
+      memory = createMemory(seed, saved as SavedMemory | undefined);
+      // A saved board comes back as it was, not flipping into place.
+      turn = memory.tiles.map((tl) => (tl.state === 'down' ? 0 : 1));
       pop = memory.tiles.map(() => 0);
       look = 0;
       cursor = -1;
@@ -108,6 +109,8 @@ function createRound(ctx: CanvasRenderingContext2D, input: Input): Round {
       flip(cy * SIZE + cx);
     },
     hud: () => `${memory.points} pts · ${memory.pairs}/${PAIRS} pairs`,
+    save: () => memory.save(),
+    progress: () => `${memory.pairs} of ${PAIRS} pairs found, ${memory.points} points`,
     get result() {
       return result;
     },

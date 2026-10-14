@@ -292,3 +292,20 @@ describe('seeds', () => {
     expect(new Set(a).size).toBeGreaterThan(1);
   });
 });
+
+describe('a saved game', () => {
+  it('carries on exactly as the game it was saved from', () => {
+    const a = started(7);
+    const walk: Controls = { move: { x: 1, y: 0 }, fire: true, aim: null };
+    for (let i = 0; i < 60 * 8; i++) a.update(STEP, walk);
+    // Through JSON, the way the save keeps it.
+    const b = createGame(1, JSON.parse(JSON.stringify(a.save())));
+    for (let i = 0; i < 60 * 12; i++) {
+      a.update(STEP, i % 120 < 60 ? walk : idle);
+      b.update(STEP, i % 120 < 60 ? walk : idle);
+    }
+    expect(b.save()).toEqual(a.save());
+    expect(b.score).toBe(a.score);
+    expect(b.enemies.length).toBe(a.enemies.length);
+  });
+});

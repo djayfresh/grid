@@ -97,3 +97,19 @@ describe('Grid Run', () => {
     expect(createRun(5).board).toEqual(createRun(5).board);
   });
 });
+
+describe('a saved Grid Run', () => {
+  it('carries on with the same boards still to come', () => {
+    const a = createRun(13);
+    for (let i = 0; i < 40 && !a.over; i++) a.step(...nextStep(a.board));
+    const b = createRun(99, JSON.parse(JSON.stringify(a.save())));
+    expect(b.number).toBe(a.number);
+    expect(b.moves).toBe(a.moves);
+    expect(b.board).toEqual(a.board);
+    for (let i = 0; i < 60 && !a.over; i++) {
+      const s = nextStep(a.board);
+      expect(b.step(...s)).toBe(a.step(...s));
+      expect(b.board).toEqual(a.board);
+    }
+  });
+});

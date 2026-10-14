@@ -1,4 +1,4 @@
-import { type DialogHandle, openDialog, pauseMenu, shareButton, topBar } from '@djayfresh/engine-ui';
+import { type DialogAction, type DialogHandle, openDialog, pauseMenu, shareButton, topBar } from '@djayfresh/engine-ui';
 import { createLoop } from '../loop';
 import { type ArcadeGame, GAMES, gameUrl, HOME_PATH, TITLE } from '../site';
 import { createStick, type Stick } from './joystick';
@@ -32,8 +32,14 @@ export interface Result {
 }
 
 export interface Round {
-  /** A fresh game. */
-  reset(seed?: number): void;
+  /** A fresh game, or with `saved` (from save()) the one that was left. */
+  reset(seed?: number, saved?: unknown): void;
+  /** The game in progress as plain data, kept when it's paused or left. */
+  save?(): unknown;
+  /** The saved game in a line, for the Continue card: "Round 3, 120 points". */
+  progress?(): string;
+  /** What a game in progress scores if the player starts over instead; none if it only counts at the end. */
+  forfeit?(): number | undefined;
   /** One fixed step, in seconds. */
   update(step: number): void;
   render(): void;
@@ -142,10 +148,38 @@ export function arcadePage(spec: PageSpec): Page {
     },
   );
 
+  // A game in progress is kept in the save whenever it's paused or left (the
+  // pause menu pauses on its own when the tab goes away), the way Space Pirates
+  // keeps a run: the title card then offers Continue. Each game says what it is
+  // (Round.save); a finished game or a new one takes it out.
+  const runStore = window.playallday?.storage?.(game.slug);
+  const RUN_KEY = 'run';
+  const RUN_VERSION = 1;
+  function keepRun(): void {
+    if (!round.save || round.result || !(loop.running || pause.paused)) return;
+    try {
+      const data = round.save();
+      if (data) runStore?.setJSON(RUN_KEY, { v: RUN_VERSION, data });
+    } catch {
+      // No room or no storage: the game just doesn't carry over.
+    }
+  }
+  function dropRun(): void {
+    runStore?.remove(RUN_KEY);
+  }
+  function savedRun(): unknown {
+    const run = runStore?.getJSON<{ v?: number; data?: unknown } | null>(RUN_KEY, null);
+    return run && run.v === RUN_VERSION && run.data ? run.data : null;
+  }
+  window.addEventListener('pagehide', keepRun);
+
   const pause = pauseMenu({
     note: () => round.hud(),
     canPause: () => loop.running,
-    onPause: () => loop.stop(),
+    onPause: () => {
+      loop.stop();
+      keepRun();
+    },
     onResume: () => loop.start(),
     share: { url: gameUrl(game), title: game.title, text: game.description },
     items: [
@@ -173,7 +207,7 @@ export function arcadePage(spec: PageSpec): Page {
     cardBest.textContent = best === null ? '' : `Best: ${best}${unit}`;
   }
 
-  function showCard(heading: string, text: string, button: string): void {
+  function showCard(heading: string, text: string, button: string, onPress = play, more: DialogAction[] = []): void {
     cardText.textContent = text;
     showBest();
     card?.close();
@@ -181,7 +215,8 @@ export function arcadePage(spec: PageSpec): Page {
       title: heading,
       body: [cardText, cardBest, links],
       actions: [
-        { label: button, primary: true, keepOpen: true, onPress: play },
+        { label: button, primary: true, keepOpen: true, onPress },
+        ...more,
         { label: 'Main menu', onPress: () => location.assign(HOME_PATH) },
       ],
       onDismiss: 'none',
@@ -190,6 +225,7 @@ export function arcadePage(spec: PageSpec): Page {
   }
 
   function play(): void {
+    dropRun();
     card?.close();
     pause.resume();
     round.reset();
@@ -199,10 +235,29 @@ export function arcadePage(spec: PageSpec): Page {
     pauseButton.hidden = false;
   }
 
+  /** Back into the saved game, already set up behind the card. */
+  function carryOn(): void {
+    card?.close();
+    fit();
+    loop.start();
+    pauseButton.hidden = false;
+  }
+
+  /** Starting over on a saved game: one that scores as it goes counts what it had. */
+  function startOver(): void {
+    const score = round.forfeit?.();
+    if (score !== undefined) {
+      scores.ended(false);
+      scores.record(score);
+    }
+    play();
+  }
+
   function finish(): void {
     loop.stop();
     pauseButton.hidden = true;
     const result = round.result!;
+    dropRun();
     scores.ended(result.success);
     const beat = result.score === undefined ? false : scores.record(result.score);
     draw();
@@ -260,6 +315,21 @@ export function arcadePage(spec: PageSpec): Page {
     fit();
     round.reset();
     backdrop(ctx, width, height, game.accent);
+    const saved = savedRun();
+    if (saved) {
+      try {
+        round.reset(undefined, saved);
+        fit();
+        draw();
+        showCard(game.title, `Game in progress: ${round.progress?.() ?? 'pick up where you left off'}.`, 'Continue', carryOn, [{ label: 'New game', keepOpen: true, onPress: startOver }]);
+        return;
+      } catch {
+        // A save this version can't read: start fresh.
+        dropRun();
+        round.reset();
+        fit();
+      }
+    }
     draw();
     showCard(game.title, spec.intro, 'Play');
   });

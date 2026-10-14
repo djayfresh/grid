@@ -53,3 +53,29 @@ describe('Memory Grid', () => {
     expect(createMemory(9).tiles).toEqual(createMemory(9).tiles);
   });
 });
+
+describe('a saved Memory Grid', () => {
+  it('keeps the board, the points and a tile turned up', () => {
+    const a = createMemory(5);
+    a.flip(0);
+    a.flip(pairOf(a, 0));
+    a.flip(1);
+    const b = createMemory(77, JSON.parse(JSON.stringify(a.save())));
+    expect(b.tiles).toEqual(a.tiles);
+    expect(b.points).toBe(a.points);
+    expect(b.pairs).toBe(1);
+    expect(b.flip(pairOf(b, 1))).toBe(a.flip(pairOf(a, 1)));
+  });
+
+  it('turns a missed pair back down in the save', () => {
+    const a = createMemory(6);
+    a.flip(0);
+    const j = notPairOf(a, 0);
+    a.flip(j);
+    const b = createMemory(1, a.save());
+    expect(b.tiles[0].state).toBe('down');
+    expect(b.tiles[j].state).toBe('down');
+    expect(b.waiting).toBe(false);
+    expect(b.points).toBe(a.points);
+  });
+});

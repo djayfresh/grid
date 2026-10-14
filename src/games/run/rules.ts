@@ -1,4 +1,5 @@
-import { createRng, type Rng } from '@djayfresh/engine-kit';
+import type { Rng } from '@djayfresh/engine-kit';
+import { countedRng } from '../../arcade/rng';
 
 // Grid Run's rules, as the 2020 game had them (legacy/game/src/grid/): a 6x6
 // board with you, a flag and as many red squares as the board's number. Step to
@@ -89,14 +90,24 @@ export interface Run {
   readonly over: boolean;
   /** Step by dx, dy (each -1, 0 or 1). */
   step(dx: number, dy: number): Outcome;
+  /** The run as plain data, for the save: createRun(seed, saved) carries on from it. */
+  save(): SavedRun;
 }
 
-export function createRun(seed: number): Run {
-  const rng = createRng(seed);
-  let number = 1;
-  let moves = 0;
+export interface SavedRun {
+  seed: number;
+  draws: number;
+  number: number;
+  moves: number;
+  board: Board;
+}
+
+export function createRun(seed: number, saved?: SavedRun): Run {
+  const rng = countedRng(saved?.seed ?? seed, saved?.draws ?? 0);
+  let number = saved?.number ?? 1;
+  let moves = saved?.moves ?? 0;
   let over = false;
-  let board = deal(rng, number);
+  let board = saved ? structuredClone(saved.board) : deal(rng, number);
 
   return {
     get board() {
@@ -111,6 +122,7 @@ export function createRun(seed: number): Run {
     get over() {
       return over;
     },
+    save: () => ({ seed: saved?.seed ?? seed, draws: rng.draws, number, moves, board: structuredClone(board) }),
     step(dx, dy) {
       if (over || (!dx && !dy) || Math.abs(dx) > 1 || Math.abs(dy) > 1) return 'blocked';
       const x = board.player.x + dx;

@@ -71,6 +71,15 @@ Memory Grid's pairs differ by shape and fill as well as colour, so it plays
 without telling colours apart. Keep it that way: no piece in any game should
 be told apart by colour alone.
 
+A game in progress is kept, like a Space Pirates run: the page saves
+`Round.save()` to the game's `run` key whenever it's paused, the tab goes away
+or the page closes, and the title card then offers Continue, New game and Main
+menu. Each game's rules have `save()` and take the saved data back in their
+`create*` (random numbers through `src/arcade/rng.ts`'s `countedRng`, so a
+restored game deals what the original would have). A finished game or a new
+one drops it; New game on a Zombie save scores what it had (`forfeit`). Bump
+`RUN_VERSION` in `src/arcade/page.ts` when a saved shape changes.
+
 `src/arcade/score.ts` keeps each game's best and what the board last took, and
 sends a signed-out best when the player signs in. Each game's board shape (the
 metric, which way it wins, how it reads) is its `leaderboard` entry in the

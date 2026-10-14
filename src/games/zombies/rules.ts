@@ -1,4 +1,4 @@
-import { createRng, type Rng } from '@djayfresh/engine-kit';
+import { countedRng } from '../../arcade/rng';
 import { addXp, newStats, perks, type Stats } from './leveling';
 import { enemyBlockers, generateMap, overlaps, PLAYER_SIZE, type Rect, slide, type TownMap } from './world';
 
@@ -121,6 +121,26 @@ export interface Game {
   award(amount: number, events?: GameEvent[]): void;
   /** The target auto-fire would pick right now, or null. */
   autoTarget(): { x: number; y: number } | null;
+  /** The game as plain data, for the save: createGame(seed, saved) carries on from it. */
+  save(): SavedGame;
+}
+
+/** Everything a game in progress is, with how far its random numbers have got. */
+export interface SavedGame {
+  seed: number;
+  draws: number;
+  nextId: number;
+  round: number;
+  score: number;
+  stats: Stats;
+  map: TownMap;
+  player: Player;
+  enemies: Enemy[];
+  bullets: Bullet[];
+  phase: Phase;
+  banner: number;
+  time: number;
+  kills: number;
 }
 
 const center = (r: Rect) => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
@@ -129,15 +149,16 @@ function newPlayer(map: TownMap, weapon = 0): Player {
   return { ...map.start, w: PLAYER_SIZE, h: PLAYER_SIZE, health: MAX_HEALTH, weapon, cooldown: 0, vx: 0, vy: 0, aimX: 1, aimY: 0, flash: 0 };
 }
 
-export function createGame(seed: number): Game {
-  const rng: Rng = createRng(seed);
-  let nextId = 1000;
+export function createGame(seed: number, saved?: SavedGame): Game {
+  const s0 = saved ? structuredClone(saved) : null;
+  const rng = countedRng(s0?.seed ?? seed, s0?.draws ?? 0);
+  let nextId = s0?.nextId ?? 1000;
   const g: Game = {
-    seed,
-    round: 1,
-    score: 0,
-    stats: newStats(),
-    map: generateMap(1, rng),
+    seed: s0?.seed ?? seed,
+    round: s0?.round ?? 1,
+    score: s0?.score ?? 0,
+    stats: s0?.stats ?? newStats(),
+    map: s0?.map ?? generateMap(1, rng),
     player: undefined as unknown as Player,
     enemies: [],
     bullets: [],
@@ -156,8 +177,18 @@ export function createGame(seed: number): Game {
       if (gained > 0) events?.push({ type: 'level', level: g.stats.level + 1 });
     },
     autoTarget,
+    save: () => structuredClone({ seed: g.seed, draws: rng.draws, nextId, round: g.round, score: g.score, stats: g.stats, map: g.map, player: g.player, enemies: g.enemies, bullets: g.bullets, phase: g.phase, banner: g.banner, time: g.time, kills: g.kills }),
   };
   g.player = newPlayer(g.map);
+  if (s0) {
+    g.player = s0.player;
+    g.enemies = s0.enemies;
+    g.bullets = s0.bullets;
+    g.phase = s0.phase;
+    g.banner = s0.banner;
+    g.time = s0.time;
+    g.kills = s0.kills;
+  }
 
   function nextRound(events: GameEvent[]): void {
     g.round += 1;
