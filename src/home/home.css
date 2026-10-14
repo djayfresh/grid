@@ -1,4 +1,4 @@
-/* The Grid's home: a hero over a drifting grid, the cabinets, the 2020 plaque. */
+/* The main menu: a cabinet per game, under the top bar. */
 
 body.home {
   display: block;
@@ -13,46 +13,11 @@ body.home {
   padding: 0 max(16px, env(safe-area-inset-left)) max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right));
 }
 
-.hero {
-  position: relative;
-  overflow: hidden;
-  margin: 8px 0 24px;
-  padding: 44px 24px 40px;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  text-align: center;
-}
-
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  border-radius: 0;
-  z-index: -1;
-}
-
-.hero h1 {
-  margin: 0;
-  font-size: clamp(2.6rem, 9vw, 4.6rem);
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  text-shadow: 0 0 28px color-mix(in srgb, #7c8cff 55%, transparent);
-}
-
-.hero p {
-  margin: 12px 0 0;
-  color: var(--muted);
-  font-size: 1.1rem;
-}
-
 .cabinets {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 18px;
-  margin: 0;
+  margin: 12px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -128,69 +93,6 @@ body.home {
   border-radius: 999px;
 }
 
-.plaque {
-  margin: 28px auto 0;
-  max-width: 520px;
-  padding: 18px 22px;
-  text-align: center;
-  background: linear-gradient(180deg, #2a2312, #17130a);
-  border: 1px solid #6e5a2a;
-  border-radius: 14px;
-  box-shadow: inset 0 1px 0 rgba(255, 220, 140, 0.18);
-}
-
-.plaque h2 {
-  margin: 0 0 10px;
-  font-size: 0.85rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #e6c46a;
-}
-
-.plaque ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
-}
-
-.plaque li {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto;
-  gap: 12px;
-  align-items: baseline;
-  padding: 4px 0;
-  border-bottom: 1px dashed rgba(230, 196, 106, 0.2);
-}
-
-.plaque .pg {
-  text-align: left;
-  color: var(--accent);
-}
-
-.plaque .pn {
-  letter-spacing: 0.2em;
-  color: #f4e2b0;
-}
-
-.plaque .ps {
-  min-width: 3ch;
-  text-align: right;
-  font-weight: 700;
-  color: #f4e2b0;
-}
-
-.plaque .pb {
-  font-size: 0.75rem;
-  color: var(--accent);
-}
-
-.plaque p {
-  margin: 12px 0 0;
-  font-size: 0.85rem;
-  color: #b9a678;
-}
-
 .home canvas {
   touch-action: auto;
 }
@@ -198,4 +100,14 @@ body.home {
 /* On the day page the bright accents are too pale to read as text. */
 :root[data-theme="light"] .cabinet h2 {
   color: color-mix(in srgb, var(--accent) 55%, #10132a);
+}
+
+/* The page's name for screen readers: the top bar already says Main menu. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

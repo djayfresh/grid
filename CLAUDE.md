@@ -1,10 +1,13 @@
 # The Grid (`grid`)
 
-An arcade on playallday.games, like the escape room's mini-games: a home at
-`/grid/` and three games, each a game of its own on the hub with its own folder,
-card and leaderboard: Grid Run (`grid-run`), Memory Grid (`grid-memory`) and
-Zombie Grid (`grid-zombies`). All four are built from this repo under the
-`/grid/` base and deployed each to its own folder (`ownFolders`). The
+Three games on playallday.games, like the escape room's mini-games, each a
+game of its own on the hub with its own folder, card and leaderboard: Grid Run
+(`grid-run`), Memory Grid (`grid-memory`) and Zombie Grid (`grid-zombies`), and
+a main menu at `/grid/` linking them, which has no hub card (`"card": false` in
+the hub's games.json). The Grid as a project, its 2020 story and high scores,
+lives on djayfresh.com (`/project/grid/`), not here. All four pages are built
+from this repo under the `/grid/` base and deployed each to its own folder
+(`ownFolders`). The
 platform around it — the hub, the shared browser scripts at `/shared/`, the
 registry, the backend, the infrastructure — is the **`playallday` repo**
 (`../playallday`). Read its README before changing anything about how this game
@@ -39,8 +42,8 @@ All the games share one origin, so a mistake here leaks into another game:
   custom dimensions, so the games share one event list.
 - Every `window.playallday` call is optional-chained. The scripts are absent on a
   bare dev server and can be blocked in a browser; the game must still play.
-- `public/hub.js` is loaded by the hub itself. Its file name must not change, and
-  it must bring no CSS of its own — it uses the hub's classes so it follows the
+- `public/<slug>/hub.js` (one per game, sharing `public/hub-best.js`) is loaded
+  by the hub itself. The file names must not change, and they must bring no CSS of their own — it uses the hub's classes so it follows the
   hub's theme.
 
 ## Where things are

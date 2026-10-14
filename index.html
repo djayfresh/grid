@@ -5,18 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0a0c18" />
     <!-- The shared platform scripts are added by vite.config.ts. -->
-    <title>The Grid · Play All Day</title>
+    <title>Grid games · Play All Day</title>
   </head>
   <body class="home">
-    <!-- The top bar and the cabinets are built by src/home/main.ts. -->
+    <!-- The main menu: the top bar and a cabinet per game, built by src/home/main.ts. -->
     <main class="arcade">
-      <header class="hero">
-        <canvas class="hero-grid" aria-hidden="true"></canvas>
-        <h1>The Grid</h1>
-        <p>Three games on one grid. Pick a cabinet.</p>
-      </header>
+      <h1 class="visually-hidden">Grid games: main menu</h1>
       <ul class="cabinets"></ul>
-      <aside class="plaque" aria-label="High scores from 2020"></aside>
     </main>
     <script type="module" src="/src/home/main.ts"></script>
   </body>

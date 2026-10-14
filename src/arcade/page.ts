@@ -1,6 +1,6 @@
 import { type DialogAction, type DialogHandle, openDialog, pauseMenu, shareButton, topBar } from '@djayfresh/engine-ui';
 import { createLoop } from '../loop';
-import { type ArcadeGame, GAMES, gameUrl, HOME_PATH, TITLE } from '../site';
+import { type ArcadeGame, GAMES, gameUrl, HOME_PATH, MENU } from '../site';
 import { createStick, type Stick } from './joystick';
 import { initMode, modeButton, toggleMode } from './mode';
 import { createScores, type Scores } from './score';
@@ -172,13 +172,21 @@ export function arcadePage(spec: PageSpec): Page {
     return run && run.v === RUN_VERSION && run.data ? run.data : null;
   }
   window.addEventListener('pagehide', keepRun);
+  // A phone can drop a page in the background without a pagehide; the pause
+  // menu pauses (and so saves) on the way out, and this catches a game that
+  // can't pause just then.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') keepRun();
+  });
 
   const pause = pauseMenu({
     note: () => round.hud(),
     canPause: () => loop.running,
     onPause: () => {
-      loop.stop();
+      // Saved first: keepRun only keeps a game that's running or paused, and
+      // the menu counts as paused only once this returns.
       keepRun();
+      loop.stop();
     },
     onResume: () => loop.start(),
     share: { url: gameUrl(game), title: game.title, text: game.description },
@@ -191,7 +199,7 @@ export function arcadePage(spec: PageSpec): Page {
   const pauseButton = pause.button('Pause');
   pauseButton.classList.add('pause');
   pauseButton.hidden = true;
-  topBar({ back: { href: HOME_PATH, label: TITLE }, title: game.title, right: [hud, pauseButton] });
+  topBar({ back: { href: HOME_PATH, label: MENU }, title: game.title, right: [hud, pauseButton] });
 
   const cardText = document.createElement('p');
   const cardBest = document.createElement('p');

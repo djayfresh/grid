@@ -1,30 +1,23 @@
 import { shareButton, topBar } from '@djayfresh/engine-ui';
 import { initMode, modeButton } from '../arcade/mode';
-import { beats } from '../arcade/score';
-import { backdrop, INK, withAlpha } from '../arcade/theme';
+import { INK } from '../arcade/theme';
 import { attract as memoryArt } from '../games/memory/art';
 import { attract as runArt } from '../games/run/art';
 import { attract as zombiesArt } from '../games/zombies/art';
-import { type ArcadeGame, DESCRIPTION, GAME_URL, GAMES, TITLE } from '../site';
+import { type ArcadeGame, DESCRIPTION, GAME_URL, GAMES, MENU, TITLE } from '../site';
 import '../style.css';
 import './home.css';
 
-// The Grid's home, playallday.games/grid/: a cabinet per game with a moving
-// picture of it, the player's best, and the way in; under them, the high
-// scores the 2020 version kept on its own server, as a plaque.
+// The main menu, playallday.games/grid/: a cabinet per game with a moving
+// picture of it, the player's best, and the way in. Every game's Main menu
+// comes back here. It has no hub card ("card": false in the hub's games.json);
+// The Grid's story and its 2020 high scores are on djayfresh.com.
 
 type Art = (ctx: CanvasRenderingContext2D, w: number, h: number, t: number, accent: string) => void;
 const ART: Record<ArcadeGame['id'], Art> = { run: runArt, memory: memoryArt, zombies: zombiesArt };
 
-/** The 2020 server's high-score.json, as it was left. */
-const PLAQUE: { game: ArcadeGame['id']; name: string; score: number }[] = [
-  { game: 'run', name: 'DJF', score: 28 },
-  { game: 'zombies', name: 'TTT', score: 10 },
-  { game: 'memory', name: 'DJF', score: 108 },
-];
-
 initMode();
-topBar({ title: TITLE, right: [modeButton(), shareButton({ url: GAME_URL, title: TITLE, text: DESCRIPTION }, 'Share', 'link')] });
+topBar({ title: MENU, right: [modeButton(), shareButton({ url: GAME_URL, title: TITLE, text: DESCRIPTION }, 'Share', 'link')] });
 
 /** The best from a game's save, read straight from storage.js (same prefix as the game writes). */
 function best(game: ArcadeGame): number | null {
@@ -69,22 +62,7 @@ function showBests(): void {
 showBests();
 window.addEventListener('playallday:sync', showBests);
 
-const plaque = document.querySelector<HTMLElement>('.plaque')!;
-plaque.innerHTML = '<h2>High scores, 2020</h2>';
-const ol = document.createElement('ol');
-for (const row of PLAQUE) {
-  const game = GAMES.find((g) => g.id === row.game)!;
-  const li = document.createElement('li');
-  li.style.setProperty('--accent', game.accent);
-  const mine = best(game);
-  const beaten = mine !== null && beats(game.direction, mine, row.score);
-  li.innerHTML = `<span class="pg">${game.title}</span><span class="pn">${row.name}</span><span class="ps">${row.score}</span>${beaten ? '<span class="pb">beaten</span>' : ''}`;
-  ol.append(li);
-}
-plaque.append(ol, Object.assign(document.createElement('p'), { textContent: 'Kept by the 2020 version on its own little server. Sign in on playallday.games and your scores go on the leaderboards.' }));
-
-// The pictures and the hero's grid: drawn while on screen, still when motion is reduced.
-const hero = document.querySelector<HTMLCanvasElement>('.hero-grid')!;
+// The pictures: drawn every frame, still when motion is reduced.
 const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function size(c: HTMLCanvasElement): CanvasRenderingContext2D {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -100,17 +78,6 @@ function size(c: HTMLCanvasElement): CanvasRenderingContext2D {
 }
 function frame(now: number): void {
   const t = still ? 2 : now / 1000;
-  const hc = size(hero);
-  backdrop(hc, hero.clientWidth, hero.clientHeight, '#7c8cff', t);
-  // A few lit cells drifting across the hero, one per game.
-  GAMES.forEach((g, i) => {
-    const cellSize = 32;
-    const cols = Math.ceil(hero.clientWidth / cellSize);
-    const cx = Math.floor((t * 0.6 + i * 7) % cols);
-    const cy = 1 + ((i * 3) % Math.max(1, Math.floor(hero.clientHeight / cellSize) - 1));
-    hc.fillStyle = withAlpha(g.accent, 0.35);
-    hc.fillRect(cx * cellSize + 1, cy * cellSize + 1, cellSize - 1, cellSize - 1);
-  });
   for (const { canvas, game } of pictures) {
     const ctx = size(canvas);
     ctx.fillStyle = INK.bg;

@@ -1,10 +1,10 @@
-# The Grid
+# Grid games
 
-Three arcade games on one grid: race to the flag, match the pairs or hold off the zombies.
-
-An arcade on **[playallday.games](https://playallday.games)**, the way the escape
-room has its mini-games: a home at `/grid/` and three games, each a game of its
-own on the hub with its own folder, card and leaderboard:
+Grid Run, Memory Grid and Zombie Grid on **[playallday.games](https://playallday.games)**,
+the way the escape room has its mini-games: each a game of its own on the hub
+with its own folder, card and leaderboard, and a main menu at `/grid/` that
+links the three (it has no hub card of its own). The Grid as a project, with
+its 2020 story and scores, is on djayfresh.com (`/project/grid/`).
 
 | Game | Slug | Board |
 | --- | --- | --- |
@@ -34,14 +34,14 @@ Without it the game still runs, with no saves.
 | Path | What it is |
 | --- | --- |
 | `src/site.ts` | The home's slug, title and description, and `GAMES`: each game's slug, title, lines, board and colour. The pages, the deploy's folders, the head tags and the home's cabinets all read it. |
-| `index.html`, `src/home/` | The home: a cabinet per game, with its attract loop, best and Play link, and the 2020 plaque. |
+| `index.html`, `src/home/` | The main menu (`/grid/`): a cabinet per game, with its attract loop, best and Play link. No hub card (`"card": false`). |
 | `grid-run/`, `grid-memory/`, `grid-zombies/` | Each game's page (deployed to its own folder of the bucket). |
 | `src/games/<id>/` | A game: `rules.ts` (pure, tested), `art.ts` (its drawings and attract loop), `main.ts` (the round). |
 | `src/arcade/` | What the games share: `page.ts` (canvas, top bar, cards, pause menu, the move between a card and a round), `score.ts` (saves, offline scores, the board), `theme.ts` (palette and tiles), `joystick.ts` (a touch stick). |
 | `src/loop.ts` | Fixed-step update, render once a frame. |
 | `src/pages.ts`, `dev/` | Every page, and the dev pages `npm run dev` serves at `/dev/` (never built): an index, the Art page and the look mock-ups. |
 | `tests/` | The games' rules (vitest). |
-| `public/hub.js` | Each game's best on its hub card, and all three on the home's (`hubScript` in the hub's `games.json`). |
+| `public/<slug>/hub.js`, `public/hub-best.js` | Each game's best on its own hub card (`hubScript` in the hub's `games.json`); the menu has no card. |
 | `tools/deploy.ts` | The deploy: the home's folder and each game's, then a Cloudflare purge. |
 | `legacy/` | The 2020 game and its server, kept as they were. |
 | `engine/` | The engine (git submodule, `web-game-engine`). |

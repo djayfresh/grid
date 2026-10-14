@@ -1,19 +1,24 @@
-// Where the arcade is published, and what is in it. The Grid is a home at
-// playallday.games/grid/ and a set of games, each a game of its own on the hub
-// with its own folder (playallday.games/<slug>/), card, guide and leaderboard,
-// the way the escape room's mini-games are. The playallday repo's games.json
+// Where the games are published, and what they are. Three games, each a game of
+// its own on the hub with its own folder (playallday.games/<slug>/), card and
+// leaderboard, the way the escape room's mini-games are, and a main menu at
+// playallday.games/grid/ that links them, with no hub card of its own
+// ("card": false). The Grid as a project, its 2020 story and scores, is on
+// djayfresh.com (/project/grid/). The playallday repo's games.json
 // lists each one with "group": "grid". The build's pages, the deploy's folders,
 // the head tags and the home's cabinets all read GAMES, so a new game is a
 // folder in src/games/ and one entry here. Plain data: vite.config.ts and
 // tools/ import it, so it must stay free of browser and Node APIs alike.
 
-/** The home's permanent slug: its URL path and its analytics game_id. */
+/** The main menu's permanent slug: its URL path and its analytics game_id. */
 export const SLUG = 'grid';
 
-export const TITLE = 'The Grid';
+export const TITLE = 'Grid games';
+
+/** What the menu is called on the page and in every game's way back to it. */
+export const MENU = 'Main menu';
 
 /** One sentence, the same one as the home's entry in the hub's games.json. */
-export const DESCRIPTION = 'Three arcade games on one grid: race to the flag, match the pairs or hold off the zombies.';
+export const DESCRIPTION = 'The main menu for Grid Run, Memory Grid and Zombie Grid: race to the flag, match the pairs or hold off the zombies.';
 
 export const SITE_ORIGIN = 'https://playallday.games';
 
