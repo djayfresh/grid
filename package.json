@@ -1,0 +1,32 @@
+{
+  "name": "grid",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pick a game on the grid: race to the flag, match the colours or hold off the zombies.",
+  "workspaces": [
+    "engine/packages/engine-dev",
+    "engine/packages/engine-kit",
+    "engine/packages/engine-platform",
+    "engine/packages/engine-site",
+    "engine/packages/engine-ui"
+  ],
+  "scripts": {
+    "dev": "vite --configLoader runner",
+    "build": "tsc --noEmit && vite build --configLoader runner",
+    "preview": "vite preview --configLoader runner",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --configLoader runner",
+    "deploy": "npm run build && node --import tsx/esm tools/deploy.ts",
+    "deploy:dry": "npm run build && node --import tsx/esm tools/deploy.ts --dry-run",
+    "purge-cache": "node --import tsx/esm tools/purgeCache.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "happy-dom": "^20.14.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^6.4.3",
+    "vitest": "^3.2.7"
+  }
+}

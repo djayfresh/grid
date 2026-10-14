@@ -1,0 +1,16 @@
+# Normalise line endings: text files are stored and checked out with LF,
+# whatever the editor or OS writes.
+* text=auto eol=lf
+
+# Binary assets: never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.mp3 binary
+*.ogg binary
+*.wav binary
+*.woff binary
+*.woff2 binary
