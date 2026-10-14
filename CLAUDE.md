@@ -1,6 +1,10 @@
 # The Grid (`grid`)
 
-A game on playallday.games, served as one folder of that site: `/grid/`. The
+An arcade on playallday.games, like the escape room's mini-games: a home at
+`/grid/` and three games, each a game of its own on the hub with its own folder,
+card and leaderboard: Grid Run (`grid-run`), Memory Grid (`grid-memory`) and
+Zombie Grid (`grid-zombies`). All four are built from this repo under the
+`/grid/` base and deployed each to its own folder (`ownFolders`). The
 platform around it — the hub, the shared browser scripts at `/shared/`, the
 registry, the backend, the infrastructure — is the **`playallday` repo**
 (`../playallday`). Read its README before changing anything about how this game
@@ -12,7 +16,7 @@ meets the site.
 npm run dev          # http://localhost:5321 (run playallday's `npm run dev` too for /shared/*)
 npm run typecheck    # tsc --noEmit; run it before saying a change is done
 npm test             # the game's own tests (tests/); the engine's run in the engine
-npm run build        # dist/, built for /grid/
+npm run build        # dist/: the home and each game's folder, built for /grid/
 npm run deploy:dry   # build, then show what would change in the bucket
 npm run deploy       # build, upload, purge Cloudflare
 ```
@@ -21,12 +25,14 @@ npm run deploy       # build, upload, purge Cloudflare
 
 All the games share one origin, so a mistake here leaks into another game:
 
-- The slug `grid` is permanent. It is the URL path and the analytics
-  `game_id`; changing it breaks saves, links and every stat.
+- The slugs `grid`, `grid-run`, `grid-memory` and `grid-zombies` are
+  permanent. Each is a URL path, an analytics `game_id`, a save prefix and a
+  board; changing one breaks saves, links and every stat.
 - Build for `/grid/`. Never a root-absolute asset path (`/assets/...`): that
   is a different game's folder. Assets load relative, or through an `import`.
-- Save only through `window.playallday.storage('grid')` (`src/score.ts`),
-  never a bare `localStorage` key — a bare `best` is every game's `best`.
+- Save only through `window.playallday.storage(<the game's slug>)`
+  (`src/arcade/score.ts`), never a bare `localStorage` key — a bare `best` is
+  every game's `best`.
 - Track only through `window.playallday.track`, never `gtag`, and only the
   platform's events: `level_start`, `level_end`, `post_score`,
   `unlock_achievement`, `game_complete`. A GA4 property has a limited number of
@@ -39,51 +45,42 @@ All the games share one origin, so a mistake here leaks into another game:
 
 ## Where things are
 
-`src/site.ts` is the one place the slug, title and description live: the Vite
-base path, the deploy's prefix check, the canonical URL and the Open Graph tags
-all read it. The head tags the platform expects are added by the build only
-(`vite.config.ts`, the engine's `headTagsPlugin`), because the dev server has no
-`/shared/` to point them at.
+`src/site.ts` is the one place the slugs, titles and descriptions live: `SLUG`
+and friends for the home, `GAMES` for the three games (each one's board metric
+and direction, colour and lines). The Vite pages and base path, the deploy's
+folders, the canonical URLs, the Open Graph tags and the home's cabinets all
+read it. The head tags the platform expects are added by the build only
+(`vite.config.ts`, the engine's `headTagsPlugin`, one set per page), because
+the dev server has no `/shared/` to point them at.
 
-`src/game.ts` started as a placeholder (drifting targets), and `tests/game.test.ts`
-tests that placeholder. If it still is, say so rather than building around it;
-when it goes, its test goes with it and the real game's tests take the folder.
+Each game is `src/games/<id>/`: `rules.ts` is the game as pure code (seeded by
+engine-kit's `createRng`, tested in `tests/<id>.test.ts`), `art.ts` draws it
+(and its `attract` loop, which the home's cabinet plays), `main.ts` is the
+round on `src/arcade/page.ts`. The page gives every game the same canvas, top
+bar, title and result cards, pause menu (with links to the other games), the
+keyboard/pointer input and, for games that ask, the touch joystick
+(`src/arcade/joystick.ts`, the engine's stick geometry on a plain canvas).
+`src/arcade/theme.ts` is the look: the palette, tiles and boards.
 
-The round's numbers are content, not code: `content/rounds/*.json`, shaped by
-`src/roundFields.ts` (the type and the form's fields), read by `src/rounds.ts`,
-picked with `?round=<id>`. `tests/content.test.ts` holds every file to those
-fields. Content the real game has (levels, waves, words) takes the same shape.
+Memory Grid's pairs differ by shape and fill as well as colour, so it plays
+without telling colours apart. Keep it that way: no piece in any game should
+be told apart by colour alone.
+
+`src/arcade/score.ts` keeps each game's best and what the board last took, and
+sends a signed-out best when the player signs in. Each game's board shape (the
+metric, which way it wins, how it reads) is its `leaderboard` entry in the
+hub's `games.json`; the two must agree with `GAMES`.
 
 The dev pages (`npm run dev`, then `/dev/`) are the engine's `engine-dev` kit.
 `src/pages.ts` lists every page: a dev page is its HTML in `dev/` plus one line
-there, and `devPages` in `vite.config.ts` keeps them out of the build. The Rounds
-page edits `content/rounds/` through the dev server's store. The Art page
-(`dev/art.ts`) draws everything the game draws by the game's own code
-(`artSheet`): add each new drawing, image or atlas to it as it is made. The
-Sounds page (`dev/sounds.ts`, `soundLab`) has a pad for each sound in
-`src/sound.ts` and a slider for every number in its `SOUND`, with the game
-beside it following the sliders: add each new sound to both as it is made.
-The game's feel numbers (`TUNE`, in `src/game.ts`) get a panel of sliders
-with `?tune` on the dev server (`src/tune.ts`, loaded only behind
-`import.meta.env.DEV`); a number worth tuning goes in `TUNE`, with its range
-there. When one is right, Copy on the panel and paste it back as the default.
- When the
-game gets achievements (engine-ui's), add an Icons page on the engine's
-`iconReview` (every icon in each state, with the toast). Notes typed on a dev
-page land in `dev/notes/` and belong in the repo.
+there, and `devPages` in `vite.config.ts` keeps them out of the build. The Art
+page (`dev/art.ts`) draws everything the games draw by their own code
+(`artSheet`): add each new drawing to it as it is made. The Mock-ups page
+(`dev/mockups.ts`) sets the three looks for the face lift side by side. Notes
+typed on a dev page land in `dev/notes/` and belong in the repo.
 
-Playing together is a race in the placeholder: `src/multiplayer.ts` is the
-rules (pure, the host's page the one writer, followers ask by intent),
-`src/together.ts` the card, lobby, share link (`?room=<code>`) and board, on the
-engine's `HostLink`/`FollowerLink`. It only appears on playallday.games, where
-the rooms script is, so its tests use the engine's in-memory rooms
-(`@djayfresh/engine-platform/testing`). Everything read off a room is checked
-before it is believed: anyone in a room can send anything.
-
-`src/score.ts` sends a finished round to the all-time leaderboard. The board's
-shape (what the number is, which way it wins, how it reads) is this game's
-`leaderboard` entry in the hub's `games.json`; the two must agree. A daily game
-sends `submitDaily` and has a `daily` entry too (the playallday README).
+`legacy/` is the 2020 game and its scores server, as they were (tag
+`start-2020`). Read it for how a game played; don't build on it.
 
 ## Deploying
 
@@ -93,9 +90,12 @@ that doesn't carry this game's marker (`grid.deploy.json`), so it cannot wipe
 another game. Credentials come from aws-vault (`AWS_VAULT_PROFILE` in `.env`), never a
 file in the repo; run deploys as the `aws-vault` skill says.
 
-A new game also needs, once, in the `playallday` repo: its `games.json` entry,
-its card art in `site/thumbs/`, and a `terraform apply` for the `/grid` →
-`/grid/` redirect. The `new-game` skill there does all of it.
+A new game in the arcade is a folder in `src/games/`, its page folder, an entry
+in `GAMES`, and in the `playallday` repo its `games.json` entry (`"group":
+"grid"`, its leaderboard) and card art in `site/thumbs/`. The slug redirects
+(`/grid` → `/grid/` and each game's) are a `terraform apply` the owner runs;
+they aren't applied yet. The games are unlisted on the hub until the owner says
+otherwise.
 
 ## The plan
 

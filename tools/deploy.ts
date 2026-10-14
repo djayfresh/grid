@@ -1,10 +1,10 @@
 import { deploySite, runCommand, type GameSite } from '@djayfresh/engine-site';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SLUG, TITLE } from '../src/site';
+import { GAMES, SLUG, TITLE } from '../src/site';
 
-// Pushes the built game (dist/) to its own folder of the playallday.games
-// bucket, then clears Cloudflare's cache. The engine's deploy does the work
+// Pushes the built arcade (dist/) to its folder of the playallday.games bucket
+// (grid/), and each game's page folder beside it (grid-run/, ...), then clears Cloudflare's cache. The engine's deploy does the work
 // (@djayfresh/engine-site): it only ever syncs into an empty folder or one
 // holding this game's owner marker, skips files whose MD5 already matches,
 // deletes what the build dropped, and sends HTML as no-cache so a deploy shows
@@ -30,6 +30,8 @@ export const SITE: GameSite = {
   // The build's asset URLs start /grid/ (vite.config.ts base), so a deploy
   // to any other prefix would ship a game whose assets all 404.
   prefix: SLUG,
+  // Each game's own page folder beside it (grid-run/, ...; src/site.ts GAMES).
+  ownFolders: GAMES.map((g) => g.slug),
 };
 
 // Only as the command: importing this file must never deploy.

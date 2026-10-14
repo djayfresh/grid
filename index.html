@@ -3,18 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0b0d1c" />
-    <!-- The shared platform scripts (/shared/storage.js and the rest) are added
-         by vite.config.ts: the build writes them into the published page, and the
-         dev server injects the storage one. They are deliberately not here. -->
+    <meta name="theme-color" content="#0a0c18" />
+    <!-- The shared platform scripts are added by vite.config.ts. -->
     <title>The Grid · Play All Day</title>
   </head>
-  <body>
-    <!-- The top bar, the cards and the pause menu are the engine's kit
-         (@djayfresh/engine-ui), built by src/main.ts around the canvas. -->
-    <main>
-      <canvas id="stage" aria-label="The Grid"></canvas>
+  <body class="home">
+    <!-- The top bar and the cabinets are built by src/home/main.ts. -->
+    <main class="arcade">
+      <header class="hero">
+        <canvas class="hero-grid" aria-hidden="true"></canvas>
+        <h1>The Grid</h1>
+        <p>Three games on one grid. Pick a cabinet.</p>
+      </header>
+      <ul class="cabinets"></ul>
+      <aside class="plaque" aria-label="High scores from 2020"></aside>
     </main>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/home/main.ts"></script>
   </body>
 </html>

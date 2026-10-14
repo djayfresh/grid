@@ -1,9 +1,0 @@
-{
-  "id": "classic",
-  "name": "Classic",
-  "seconds": 30,
-  "targetLife": 2.2,
-  "spawnEvery": 0.9,
-  "maxTargets": 3,
-  "missPenalty": 0.5
-}

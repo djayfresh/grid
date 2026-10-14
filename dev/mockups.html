@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Mock-ups · The Grid</title>
+    <style>
+      .looks { display: grid; gap: 28px; }
+      .look { border: 1px solid #8884; border-radius: 14px; padding: 16px; }
+      .look h2 { margin: 0 0 4px; }
+      .look > p { margin: 0 0 12px; opacity: 0.8; max-width: 70ch; }
+      .look canvas { display: block; width: 100%; max-width: 1100px; aspect-ratio: 16 / 7; border-radius: 10px; }
+      .look .tag { display: inline-block; margin-left: 8px; padding: 2px 8px; font-size: 0.75rem; border-radius: 999px; background: #3ef0b0; color: #062a1e; vertical-align: middle; }
+    </style>
+  </head>
+  <body>
+    <main class="dev-main">
+      <h1>The Grid: the face lift, three looks</h1>
+      <p>Each look shows the home's cabinets and a board from each game. The games are built in look A for now; picking another doesn't hold up the port, it is a restyle of <code>src/arcade/theme.ts</code> and each game's <code>art.ts</code>. Leave a note on the one you want.</p>
+      <div class="looks"></div>
+    </main>
+    <script type="module" src="./mockups.ts"></script>
+  </body>
+</html>

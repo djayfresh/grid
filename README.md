@@ -1,10 +1,21 @@
 # The Grid
 
-Pick a game on the grid: race to the flag, match the colours or hold off the zombies.
+Three arcade games on one grid: race to the flag, match the pairs or hold off the zombies.
 
-A game on **[playallday.games](https://playallday.games)**: it is served as one
-folder of that site, at `/grid/`. The hub, the shared browser scripts and the
-backend live in the `playallday` repo; this repo is the game and its deploy.
+An arcade on **[playallday.games](https://playallday.games)**, the way the escape
+room has its mini-games: a home at `/grid/` and three games, each a game of its
+own on the hub with its own folder, card and leaderboard:
+
+| Game | Slug | Board |
+| --- | --- | --- |
+| Grid Run | `grid-run` | Moves, fewest wins |
+| Memory Grid | `grid-memory` | Points, most wins |
+| Zombie Grid | `grid-zombies` | Score, most wins |
+
+The games started in 2020 (tag `start-2020`; that code is in `legacy/`, with its
+own scores server, which the playallday leaderboards replaced). The hub, the
+shared browser scripts and the backend live in the `playallday` repo; this repo
+is the arcade and its deploy.
 
 ```sh
 npm install            # the engine submodule's packages are workspaces of this repo
@@ -22,29 +33,27 @@ Without it the game still runs, with no saves.
 
 | Path | What it is |
 | --- | --- |
-| `src/site.ts` | Slug, title, description, origin. The build's base path, the deploy's prefix check and the canonical link all read it. |
-| `src/main.ts` | Boot: the engine-ui top bar, cards and pause menu, the loop, and the move between a card and a round. |
-| `src/game.ts` | **The game.** Starts as a placeholder so the repo is playable at once; replace it. |
-| `src/sound.ts` | The game's sounds, as engine-ui tones (no audio files), and `SOUND`, every number they are made from. |
-| `src/tune.ts` | Dev server only: `?tune` puts a panel of sliders over the game's `TUNE` numbers. |
+| `src/site.ts` | The home's slug, title and description, and `GAMES`: each game's slug, title, lines, board and colour. The pages, the deploy's folders, the head tags and the home's cabinets all read it. |
+| `index.html`, `src/home/` | The home: a cabinet per game, with its attract loop, best and Play link, and the 2020 plaque. |
+| `grid-run/`, `grid-memory/`, `grid-zombies/` | Each game's page (deployed to its own folder of the bucket). |
+| `src/games/<id>/` | A game: `rules.ts` (pure, tested), `art.ts` (its drawings and attract loop), `main.ts` (the round). |
+| `src/arcade/` | What the games share: `page.ts` (canvas, top bar, cards, pause menu, the move between a card and a round), `score.ts` (saves, offline scores, the board), `theme.ts` (palette and tiles), `joystick.ts` (a touch stick). |
 | `src/loop.ts` | Fixed-step update, render once a frame. |
-| `src/roundFields.ts`, `src/rounds.ts`, `content/rounds/` | A round's shape and form, the files, and how the game reads them (`?round=<id>` picks one). |
-| `src/multiplayer.ts`, `src/together.ts` | Playing together: the race's rules, and the card, lobby and board over the platform's rooms. |
-| `src/pages.ts`, `dev/` | Every page, and the dev pages `npm run dev` serves at `/dev/` (never built): an index, the rounds editor, the Art page and the Sounds page. |
-| `src/score.ts` | Saves, the leaderboard and analytics, through `window.playallday`. |
-| `tests/` | The game's own tests (vitest). The placeholder's go when it does. |
-| `public/hub.js` | The player's progress on the hub card (`hubScript` in the hub's `games.json`). |
-| `tools/deploy.ts` | The deploy: this game's folder of the bucket, then a Cloudflare purge. |
+| `src/pages.ts`, `dev/` | Every page, and the dev pages `npm run dev` serves at `/dev/` (never built): an index, the Art page and the look mock-ups. |
+| `tests/` | The games' rules (vitest). |
+| `public/hub.js` | Each game's best on its hub card, and all three on the home's (`hubScript` in the hub's `games.json`). |
+| `tools/deploy.ts` | The deploy: the home's folder and each game's, then a Cloudflare purge. |
+| `legacy/` | The 2020 game and its server, kept as they were. |
 | `engine/` | The engine (git submodule, `web-game-engine`). |
 
 ## The rules this game keeps
 
 Every game on the domain shares one origin, so these are not style points:
 
-- **Slug** `grid` is permanent: it is the URL and the analytics `game_id`.
+- **Slugs** `grid`, `grid-run`, `grid-memory` and `grid-zombies` are permanent: each is a URL, an analytics `game_id`, a save prefix and a board.
 - **Base path**: the build is made for `/grid/`. No root-absolute asset
   paths (`/assets/...`) — that is another game's folder.
-- **Storage**: keys through `window.playallday.storage('grid')`, never a bare
+- **Storage**: keys through `window.playallday.storage(<the game's slug>)`, never a bare
   `localStorage` key. IndexedDB names through `.dbName()`.
 - **Analytics**: `window.playallday.track`, never `gtag`, and only the platform's
   event list (`level_start`, `level_end`, `post_score`, `unlock_achievement`,
@@ -52,7 +61,7 @@ Every game on the domain shares one origin, so these are not style points:
 - **Shared scripts can be missing** (blocked, or a dev server without the
   platform behind it): every call goes through optional chaining and the game
   plays on without them.
-- **Service worker**, if it ever gets one: scoped to `/grid/`, never `/`.
+
 
 The full list, and what the platform gives a game in return (accounts, feedback,
 saves on every device, leaderboards, rooms) is in the `playallday` repo's README.

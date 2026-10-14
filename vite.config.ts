@@ -3,11 +3,12 @@ import { headTags, headTagsPlugin } from '@djayfresh/engine-site/vite';
 import { readFileSync } from 'node:fs';
 import { defineConfig, type Plugin } from 'vite';
 import { PAGES } from './src/pages';
-import { DESCRIPTION, GAME_URL, SITE_ORIGIN, SLUG, TITLE } from './src/site';
+import { DESCRIPTION, GAME_URL, GAMES, gamePage, gameUrl, SITE_ORIGIN, SLUG, TITLE } from './src/site';
 
-// The game is one folder of playallday.games, so the production build is made
-// for /grid/ and every asset URL is relative to it; the dev server stays at
-// the root.
+// The arcade is built for /grid/ and every asset URL is relative to it; the dev
+// server stays at the root. Each game's page (<slug>/index.html) is built
+// beside the home and deployed to its own folder (tools/deploy.ts), its code
+// staying under /grid/assets/, the way the escape room ships its mini-games.
 //
 // The head tags the platform expects (canonical, description, Open Graph, and
 // the shared account and sync scripts) are added by the build only, from the
@@ -17,6 +18,13 @@ import { DESCRIPTION, GAME_URL, SITE_ORIGIN, SLUG, TITLE } from './src/site';
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
 
 const STORAGE_SCRIPT = '<script src="/shared/storage.js"></script>';
+
+/** Each page's own canonical, description, title and analytics game_id. */
+function metaFor(page: string) {
+  const game = GAMES.find((g) => gamePage(g) === page);
+  if (game) return { canonical: gameUrl(game), description: game.description, title: game.title, game: game.slug, image: `${SITE_ORIGIN}/thumbs/${game.slug}.png` };
+  return { canonical: GAME_URL, description: DESCRIPTION, title: TITLE, game: SLUG, image: `${SITE_ORIGIN}/thumbs/${SLUG}.png` };
+}
 
 // storage.js is the one shared script the engine's headTags doesn't offer, since
 // a game only needs it if it saves anything. In dev it's injected here instead,
@@ -32,19 +40,17 @@ export default defineConfig(({ command }) => ({
   base: command === 'build' ? `/${SLUG}/` : '/',
   plugins: [
     // The dev pages (src/pages.ts): the build's inputs are the published pages
-    // only, and the dev server answers the dev pages' notes (dev/notes/) and the
-    // rounds store the Rounds page saves through (content/rounds/). The Art page
-    // shows the hub card from the playallday repo beside this one.
+    // only, and the dev server answers the dev pages' notes (dev/notes/). The Art
+    // page shows the hub cards from the playallday repo beside this one.
     devPages({
       pages: PAGES,
-      stores: [{ route: '/__dev/rounds', dir: 'content/rounds', key: 'id' }],
       allow: ['../playallday/site/thumbs'],
     }),
     storageInDev(),
     headTagsPlugin(
-      () =>
+      (page) =>
         `${STORAGE_SCRIPT}\n    ${headTags(
-          { canonical: GAME_URL, description: DESCRIPTION, title: TITLE, game: SLUG, image: `${SITE_ORIGIN}/thumbs/${SLUG}.png` },
+          metaFor(page),
           // account brings the sign-in sheet and the feedback form; sync carries
           // this game's saves to the player's other devices; rooms is playing
           // together (rooms by code, lobbies, casts); leaderboard is the boards.

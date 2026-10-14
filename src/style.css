@@ -1,21 +1,21 @@
-/* Follows the hub's look: the same dark-first palette, light theme when the
-   player's system asks for one, and the safe-area insets a phone needs so the
-   HUD clears the notch and the home bar. */
+/* The arcade's look (src/arcade/theme.ts has the same colours for the canvas):
+   dark only, a night-blue page around a glowing board, and the safe-area insets
+   a phone needs so the HUD clears the notch and the home bar. --accent is the
+   game's own colour, set by the page (src/site.ts). */
 
 :root {
-  --bg: #0b0d1c;
-  --surface: #151a33;
-  --line: #2a3057;
+  --bg: #0a0c18;
+  --surface: #10142a;
+  --line: #262d5c;
   --ink: #eef1ff;
   --muted: #9aa3cc;
   --accent: #7c8cff;
-  --accent-ink: #0b0d1c;
+  --accent-ink: #0a0c18;
   color-scheme: dark;
 }
 
 /* The engine's kit (the top bar, the cards, the pause menu, toasts) in the
-   game's colours. Custom properties reach into its shadow roots, and these
-   follow the palette above through the light theme too. */
+   game's colours. Custom properties reach into its shadow roots. */
 :root {
   --pad-bg: var(--bg);
   --pad-surface: var(--surface);
@@ -26,19 +26,6 @@
   --pad-accent-strong: var(--accent);
   --pad-accent-ink: var(--accent-ink);
   --pad-tile: var(--line);
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #f5f6fb;
-    --surface: #ffffff;
-    --line: #dfe3f2;
-    --ink: #161a2e;
-    --muted: #5d6488;
-    --accent: #4353d6;
-    --accent-ink: #ffffff;
-    color-scheme: light;
-  }
 }
 
 * {
@@ -68,38 +55,20 @@ body {
   font-weight: 700;
 }
 
-/* The room code box on the Play together card (src/together.ts). */
-.room-code {
-  font: inherit;
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-align: center;
-  text-transform: uppercase;
-  width: 8em;
-  padding: 8px 10px;
-  /* The card's colours, not the page's: it sits in the engine's card, which follows its own theme. */
-  color: inherit;
-  background: transparent;
-  border: 2px solid currentColor;
-  border-radius: 10px;
-}
-
-/* Playing together: everyone's score, on a line of its own under the bar. */
-.board {
-  margin: 0 max(12px, env(safe-area-inset-left)) 6px;
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.board[hidden] {
-  display: none;
-}
-
 .pause {
   padding: 4px 12px;
   font-size: 0.9rem;
+}
+
+/* A phone's top bar holds the back link, the title, the HUD and Pause. */
+@media (max-width: 480px) {
+  .hud {
+    font-size: 0.8rem;
+  }
+  .pause {
+    padding: 3px 9px;
+    font-size: 0.8rem;
+  }
 }
 
 .pause[hidden] {
@@ -117,8 +86,8 @@ canvas {
   display: block;
   width: 100%;
   height: 100%;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--bg);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
   border-radius: 16px;
   /* The pointer handler measures the element, so it must not scroll under it. */
   touch-action: none;

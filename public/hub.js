@@ -8,29 +8,53 @@
 // The hub doesn't serve /shared/storage.js, so the save is read straight out of
 // localStorage, under the same "<slug>:" prefix storage.js writes in the game.
 
-const SLUG = 'grid';
+// The Grid's home and its three games each have a card. Each game's card gets
+// its own best; the home's card gets the three together. The units match each
+// game's leaderboard (src/site.ts GAMES, the hub's games.json).
+const GAMES = [
+  { slug: 'grid-run', title: 'Grid Run', unit: 'moves' },
+  { slug: 'grid-memory', title: 'Memory', unit: 'points' },
+  { slug: 'grid-zombies', title: 'Zombie', unit: 'score' },
+];
 
-function best() {
+function best(slug) {
   try {
-    const raw = localStorage.getItem(`${SLUG}:best`);
-    const value = raw === null ? 0 : Number(JSON.parse(raw));
-    return Number.isFinite(value) ? value : 0;
+    const raw = localStorage.getItem(`${slug}:best`);
+    const value = raw === null ? null : Number(JSON.parse(raw));
+    return Number.isFinite(value) ? value : null;
   } catch {
     // Storage blocked, or a save from an older version: no progress to show.
-    return 0;
+    return null;
   }
 }
 
-function draw() {
-  const extras = document.querySelector(`li[data-slug="${SLUG}"] .extras`);
+function pill(text) {
+  const el = document.createElement('span');
+  el.className = 'pill';
+  el.textContent = text;
+  return el;
+}
+
+function fill(slug, pills) {
+  const extras = document.querySelector(`li[data-slug="${slug}"] .extras`);
   if (!extras) return;
   extras.textContent = '';
-  const score = best();
-  if (score <= 0) return;
-  const pill = document.createElement('span');
-  pill.className = 'pill';
-  pill.textContent = `Best: ${score}`;
-  extras.append(pill);
+  extras.append(...pills);
+}
+
+function draw() {
+  const home = [];
+  for (const g of GAMES) {
+    const score = best(g.slug);
+    if (score === null) {
+      fill(g.slug, []);
+      continue;
+    }
+    const text = g.unit === 'score' ? `${score}` : `${score} ${g.unit}`;
+    fill(g.slug, [pill(`Best: ${text}`)]);
+    home.push(pill(`${g.title}: ${text}`));
+  }
+  fill('grid', home);
 }
 
 draw();
