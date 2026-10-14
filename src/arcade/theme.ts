@@ -3,7 +3,7 @@
 // top edge, and one accent per game (src/site.ts). Drawn in code, so it ships
 // no images; the dev server's Art page shows every piece over the board.
 
-export const INK = {
+export const DARK = {
   bg: '#0a0c18',
   board: '#10142a',
   cell: '#161b38',
@@ -12,7 +12,26 @@ export const INK = {
   text: '#eef1ff',
   muted: '#9aa3cc',
   shadow: 'rgba(0, 0, 0, 0.45)',
+  vignette: 'rgba(0, 0, 0, 0.55)',
 };
+
+export type Ink = typeof DARK;
+
+/** Daylight: a pale page, white boards, the same pieces. */
+export const LIGHT: Ink = {
+  bg: '#e9ecf7',
+  board: '#ffffff',
+  cell: '#e2e6f4',
+  cellHi: '#d3d9ef',
+  line: '#c5cce6',
+  text: '#161a33',
+  muted: '#59618a',
+  shadow: 'rgba(30, 40, 90, 0.2)',
+  vignette: 'rgba(120, 130, 180, 0.18)',
+};
+
+/** The palette in use: the player's mode (src/arcade/mode.ts) swaps it in place. */
+export const INK: Ink = { ...DARK };
 
 /** The 2020 game's colours, brightened: green you, red danger, yellow goal, blue bonus. */
 export const PIECE = {
@@ -110,7 +129,7 @@ export function backdrop(ctx: CanvasRenderingContext2D, w: number, h: number, ac
   ctx.stroke();
   const v = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.2, w / 2, h / 2, Math.max(w, h) * 0.75);
   v.addColorStop(0, 'rgba(0,0,0,0)');
-  v.addColorStop(1, 'rgba(0,0,0,0.55)');
+  v.addColorStop(1, INK.vignette);
   ctx.fillStyle = v;
   ctx.fillRect(0, 0, w, h);
   ctx.restore();

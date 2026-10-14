@@ -22,13 +22,24 @@ interface Look {
 
 const ARTS = [runArt, memoryArt, zombiesArt];
 
-/** Three cabinets across, a title over them: the home in any look. */
+/**
+ * Three cabinets, a title over them: the home in any look. Across on a wide
+ * screen, stacked on a phone (the canvas is taller there, see mockups.html).
+ */
 function cabinets(w: number, h: number, face: (i: number, x: number, y: number, cw: number, ch: number) => void, title: (x: number, y: number) => void): void {
   title(24, 40);
   const gap = 18;
-  const cw = (w - 48 - gap * 2) / 3;
-  const ch = h - 90;
-  for (let i = 0; i < 3; i++) face(i, 24 + i * (cw + gap), 70, cw, ch);
+  const across = w >= 600;
+  const cw = across ? (w - 48 - gap * 2) / 3 : w - 48;
+  const ch = across ? h - 90 : (h - 90 - gap * 2) / 3;
+  for (let i = 0; i < 3; i++) face(i, across ? 24 + i * (cw + gap) : 24, across ? 70 : 70 + i * (ch + gap), cw, ch);
+}
+
+/** Sets `font` at `size` px, or smaller until `text` fits in `room`. */
+function fit(ctx: CanvasRenderingContext2D, font: (px: number) => string, size: number, text: string, room: number): void {
+  let px = size;
+  ctx.font = font(px);
+  while (px > 9 && ctx.measureText(text).width > room) ctx.font = font(--px);
 }
 
 const neon: Paint = (ctx, w, h, t) => {
@@ -50,7 +61,7 @@ const neon: Paint = (ctx, w, h, t) => {
       ARTS[i](ctx, cw - 20, ch - 60, t, g.accent);
       ctx.restore();
       ctx.fillStyle = g.accent;
-      ctx.font = '900 20px system-ui, sans-serif';
+      fit(ctx, (px) => `900 ${px}px system-ui, sans-serif`, 20, g.title, cw - 28);
       ctx.fillText(g.title, x + 14, y + ch - 20);
     },
     (x, y) => {
@@ -109,7 +120,7 @@ const paper: Paint = (ctx, w, h, t) => {
       }
       ctx.globalAlpha = 1;
       ctx.fillStyle = ink;
-      ctx.font = 'italic 700 20px Georgia, serif';
+      fit(ctx, (px) => `italic 700 ${px}px Georgia, serif`, 20, GAMES[i].title, cw - 28);
       ctx.fillText(GAMES[i].title, x + 14, y + ch - 18);
       ctx.restore();
     },
@@ -144,7 +155,7 @@ const remaster: Paint = (ctx, w, h, t) => {
           ctx.fillRect(ox + cx * cell + 2, oy + cy * cell + 2, cell - 4, cell - 4);
         }
       ctx.fillStyle = '#000';
-      ctx.font = '900 22px ui-monospace, monospace';
+      fit(ctx, (px) => `900 ${px}px ui-monospace, monospace`, 22, GAMES[i].title.toUpperCase(), cw - 24);
       ctx.fillText(GAMES[i].title.toUpperCase(), x + 12, y + ch - 16);
     },
     (x, y) => {

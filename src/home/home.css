@@ -39,7 +39,7 @@ body.home {
   font-weight: 900;
   letter-spacing: -0.03em;
   line-height: 1;
-  text-shadow: 0 0 28px rgba(124, 140, 255, 0.55);
+  text-shadow: 0 0 28px color-mix(in srgb, #7c8cff 55%, transparent);
 }
 
 .hero p {
@@ -64,7 +64,7 @@ body.home {
   padding: 14px;
   color: var(--ink);
   text-decoration: none;
-  background: linear-gradient(180deg, #171c3a, #0f1328);
+  background: linear-gradient(180deg, var(--cabinet-top), var(--cabinet-bottom));
   border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   border-radius: 20px;
   box-shadow: 0 18px 40px -24px var(--accent);
@@ -90,7 +90,7 @@ body.home {
   aspect-ratio: 4 / 3;
   border: 0;
   border-radius: 12px;
-  background: #0a0c18;
+  background: var(--bg);
 }
 
 .cabinet h2 {
@@ -193,4 +193,9 @@ body.home {
 
 .home canvas {
   touch-action: auto;
+}
+
+/* On the day page the bright accents are too pale to read as text. */
+:root[data-theme="light"] .cabinet h2 {
+  color: color-mix(in srgb, var(--accent) 55%, #10132a);
 }

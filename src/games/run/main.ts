@@ -159,7 +159,7 @@ function createRound(ctx: CanvasRenderingContext2D): Round {
         const a = Math.min(1, banner / 0.25);
         ctx.save();
         ctx.globalAlpha = a;
-        ctx.fillStyle = 'rgba(10, 12, 24, 0.6)';
+        ctx.fillStyle = withAlpha(INK.bg, 0.7);
         ctx.fillRect(0, 0, width, height);
         ctx.fillStyle = INK.text;
         ctx.textAlign = 'center';

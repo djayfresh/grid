@@ -1,7 +1,8 @@
 import { randomSeed } from '@djayfresh/engine-kit';
 import { tone, tones } from '@djayfresh/engine-ui';
 import { arcadePage, type Input, type Result, type Round } from '../../arcade/page';
-import { backdrop, INK, PIECE, roundRect, withAlpha } from '../../arcade/theme';
+// The town is always at night, light mode or not, so its HUD keeps the dark palette.
+import { backdrop, DARK as NIGHT, PIECE, roundRect, withAlpha } from '../../arcade/theme';
 import { gameById } from '../../site';
 import { bar, drawBullet, drawPlayer, drawTown, drawZombie, ZC } from './art';
 import { levelProgress } from './leveling';
@@ -232,18 +233,18 @@ function createRound(ctx: CanvasRenderingContext2D, input: Input): Round {
     ctx.stroke();
     ctx.font = '700 11px system-ui, sans-serif';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = INK.muted;
+    ctx.fillStyle = NIGHT.muted;
     ctx.fillText('HEALTH', pad + 10, pad + 13);
     ctx.textAlign = 'right';
-    ctx.fillStyle = INK.text;
+    ctx.fillStyle = NIGHT.text;
     ctx.fillText(`${p.health}`, pad + 10 + w, pad + 13);
     const low = p.health <= 30;
     bar(ctx, pad + 10, pad + 21, w, 8, p.health / MAX_HEALTH, low ? PIECE.enemy : '#4dff9a', low ? 8 + Math.sin(t * 10) * 4 : 6);
     ctx.textAlign = 'left';
-    ctx.fillStyle = INK.muted;
+    ctx.fillStyle = NIGHT.muted;
     ctx.fillText(`LEVEL ${g.stats.level + 1}`, pad + 10, pad + 40);
     ctx.textAlign = 'right';
-    ctx.fillStyle = INK.text;
+    ctx.fillStyle = NIGHT.text;
     ctx.fillText(`${g.stats.xp} XP`, pad + 10 + w, pad + 40);
     bar(ctx, pad + 10, pad + 48, w, 5, levelProgress(g.stats), game.accent, 4);
     ctx.restore();
@@ -254,10 +255,10 @@ function createRound(ctx: CanvasRenderingContext2D, input: Input): Round {
     ctx.font = '700 12px system-ui, sans-serif';
     ctx.textBaseline = 'middle';
     const line = `${spawners} spawner ${spawners === 1 ? 'house' : 'houses'} left`;
-    ctx.fillStyle = withAlpha(INK.text, 0.8);
+    ctx.fillStyle = withAlpha(NIGHT.text, 0.8);
     ctx.fillText(line, pad + 4, pad + 78);
     if (!touch) {
-      ctx.fillStyle = INK.muted;
+      ctx.fillStyle = NIGHT.muted;
       ctx.fillText(`${WEAPONS[p.weapon].name}  ·  X to switch`, pad + 4, pad + 96);
     }
     ctx.restore();
@@ -275,7 +276,7 @@ function createRound(ctx: CanvasRenderingContext2D, input: Input): Round {
       ctx.shadowBlur = 10;
       ctx.stroke();
       ctx.shadowBlur = 0;
-      ctx.fillStyle = INK.text;
+      ctx.fillStyle = NIGHT.text;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.font = '700 11px system-ui, sans-serif';
@@ -323,7 +324,7 @@ function createRound(ctx: CanvasRenderingContext2D, input: Input): Round {
     ctx.globalAlpha = alpha;
     ctx.fillStyle = 'rgba(10, 12, 24, 0.55)';
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = INK.text;
+    ctx.fillStyle = NIGHT.text;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.font = `800 ${Math.round(size * 0.09)}px system-ui, sans-serif`;
@@ -332,7 +333,7 @@ function createRound(ctx: CanvasRenderingContext2D, input: Input): Round {
     ctx.fillText(title, width / 2, height / 2 - 8);
     ctx.shadowBlur = 0;
     ctx.font = `600 ${Math.round(Math.max(13, size * 0.032))}px system-ui, sans-serif`;
-    ctx.fillStyle = INK.muted;
+    ctx.fillStyle = NIGHT.muted;
     ctx.fillText(sub, width / 2, height / 2 + size * 0.07);
     ctx.restore();
   }
@@ -459,7 +460,7 @@ function createRound(ctx: CanvasRenderingContext2D, input: Input): Round {
         ctx.fillText(`Level ${g.stats.level + 1}`, width / 2, height * 0.3);
         ctx.shadowBlur = 0;
         ctx.font = '600 13px system-ui, sans-serif';
-        ctx.fillStyle = INK.text;
+        ctx.fillStyle = NIGHT.text;
         ctx.fillText('Faster feet, faster trigger', width / 2, height * 0.3 + 24);
         ctx.restore();
       }

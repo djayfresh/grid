@@ -2,6 +2,7 @@ import { type DialogHandle, openDialog, pauseMenu, shareButton, topBar } from '@
 import { createLoop } from '../loop';
 import { type ArcadeGame, GAMES, gameUrl, HOME_PATH, TITLE } from '../site';
 import { createStick, type Stick } from './joystick';
+import { initMode, modeButton, toggleMode } from './mode';
 import { createScores, type Scores } from './score';
 import { backdrop } from './theme';
 import '../style.css';
@@ -62,6 +63,7 @@ export interface Page {
 
 export function arcadePage(spec: PageSpec): Page {
   const { game } = spec;
+  initMode();
   document.documentElement.style.setProperty('--accent', game.accent);
   const scores = createScores(game);
 
@@ -147,7 +149,8 @@ export function arcadePage(spec: PageSpec): Page {
     onResume: () => loop.start(),
     share: { url: gameUrl(game), title: game.title, text: game.description },
     items: [
-      { label: `All ${TITLE} games`, onPress: () => location.assign(HOME_PATH) },
+      { label: 'Main menu', onPress: () => location.assign(HOME_PATH) },
+      { label: 'Light or dark mode', keepOpen: true, onPress: toggleMode },
       { label: 'All games', onPress: () => location.assign('/') },
     ],
   });
@@ -177,7 +180,10 @@ export function arcadePage(spec: PageSpec): Page {
     card = openDialog({
       title: heading,
       body: [cardText, cardBest, links],
-      actions: [{ label: button, primary: true, keepOpen: true, onPress: play }],
+      actions: [
+        { label: button, primary: true, keepOpen: true, onPress: play },
+        { label: 'Main menu', onPress: () => location.assign(HOME_PATH) },
+      ],
       onDismiss: 'none',
       onClose: () => (card = null),
     });
@@ -221,6 +227,15 @@ export function arcadePage(spec: PageSpec): Page {
     links.append(a);
   }
   links.append(shareButton({ url: gameUrl(game), title: game.title, text: game.description }, 'Share', 'link'));
+  const mode = modeButton(true);
+  mode.classList.add('link');
+  links.append(mode);
+  // The board behind a card or the pause menu redraws in the new colours.
+  window.addEventListener('grid:theme', () => {
+    if (loop.running) return;
+    backdrop(ctx, width, height, game.accent);
+    draw();
+  });
   const account = window.playallday?.account;
   if (account) {
     const add = (label: string, run: () => void): HTMLButtonElement => {

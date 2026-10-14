@@ -11,7 +11,22 @@
   --muted: #9aa3cc;
   --accent: #7c8cff;
   --accent-ink: #0a0c18;
+  --cabinet-top: #171c3a;
+  --cabinet-bottom: #0f1328;
   color-scheme: dark;
+}
+
+/* Light mode, the player's pick (src/arcade/mode.ts sets data-theme on <html>;
+   the canvases take the same colours from INK in src/arcade/theme.ts). */
+:root[data-theme="light"] {
+  --bg: #e9ecf7;
+  --surface: #ffffff;
+  --line: #c5cce6;
+  --ink: #161a33;
+  --muted: #59618a;
+  --cabinet-top: #ffffff;
+  --cabinet-bottom: #f1f3fb;
+  color-scheme: light;
 }
 
 /* The engine's kit (the top bar, the cards, the pause menu, toasts) in the
@@ -73,6 +88,19 @@ body {
 
 .pause[hidden] {
   display: none;
+}
+
+/* The top bar's sun or moon. */
+.mode:not(.link) {
+  padding: 2px 8px;
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
 }
 
 main {

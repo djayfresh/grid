@@ -1,4 +1,4 @@
-import { board, INK, roundRect, tile, withAlpha } from '../../arcade/theme';
+import { board, DARK, roundRect, tile, withAlpha } from '../../arcade/theme';
 import { face, type Fill, type Shape, SIZE } from './rules';
 
 // Memory Grid's tiles, drawn in code: the game, the home's cabinet and the dev
@@ -97,7 +97,8 @@ export function drawBack(ctx: CanvasRenderingContext2D, x: number, y: number, s:
 /** A tile face up (or found, dimmed and ringed): the face on a dark tile. */
 export function drawFront(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, n: number, found = false): void {
   const { shape, fill } = face(n);
-  tile(ctx, x, y, s, found ? INK.cell : INK.cellHi);
+  // Face up is always a dark tile, light mode too: the shapes' colours need it.
+  tile(ctx, x, y, s, found ? DARK.cell : DARK.cellHi);
   if (found) {
     ctx.save();
     roundRect(ctx, x + 1.5, y + 1.5, s - 3, s - 3, s * 0.22);

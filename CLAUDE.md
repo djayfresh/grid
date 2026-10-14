@@ -60,7 +60,12 @@ round on `src/arcade/page.ts`. The page gives every game the same canvas, top
 bar, title and result cards, pause menu (with links to the other games), the
 keyboard/pointer input and, for games that ask, the touch joystick
 (`src/arcade/joystick.ts`, the engine's stick geometry on a plain canvas).
-`src/arcade/theme.ts` is the look: the palette, tiles and boards.
+`src/arcade/theme.ts` is the look: the palette, tiles and boards. The look is
+Neon Arcade (picked on the Mock-ups page), in dark and light: `src/arcade/mode.ts`
+is the player's switch (a sun or moon in the home's top bar; the cards and the
+pause menu in a game), kept in `storage('grid')`, and swaps `INK` in place. Draw
+with `INK` so a piece follows the mode; Zombie's night town and Memory's
+face-up tiles stay dark on purpose (`DARK`).
 
 Memory Grid's pairs differ by shape and fill as well as colour, so it plays
 without telling colours apart. Keep it that way: no piece in any game should

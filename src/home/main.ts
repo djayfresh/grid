@@ -1,4 +1,5 @@
 import { shareButton, topBar } from '@djayfresh/engine-ui';
+import { initMode, modeButton } from '../arcade/mode';
 import { beats } from '../arcade/score';
 import { backdrop, INK, withAlpha } from '../arcade/theme';
 import { attract as memoryArt } from '../games/memory/art';
@@ -22,7 +23,8 @@ const PLAQUE: { game: ArcadeGame['id']; name: string; score: number }[] = [
   { game: 'memory', name: 'DJF', score: 108 },
 ];
 
-topBar({ title: TITLE, right: [shareButton({ url: GAME_URL, title: TITLE, text: DESCRIPTION }, 'Share', 'link')] });
+initMode();
+topBar({ title: TITLE, right: [modeButton(), shareButton({ url: GAME_URL, title: TITLE, text: DESCRIPTION }, 'Share', 'link')] });
 
 /** The best from a game's save, read straight from storage.js (same prefix as the game writes). */
 function best(game: ArcadeGame): number | null {
@@ -118,3 +120,7 @@ function frame(now: number): void {
   if (!still) requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+// Held still (reduced motion), the pictures only redraw when the colours change.
+window.addEventListener('grid:theme', () => {
+  if (still) requestAnimationFrame(frame);
+});
