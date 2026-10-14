@@ -7,6 +7,7 @@ import { GameCanvas } from '../shared/canvas';
 import { SceneImage, ImageManager } from '../shared/images';
 import { Point } from '../shared/physics';
 import { House } from '../zombie/prefabs';
+import { GenerateGuns } from '../zombie/weapons';
 
 export class PrefabWorld extends World {
     player: Player;
@@ -35,7 +36,7 @@ export class PrefabWorld extends World {
     }
 
     generateMap() {
-        const player = new Player();
+        const player = new Player(Object.values(GenerateGuns()));
         player.attachPlayerToCenter = false;
         player.pos = new Point(((this.canvas.x / 2) - (player.width / 2)), ((this.canvas.y / 2) - (player.height / 2)));
         this.add(player);

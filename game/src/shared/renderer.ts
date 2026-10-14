@@ -31,6 +31,9 @@ export class Renderer {
         world.map
             .filter(ro => !ro.isDeleted())
             .forEach(ro => ro.update(dt, world));
+
+        //drop deleted entries so long rounds don't keep iterating ever-growing dead weight
+        world.map = world.map.filter(ro => !ro.isDeleted());
     };
 
     static clearScreen(ctx: CanvasRenderingContext2D, world: World) {

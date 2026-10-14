@@ -423,7 +423,16 @@ export class Prefab extends RenderObject implements IRectangle {
             if (rectLeavingHolding.some(ro => ro.attributes.indexOf(GameObjectAttributes.NoExit) >= 0)) {
                 return false;
             }
-            
+
+            //still inside some other MEANINGFUL holder - allowed. NoExit holders don't count (see World.noCollisions)
+            const stillHeld = holders
+                .filter(s => s.attributes.indexOf(GameObjectAttributes.NoExit) < 0)
+                .some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h,
+                    s.pos.x + newPos.x + this.pos.x, s.pos.y + newPos.y + this.pos.y, s.width, s.height));
+            if (stillHeld) {
+                return true;
+            }
+
             const exits = rectangles.filter(ro => ro.attributes.indexOf(GameObjectAttributes.Exiting) >= 0);
             //moving into an exit
             const rectInExit = exits.some(s => Physics.insideBounds(rect.x, rect.y, rect.w, rect.h, s.pos.x + newPos.x + this.pos.x, s.pos.y + newPos.y + this.pos.y, s.width, s.height))
@@ -521,36 +530,22 @@ export class StatusBar extends Rectangle {
         ctx.fillStyle = Colors.Black;
         ctx.fillRect(pos.x + this.pos.x, pos.y + this.pos.y, this.width, this.height);
 
+        //clamp to 0 - without this, a fillWidth that goes negative flips fillRect's draw direction,
+        //which reads as the bar "refilling" with a few px of color right before it should read empty
+        const percent = Math.max(0, Math.min(1, this._currentStatus / this.maxStatus));
+        const fillWidth = Math.max(0, (this.width * percent) - (this.padding * 2));
+
         ctx.fillStyle = this.color;
-        ctx.fillRect(pos.x + this.pos.x + this.padding, pos.y + this.pos.y + this.padding, (this.width / (this.maxStatus / this._currentStatus)) - (this.padding * 2), this.height - (this.padding * 2));
+        ctx.fillRect(pos.x + this.pos.x + this.padding, pos.y + this.pos.y + this.padding, fillWidth, this.height - (this.padding * 2));
     }
 }
 
-export class Wall extends Rectangle implements IDestroyable {
-    totalHealth: number;
-    health: number;
-    statusBar: StatusBar;
-
-    constructor(id: number, color: string, pos: IPoint, bounds: IPoint, totalHealth: number){
+//a plain, indestructible blocking obstacle - always Blocking, no health. For a wall that can be
+//shot down, don't extend this - implement IDestroyable directly (see Barricade)
+export class Wall extends Rectangle {
+    constructor(id: number, color: string, pos: IPoint, bounds: IPoint){
         super(id, color, pos, bounds);
 
-        this.totalHealth = totalHealth;
-        this.health = totalHealth;
-
-        this.statusBar = new StatusBar(Colors.Environment, {x: 0, y: 0}, {x: 20, y: 4}, totalHealth, totalHealth);
-        this.statusBar._attachedTo = this;
-    }
-    
-    draw(ctx: CanvasRenderingContext2D, world: World){
-        super.draw(ctx, world);
-
-        if (this.health < (this.totalHealth * 0.75)) {
-            this.statusBar.draw(ctx, world);
-        }
-    }
-
-    update(dt: number, world: World){
-        this.statusBar._currentStatus = this.health;
-        this.statusBar.update(dt, world);
+        this.attributes.push(GameObjectAttributes.Blocking);
     }
 }
