@@ -110,8 +110,8 @@ file in the repo; run deploys as the `aws-vault` skill says.
 A new game in the arcade is a folder in `src/games/`, its page folder, an entry
 in `GAMES`, and in the `playallday` repo its `games.json` entry (`"group":
 "grid"`, its leaderboard) and card art in `site/thumbs/`. The slug redirects
-(`/grid` → `/grid/` and each game's) are a `terraform apply` the owner runs;
-they aren't applied yet. The games are unlisted on the hub until the owner says
+(`/grid` → `/grid/` and each game's) come from the hub's games.json, applied by
+the owner's `terraform apply` (done 2026-10-14); a new game's needs one too. The games are unlisted on the hub until the owner says
 otherwise.
 
 ## The plan
