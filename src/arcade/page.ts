@@ -1,4 +1,4 @@
-import { type DialogAction, type DialogHandle, openDialog, pauseMenu, shareButton, topBar } from '@djayfresh/engine-ui';
+import { type DialogAction, type DialogHandle, openDialog, pauseMenu, pushOverlay, shareButton, topBar } from '@djayfresh/engine-ui';
 import { createLoop } from '../loop';
 import { type ArcadeGame, GAMES, gameUrl, HOME_PATH, MENU } from '../site';
 import { createStick, type Stick } from './joystick';
@@ -179,6 +179,20 @@ export function arcadePage(spec: PageSpec): Page {
     if (document.visibilityState === 'hidden') keepRun();
   });
 
+  // How to play opens the game's guide (the platform's guide.js), from the
+  // pause menu and the cards: games.json sets its corner button to none, since
+  // a phone's corners hold Zombie Grid's stick and gun, and its top bar has no
+  // room for another button. The guide joins the kit's overlay stack while it's
+  // open, so Escape closes it, not the card or the pause menu under it.
+  function openGuide(): void {
+    const guide = (window.playallday as { guide?: { open(): void; close(): void } } | undefined)?.guide;
+    const dialog = document.getElementById('pad-guide');
+    if (!guide || !(dialog instanceof HTMLDialogElement) || dialog.open) return;
+    guide.open();
+    const pop = pushOverlay({ element: dialog, dismiss: () => guide.close() });
+    dialog.addEventListener('close', pop, { once: true });
+  }
+
   const pause = pauseMenu({
     note: () => round.hud(),
     canPause: () => loop.running,
@@ -192,6 +206,7 @@ export function arcadePage(spec: PageSpec): Page {
     share: { url: gameUrl(game), title: game.title, text: game.description },
     items: [
       { label: 'Main menu', onPress: () => location.assign(HOME_PATH) },
+      { label: 'How to play', keepOpen: true, onPress: openGuide },
       { label: 'Light or dark mode', keepOpen: true, onPress: toggleMode },
       { label: 'All games', onPress: () => location.assign('/') },
     ],
@@ -280,7 +295,7 @@ export function arcadePage(spec: PageSpec): Page {
   }).observe(canvas);
   window.addEventListener('playallday:sync', showBest);
 
-  // The links under the card: the other games, Share, and Sign in and Feedback
+  // The links under the card: the other games, Share, the mode, How to play, and Sign in and Feedback
   // once account.js has loaded (accounts are optional; the game plays without).
   for (const other of GAMES.filter((g) => g.slug !== game.slug)) {
     const a = document.createElement('a');
@@ -293,6 +308,9 @@ export function arcadePage(spec: PageSpec): Page {
   const mode = modeButton(true);
   mode.classList.add('link');
   links.append(mode);
+  const guideLink = Object.assign(document.createElement('button'), { type: 'button', className: 'link how-to', textContent: 'How to play' });
+  guideLink.addEventListener('click', openGuide);
+  links.append(guideLink);
   // The board behind a card or the pause menu redraws in the new colours.
   window.addEventListener('grid:theme', () => {
     if (loop.running) return;

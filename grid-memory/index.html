@@ -13,5 +13,40 @@
     <!-- The top bar, the canvas, the cards and the pause menu are built by
          src/arcade/page.ts. -->
     <script type="module" src="/src/games/memory/main.ts"></script>
+    <!-- pad-guide:start: written from playallday/guides/grid-memory.md by `npm run guides:sync` in playallday. Edit the guide there, never here. -->
+    <dialog id="pad-guide" class="pad-guide" aria-labelledby="pad-guide-title" data-button="none">
+    <form method="dialog"><button class="pad-guide-close" aria-label="Close">×</button></form>
+    <h2 id="pad-guide-title">Memory Grid</h2>
+    <p>Memory Grid is a game of pairs on a 6×6 board. 36 tiles lie face down, and every tile has one partner somewhere on the board. Find all 18 pairs with as many points left as you can.</p>
+    <h3>How to play</h3>
+    <ol>
+    <li>Turn over a tile to see its face.</li>
+    <li>Turn over a second tile.</li>
+    <li>If the two match, they stay face up and you earn 2 points.</li>
+    <li>If they don&#39;t match, you lose a point for each tile, 2 in all. They stay up for a moment so you can remember them, then turn back down.</li>
+    <li>You start on 100 points. The game ends when every pair is face up.</li>
+    </ol>
+    <p>Tiles that are already matched can&#39;t be turned again.</p>
+    <h3>The faces</h3>
+    <p>Every pair has a shape and a fill of its own. There are six shapes: circle, square, triangle, diamond, star and hexagon. Each comes in three fills: solid, outline and striped. That makes 18 faces, and no two pairs look alike.</p>
+    <p>Each face has a colour too, but you never need it. You can tell every pair apart by shape and fill alone.</p>
+    <h3>Controls</h3>
+    <ul>
+    <li><strong>Mouse / touch:</strong> click or tap a tile to turn it over.</li>
+    <li><strong>Keyboard:</strong> the arrow keys move a cursor around the board. <strong>Enter</strong> or <strong>Space</strong> turns the tile under it.</li>
+    <li><strong>Pause:</strong> the Pause button in the top bar. A game in progress is kept when you pause or leave, so you can carry on later.</li>
+    </ul>
+    <h3>Scoring</h3>
+    <p>Your score is the points you finish with. Each match adds 2, and each miss takes 2 away. A perfect game, with no misses at all, ends on 136. The leaderboard ranks the highest scores first.</p>
+    <h3>Tips</h3>
+    <ul>
+    <li>Say the face to yourself as you see it: &#34;striped star, top left&#34;.</li>
+    <li>When you turn a tile you have seen the partner of, go straight to that partner.</li>
+    <li>Work through the board in order early on, so you know which tiles you haven&#39;t seen.</li>
+    <li>A miss still tells you two faces. Remember both before they turn back.</li>
+    </ul>
+    </dialog>
+    <script src="/shared/guide.js" defer></script>
+    <!-- pad-guide:end -->
   </body>
 </html>

@@ -90,6 +90,11 @@ body {
   display: none;
 }
 
+/* Only once the platform's guide.js is on the page to open it. */
+html:not(.has-pad-guide) .how-to {
+  display: none;
+}
+
 /* The top bar's sun or moon. */
 .mode:not(.link) {
   padding: 2px 8px;

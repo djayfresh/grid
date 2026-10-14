@@ -13,5 +13,40 @@
     <!-- The top bar, the canvas, the cards and the pause menu are built by
          src/arcade/page.ts. -->
     <script type="module" src="/src/games/run/main.ts"></script>
+    <!-- pad-guide:start: written from playallday/guides/grid-run.md by `npm run guides:sync` in playallday. Edit the guide there, never here. -->
+    <dialog id="pad-guide" class="pad-guide" aria-labelledby="pad-guide-title" data-button="none">
+    <form method="dialog"><button class="pad-guide-close" aria-label="Close">×</button></form>
+    <h2 id="pad-guide-title">Grid Run</h2>
+    <p>Grid Run is a race across a 6×6 board to a yellow flag. Every step counts as a move, and red squares stand in your way. Clear 25 boards in as few moves as you can.</p>
+    <h3>How to play</h3>
+    <ol>
+    <li>You start on an empty square. The flag is somewhere else on the board.</li>
+    <li>Step to any of the eight squares around you, diagonals included. Each step is one move.</li>
+    <li>Reach the flag and the next board is dealt, with one more red square than the last.</li>
+    <li>Step on a red square and the same board is dealt again, in a new layout. The move still counts.</li>
+    <li>Board 1 has one red square and board 25 has 25.</li>
+    <li>After the flag on board 25 the game is over, and your total moves are your score.</li>
+    </ol>
+    <p>The edge of the board stops you, and a step that is blocked costs nothing.</p>
+    <h3>Bonus squares</h3>
+    <p>From board 11, a blue bonus square sometimes appears. Step on it to take 10 moves off your total. It is worth a short detour, but only a short one.</p>
+    <h3>Controls</h3>
+    <ul>
+    <li><strong>Mouse / touch:</strong> tap a square next to you to step there. The squares you can reach are faintly lit.</li>
+    <li><strong>Keyboard:</strong> the arrow keys or <strong>W A S D</strong> step up, down, left and right. <strong>Q</strong>, <strong>E</strong>, <strong>Z</strong> and <strong>C</strong> step diagonally. The number pad works too, with <strong>7</strong>, <strong>9</strong>, <strong>1</strong> and <strong>3</strong> for the diagonals.</li>
+    <li><strong>Pause:</strong> the Pause button in the top bar. A game in progress is kept when you pause or leave, so you can carry on later.</li>
+    </ul>
+    <h3>Scoring</h3>
+    <p>Your score is the number of moves it took to clear all 25 boards, after any bonuses. Fewer is better, and the leaderboard ranks the lowest totals first.</p>
+    <h3>Tips</h3>
+    <ul>
+    <li>Look for diagonal steps. A diagonal covers as much ground as two straight steps.</li>
+    <li>Plan the whole path before your first step on the busier boards.</li>
+    <li>A red square costs a whole board, not just a move. Go around when in doubt.</li>
+    <li>Take a bonus when it is one or two steps off your path. A long detour can cost more than it saves.</li>
+    </ul>
+    </dialog>
+    <script src="/shared/guide.js" defer></script>
+    <!-- pad-guide:end -->
   </body>
 </html>

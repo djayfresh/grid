@@ -13,5 +13,46 @@
     <!-- The top bar, the canvas, the cards and the pause menu are built by
          src/arcade/page.ts. -->
     <script type="module" src="/src/games/zombies/main.ts"></script>
+    <!-- pad-guide:start: written from playallday/guides/grid-zombies.md by `npm run guides:sync` in playallday. Edit the guide there, never here. -->
+    <dialog id="pad-guide" class="pad-guide" aria-labelledby="pad-guide-title" data-button="none">
+    <form method="dialog"><button class="pad-guide-close" aria-label="Close">×</button></form>
+    <h2 id="pad-guide-title">Zombie Grid</h2>
+    <p>Zombie Grid is a top-down survival game in a town at night. Walk the streets, shoot the zombies, break the barricade and reach the safe house. Each round is harder than the last, and you play until the zombies get you.</p>
+    <h3>How to play</h3>
+    <ol>
+    <li>Each round starts in a new town, laid out as a grid of streets and houses.</li>
+    <li>Zombies come out of the spawner houses and head for you. A zombie that reaches you bites for 10 health and dies.</li>
+    <li>A barricade blocks the road to the gold safe house. Shoot it down, then walk in to clear the round.</li>
+    <li>Clearing a round earns 50 points and gives you full health. The next town has more and tougher spawner houses and faster zombies.</li>
+    <li>You start with 100 health. At 0 the game is over.</li>
+    </ol>
+    <p>You can shoot the spawner houses down too. Each one you break stops its zombies for the rest of the round.</p>
+    <h3>Guns</h3>
+    <p>You have three guns and can switch at any time.</p>
+    <ul>
+    <li><strong>Pistol:</strong> steady shots with a medium reach.</li>
+    <li><strong>Machine gun:</strong> very fast, weaker shots, a little further.</li>
+    <li><strong>Sniper:</strong> slow, heavy shots that reach much further than the others.</li>
+    </ul>
+    <h3>Levels</h3>
+    <p>Every point you score is also experience. There are seven levels, and each makes you walk faster and shoot faster. Levels carry over from round to round.</p>
+    <h3>Controls</h3>
+    <ul>
+    <li><strong>Keyboard and mouse:</strong> <strong>W A S D</strong> or the arrow keys to walk. Aim with the mouse and hold the button to fire. <strong>Space</strong> fires at the nearest target, so the keyboard alone plays too. <strong>X</strong>, or <strong>1</strong> to <strong>3</strong>, switches guns.</li>
+    <li><strong>Touch:</strong> steer with the stick. You fire on your own at whatever is nearest in reach. The gun button switches guns.</li>
+    <li><strong>Pause:</strong> the Pause button in the top bar. A game in progress is kept when you pause or leave, so you can carry on later.</li>
+    </ul>
+    <h3>Scoring</h3>
+    <p>A zombie is worth its health, so tougher zombies score more. A barricade is worth 15, a spawner house 25 and a cleared round 50. Starting a new game over a kept one still scores what it had. The leaderboard ranks the highest scores first.</p>
+    <h3>Tips</h3>
+    <ul>
+    <li>Keep moving, and don&#39;t let zombies close in from two sides at once.</li>
+    <li>Use the sniper on spawner houses and the barricade from a safe distance.</li>
+    <li>Switch to the machine gun when a crowd gets close.</li>
+    <li>Head for the safe house once the barricade is down: the round ends and your health comes back.</li>
+    </ul>
+    </dialog>
+    <script src="/shared/guide.js" defer></script>
+    <!-- pad-guide:end -->
   </body>
 </html>
