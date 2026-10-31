@@ -67,3 +67,9 @@ The full list, and what the platform gives a game in return (accounts, feedback,
 saves on every device, leaderboards, rooms) is in the `playallday` repo's README.
 The page loads all four of its scripts (`vite.config.ts`); a game that never
 uses one loses nothing by it.
+
+## Where the code lives
+
+Forgejo (`djayfresh/grid`) is the source of truth; the GitHub repo is a push
+mirror. Dependency fixes land on Forgejo, so Dependabot PRs on GitHub are off
+and its alerts close once the mirror catches up.
